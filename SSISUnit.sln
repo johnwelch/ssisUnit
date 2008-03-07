@@ -1,0 +1,69 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnit", "SSISUnit\ssisUnit.csproj", "{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTssisUnit", "UTssisUnit\UTssisUnit.csproj", "{ADC78700-333C-4BDC-9F64-DA20F500C273}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B905B87-1991-462C-9BC0-C40A66C250FC}"
+	ProjectSection(SolutionItems) = preProject
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		SSISUnit.vsmdi = SSISUnit.vsmdi
+		SSISUnit10.vsmdi = SSISUnit10.vsmdi
+		SSISUnit11.vsmdi = SSISUnit11.vsmdi
+		SSISUnit12.vsmdi = SSISUnit12.vsmdi
+		SSISUnit13.vsmdi = SSISUnit13.vsmdi
+		SSISUnit14.vsmdi = SSISUnit14.vsmdi
+		SSISUnit15.vsmdi = SSISUnit15.vsmdi
+		SSISUnit16.vsmdi = SSISUnit16.vsmdi
+		SSISUnit17.vsmdi = SSISUnit17.vsmdi
+		SSISUnit2.vsmdi = SSISUnit2.vsmdi
+		SSISUnit3.vsmdi = SSISUnit3.vsmdi
+		SSISUnit4.vsmdi = SSISUnit4.vsmdi
+		SSISUnit5.vsmdi = SSISUnit5.vsmdi
+		SSISUnit6.vsmdi = SSISUnit6.vsmdi
+		SSISUnit7.vsmdi = SSISUnit7.vsmdi
+		SSISUnit8.vsmdi = SSISUnit8.vsmdi
+		SSISUnit9.vsmdi = SSISUnit9.vsmdi
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunner", "TestRunner\ssisUnitTestRunner.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs04.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = SSISUnit\\ssisUnit.csproj
+		SccProjectName1 = SSISUnit
+		SccLocalPath1 = SSISUnit
+		SccProjectUniqueName2 = TestRunner\\ssisUnitTestRunner.csproj
+		SccProjectName2 = TestRunner
+		SccLocalPath2 = TestRunner
+		SccProjectUniqueName3 = UTssisUnit\\UTssisUnit.csproj
+		SccProjectName3 = UTssisUnit
+		SccLocalPath3 = UTssisUnit
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADC78700-333C-4BDC-9F64-DA20F500C273}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADC78700-333C-4BDC-9F64-DA20F500C273}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADC78700-333C-4BDC-9F64-DA20F500C273}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADC78700-333C-4BDC-9F64-DA20F500C273}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

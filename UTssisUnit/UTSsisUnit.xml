@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TestSuite xmlns="http://tempuri.org/ssisUnit.xsd">
+  <ConnectionList>
+    <Connection name="AdventureWorks" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks" connectionType="ConnectionString"/>
+  </ConnectionList>
+  <Setup>
+    <SQLCommand connectionRef="AdventureWorks" returnsValue="true">
+      SELECT COUNT(ProductID) FROM Production.Product
+    </SQLCommand>
+    <SQLCommand connectionRef="AdventureWorks" returnsValue="false">
+      SELECT ProductID FROM Production.Product
+    </SQLCommand>
+    <ProcessCommand process="CMD.EXE" arguments="/c COPY c:\temp\temp.txt c:\temp\temp2.txt"/>
+    <ProcessCommand process="NOTEPAD.EXE" arguments=""/>
+    <ProcessCommand process="NOTEPAD.EXE"/>
+    <VariableCommand name="ProductRowCount"/>
+  </Setup>
+  <Tests>
+    <Test name="PassedTestSQL" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT" expectedResult="504">
+      <VariableCommand name="ProductRowCount"/>
+    </Test>
+    <Test name="PassedTestProcess" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT" expectedResult="0">
+      <ProcessCommand process="NOTEPAD.EXE"/>
+    </Test>
+    <Test name="FailedTestSQL" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT" expectedResult="1">
+      <SQLCommand connectionRef="AdventureWorks" returnsValue="true">
+        SELECT COUNT(*) FROM Production.Product
+      </SQLCommand>
+    </Test>
+    <TestRef path="C:\Projects\SSISUnit\UTssisUnit\UTssisUnit_Package.xml" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="{03894FFA-8636-4E81-B0CD-3F78E2CFBBEF}"/>
+  </Tests>
+  <Teardown>
+    <SQLCommand connectionRef="AdventureWorks" returnsValue="true">
+      SELECT COUNT(ProductID) FROM Production.Product
+    </SQLCommand>
+    <VariableCommand name="ProductRowCount" value="10"/>
+  </Teardown>
+</TestSuite>
