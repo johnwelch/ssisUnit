@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ssisUnit")]
+[assembly: AssemblyTitle("SsisUnit")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Mariner")]
-[assembly: AssemblyProduct("ssisUnit")]
+[assembly: AssemblyProduct("SsisUnit")]
 [assembly: AssemblyCopyright("Copyright © Mariner 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

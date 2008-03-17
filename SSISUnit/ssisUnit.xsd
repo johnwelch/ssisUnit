@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="SsisUnit"
-    targetNamespace="http://tempuri.org/ssisUnit.xsd"
+    targetNamespace="http://tempuri.org/SsisUnit.xsd"
     elementFormDefault="qualified"
-    xmlns="http://tempuri.org/ssisUnit.xsd"
+    xmlns="http://tempuri.org/SsisUnit.xsd"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
   <xs:element name="TestSuite">
@@ -32,7 +32,7 @@
         <xs:element name="Setup" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element ref="SQLCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
@@ -51,7 +51,7 @@
         <xs:element name ="Teardown" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element ref="SQLCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
@@ -63,7 +63,7 @@
   </xs:element>
 
   <!--Define Common SQL Command-->
-  <xs:element name="SQLCommand">
+  <xs:element name="SqlCommand">
     <xs:complexType mixed="true">
       <xs:attribute name="connectionRef" type="xs:string" use="required"/>
       <xs:attribute name="returnsValue" use="required" type="xs:boolean"/>
@@ -105,16 +105,24 @@
   <xs:element name="Test">
     <xs:complexType>
       <xs:sequence>
-        <xs:choice minOccurs="1" maxOccurs="1">
-          <xs:element ref="ProcessCommand"/>
-          <xs:element ref="SQLCommand"/>
-          <xs:element ref="VariableCommand"/>
-        </xs:choice>
+        <xs:element name="Assert" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:choice minOccurs="1" maxOccurs="1">
+                <xs:element ref="ProcessCommand"/>
+                <xs:element ref="SqlCommand"/>
+                <xs:element ref="VariableCommand"/>
+              </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="expectedResult" type="xs:string" use="required"/>
+            <xs:attribute name="testBefore" type="xs:boolean" use="required"/>
+          </xs:complexType>
+        </xs:element>
       </xs:sequence>
       <xs:attribute name="name" type="xs:string" use="required"/>
       <xs:attribute name="package" type="xs:string" use="required"/>
       <xs:attribute name="task" type="xs:string" use="required"/>
-      <xs:attribute name="expectedResult" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
 

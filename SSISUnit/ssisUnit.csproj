@@ -8,8 +8,8 @@
     <ProjectGuid>{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ssisUnit</RootNamespace>
-    <AssemblyName>ssisUnit</AssemblyName>
+    <RootNamespace>SsisUnit</RootNamespace>
+    <AssemblyName>SsisUnit</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -41,23 +41,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IssisTestCase.cs" />
-    <Compile Include="ssisTestCase.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ssisUnit1.Designer.cs">
+    <Compile Include="app.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ssisUnit.settings</DependentUpon>
+      <DependentUpon>app.settings</DependentUpon>
     </Compile>
+    <Compile Include="CommandPlugin.cs" />
+    <Compile Include="IssisTestCase.cs" />
+    <Compile Include="ProcessCommand.cs" />
+    <Compile Include="SqlCommand.cs" />
+    <Compile Include="ssisTestCase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ssisUnit.cs">
+      <DependentUpon>SsisUnit.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="VariableCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ssisUnit.xsd" />
+    <EmbeddedResource Include="SsisUnit.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ssisUnit.settings">
+    <None Include="app.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>ssisUnit1.Designer.cs</LastGenOutput>
+      <LastGenOutput>app.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

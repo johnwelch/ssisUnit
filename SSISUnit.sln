@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnit", "SSISUnit\ssisUnit.csproj", "{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit", "SSISUnit\SsisUnit.csproj", "{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTssisUnit", "UTssisUnit\UTssisUnit.csproj", "{ADC78700-333C-4BDC-9F64-DA20F500C273}"
 EndProject
@@ -17,7 +17,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SSISUnit15.vsmdi = SSISUnit15.vsmdi
 		SSISUnit16.vsmdi = SSISUnit16.vsmdi
 		SSISUnit17.vsmdi = SSISUnit17.vsmdi
+		SSISUnit18.vsmdi = SSISUnit18.vsmdi
+		SSISUnit19.vsmdi = SSISUnit19.vsmdi
 		SSISUnit2.vsmdi = SSISUnit2.vsmdi
+		SSISUnit20.vsmdi = SSISUnit20.vsmdi
+		SSISUnit21.vsmdi = SSISUnit21.vsmdi
+		SSISUnit22.vsmdi = SSISUnit22.vsmdi
+		SSISUnit23.vsmdi = SSISUnit23.vsmdi
 		SSISUnit3.vsmdi = SSISUnit3.vsmdi
 		SSISUnit4.vsmdi = SSISUnit4.vsmdi
 		SSISUnit5.vsmdi = SSISUnit5.vsmdi
@@ -35,7 +41,7 @@ Global
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs04.codeplex.com/
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = SSISUnit\\ssisUnit.csproj
+		SccProjectUniqueName1 = SSISUnit\\SsisUnit.csproj
 		SccProjectName1 = SSISUnit
 		SccLocalPath1 = SSISUnit
 		SccProjectUniqueName2 = TestRunner\\ssisUnitTestRunner.csproj
@@ -44,6 +50,9 @@ Global
 		SccProjectUniqueName3 = UTssisUnit\\UTssisUnit.csproj
 		SccProjectName3 = UTssisUnit
 		SccLocalPath3 = UTssisUnit
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = SSISUnit23.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ssisUnit;
+using SsisUnit;
 using System.IO;
 
 namespace ssisUnitTestRunner

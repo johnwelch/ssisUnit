@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<TestSuite xmlns="http://tempuri.org/ssisUnit.xsd">
+<TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
   <ConnectionList>
     <Connection name="AdventureWorks" connectionType="ConnectionString" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks"/>
   </ConnectionList>
   <Setup>
-    <SQLCommand connectionRef="AdventureWorks" returnsValue="false">
+    <SqlCommand connectionRef="AdventureWorks" returnsValue="false">
       CREATE TABLE [dbo].[TestTable](
       [ID] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
       [ColName] [varchar](50) NOT NULL)
-    </SQLCommand>
+    </SqlCommand>
   </Setup>
   <Tests>
     <TestRef path="C:\Projects\SSISUnit\UTssisUnit\UTSsisUnitChild.xml" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="{03894FFA-8636-4E81-B0CD-3F78E2CFBBEF}"/>
   </Tests>
   <Teardown>
-    <SQLCommand connectionRef="AdventureWorks" returnsValue="false">
+    <SqlCommand connectionRef="AdventureWorks" returnsValue="false">
       DROP TABLE dbo.TestTable
-    </SQLCommand>
+    </SqlCommand>
   </Teardown>
 </TestSuite>

@@ -1,4 +1,4 @@
-﻿using ssisUnit;
+﻿using SsisUnit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using System.Xml;
@@ -149,60 +149,57 @@ namespace UTssisUnit
             Assert.AreEqual(2, result);
         }
 
-        [TestMethod()]
-        public void RunSQLCommandResultsTest()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
+        //[TestMethod()]
+        //public void RunSQLCommandResultsTest()
+        //{
+        //    SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
 
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            //target.InitializeTestCase(TEST_XML_FILE_PATH);
-            XmlNode command = doc.DocumentElement["Setup"]["SQLCommand"];
+        //    XmlDocument doc = new XmlDocument();
+        //    doc.Load(TEST_XML_FILE_PATH);
+        //    //target.InitializeTestCase(TEST_XML_FILE_PATH);
+        //    XmlNode command = doc.DocumentElement["Setup"]["SqlCommand"];
 
-            object result = target.RunSQLCommand(command);
-            Assert.AreEqual(504, (int)result);
-        }
+        //    object result = target.RunSQLCommand(command);
+        //    Assert.AreEqual(504, (int)result);
+        //}
 
-        [TestMethod()]
-        public void RunSQLCommandNoResultsTest()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
+        //[TestMethod()]
+        //public void RunSQLCommandNoResultsTest()
+        //{
+        //    SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
 
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            XmlNode command = doc.DocumentElement["Setup"].ChildNodes[1];
-            //target.InitializeTestCase(TEST_XML_FILE_PATH);
+        //    XmlDocument doc = new XmlDocument();
+        //    doc.Load(TEST_XML_FILE_PATH);
+        //    XmlNode command = doc.DocumentElement["Setup"].ChildNodes[1];
 
-            object result = target.RunSQLCommand(command);
-            Assert.IsNull(result);
-        }
+        //    object result = target.RunSQLCommand(command);
+        //    Assert.IsNull(result);
+        //}
 
-        [TestMethod()]
-        public void RunSQLCommandInvalidConnectionRefTest()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_BAD_DATA_PATH);
+        //[TestMethod()]
+        //public void RunSQLCommandInvalidConnectionRefTest()
+        //{
+        //    SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_BAD_DATA_PATH);
 
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_BAD_DATA_PATH);
-            XmlNode command = doc.DocumentElement["Setup"].ChildNodes[0];
+        //    XmlDocument doc = new XmlDocument();
+        //    doc.Load(TEST_XML_FILE_BAD_DATA_PATH);
+        //    XmlNode command = doc.DocumentElement["Setup"].ChildNodes[0];
 
-            //target.InitializeTestCase(TEST_XML_FILE_BAD_DATA_PATH);
+        //    try
+        //    {
+        //        object result = target.RunSQLCommand(command);
+        //        Assert.Fail("The method did not throw the expected argument exception.");
+        //    }
+        //    catch (System.ArgumentException)
+        //    {
+        //        Assert.IsTrue(true);
+        //    }
+        //    catch (System.Exception)
+        //    {
+        //        Assert.Fail("The method did not throw the expected argument exception.");
+        //    }
 
-            try
-            {
-                object result = target.RunSQLCommand(command);
-                Assert.Fail("The method did not throw the expected argument exception.");
-            }
-            catch (System.ArgumentException)
-            {
-                Assert.IsTrue(true);
-            }
-            catch (System.Exception)
-            {
-                Assert.Fail("The method did not throw the expected argument exception.");
-            }
-
-        }
+        //}
 
         [TestMethod()]
         public void RunTestTest()
@@ -252,36 +249,6 @@ namespace UTssisUnit
             {
                 Assert.Fail(ex.Message);
             } 
-        }
-
-        [TestMethod()]
-        public void RunVariableCommandSetTest()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            XmlNode command = doc.DocumentElement["Teardown"]["VariableCommand"];
-            Application ssisApp = new Application();
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-
-            object result = target.RunVariableCommand(command, packageToTest.VariableDispenser);
-            Assert.AreEqual(10, (int)(packageToTest.Variables["ProductRowCount"].Value));
-        }
-
-        [TestMethod()]
-        public void RunVariableCommandGetTest()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            XmlNode command = doc.DocumentElement["Setup"]["VariableCommand"];
-            Application ssisApp = new Application();
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-
-            object result = target.RunVariableCommand(command, packageToTest.VariableDispenser);
-            Assert.AreEqual(100, (int)result);
         }
 
         [TestMethod()]
@@ -337,62 +304,6 @@ namespace UTssisUnit
 
             DtsContainer result = SsisTestSuite.FindExecutable(packageToTest, "Does Not Exist");
             Assert.IsNull(result);
-        }
-
-        [TestMethod()]
-        public void RunProcessCommandTest()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            //target.InitializeTestCase(TEST_XML_FILE_PATH);
-            XmlNode command = doc.DocumentElement["Setup"]["ProcessCommand"];
-
-            int result = target.RunProcessCommand(command);
-            Assert.AreEqual(0, result);
-        }
-
-        [TestMethod()]
-        public void RunProcessCommandEmptyArgsTest()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            //target.InitializeTestCase(TEST_XML_FILE_PATH);
-            XmlNode command = doc.DocumentElement["Setup"].ChildNodes[3];
-
-            int result = target.RunProcessCommand(command);
-            Assert.AreEqual(0, result);
-        }
-
-        [TestMethod()]
-        public void RunProcessCommandNoArgsTest()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            //target.InitializeTestCase(TEST_XML_FILE_PATH);
-            XmlNode command = doc.DocumentElement["Setup"].ChildNodes[4];
-
-            int result = target.RunProcessCommand(command);
-            Assert.AreEqual(0, result);
-        }
-
-        [TestMethod()]
-        public void RunProcessCommandReturnsFailure()
-        {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_BAD_DATA_PATH);
-            //target.InitializeTestCase(TEST_XML_FILE_BAD_DATA_PATH);
-            XmlNode command = doc.DocumentElement["Setup"].ChildNodes[1];
-
-            int result = target.RunProcessCommand(command);
-            Assert.AreEqual(1, result);
         }
     }
 }

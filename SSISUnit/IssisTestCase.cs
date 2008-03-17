@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ssisUnit
+namespace SsisUnit
 {
     interface IssisTestSuite
     {

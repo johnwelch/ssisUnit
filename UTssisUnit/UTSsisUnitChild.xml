@@ -1,18 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<TestSuite xmlns="http://tempuri.org/ssisUnit.xsd">
+<TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
   <ConnectionList>
     <Connection name="AdventureWorks" connectionType="ConnectionString" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks"/>
   </ConnectionList>
   <Setup>
-    <SQLCommand connectionRef="AdventureWorks" returnsValue="false">
+    <SqlCommand connectionRef="AdventureWorks" returnsValue="false">
       INSERT INTO TestTable VALUES('Test')
-    </SQLCommand>
+    </SqlCommand>
   </Setup>
   <Tests>
-    <Test name="TestRowCount" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="{5661EB8F-527A-460B-B7F5-2C8E066130B7}" expectedResult="1">
-      <SQLCommand connectionRef="AdventureWorks" returnsValue="true">
-        SELECT COUNT(1) FROM TestTable
-      </SQLCommand>
+    <Test name="TestRowCount" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="{5661EB8F-527A-460B-B7F5-2C8E066130B7}" >
+      <Assert name="RowOCunt" expectedResult="1" testBefore="false">
+        <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
+          SELECT COUNT(1) FROM TestTable
+        </SqlCommand>
+      </Assert>
     </Test>
   </Tests>
   <Teardown>

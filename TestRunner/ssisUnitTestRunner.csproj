@@ -44,9 +44,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SSISUnit\ssisUnit.csproj">
+    <ProjectReference Include="..\SSISUnit\SsisUnit.csproj">
       <Project>{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}</Project>
-      <Name>ssisUnit</Name>
+      <Name>SsisUnit</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

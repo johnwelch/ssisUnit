@@ -10,7 +10,7 @@ using System.Globalization;
 using Microsoft.SqlServer.Dts.Runtime;
 
 [assembly: InternalsVisibleTo("UTssisUnit")]
-namespace ssisUnit
+namespace SsisUnit
 {
     public class SsisTestSuite : IssisTestSuite
     {
@@ -23,11 +23,15 @@ namespace ssisUnit
         private Application _ssisApp = new Application();
         private XmlNamespaceManager _namespaceMgr;
         private SsisTestSuite _parentSuite;
+        private Dictionary<string, CommandBase> _commands = new Dictionary<string, CommandBase>(3);
 
         public SsisTestSuite(string testCaseFile)
         {
             InitializeTestCase(testCaseFile);
+
+            LoadCommands();
         }
+
 
         #region Events
 
@@ -100,22 +104,15 @@ namespace ssisUnit
 
         public void Execute()
         {
-            foreach (XmlNode test in _testCaseDoc.SelectNodes("ssisUnit:TestSuite/ssisUnit:Tests/ssisUnit:Test", _namespaceMgr))
+            foreach (XmlNode test in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:Test", _namespaceMgr))
             {
                 this.Test(test);
             }
 
-            foreach (XmlNode testRef in _testCaseDoc.SelectNodes("ssisUnit:TestSuite/ssisUnit:Tests/ssisUnit:TestRef", _namespaceMgr))
+            foreach (XmlNode testRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:TestRef", _namespaceMgr))
             {
                 this.RunTestSuite(testRef);
             }
-
-            //TODO: Implement TestRef logic
-            //TODO: Implement FileCommand logic
-            //TODO: Implement plugin architecture for commands
-            //TODO: Implement Connection Manager Logic
-
-
         }
 
         public void Execute(SsisTestSuite ssisTestCase)
@@ -133,7 +130,7 @@ namespace ssisUnit
         {
             _testCaseDoc = LoadTestXmlFromFile(testCaseFile);
             _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
-            _namespaceMgr.AddNamespace("ssisUnit", "http://tempuri.org/ssisUnit.xsd");
+            _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             _connections = _testCaseDoc.DocumentElement["ConnectionList"];
         }
 
@@ -152,17 +149,17 @@ namespace ssisUnit
                     return null;
                 }
                 Assembly asm = Assembly.GetExecutingAssembly();
-                Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".ssisUnit.xsd");
+                Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
 
                 XmlReaderSettings settings = new XmlReaderSettings();
-                settings.Schemas.Add("http://tempuri.org/ssisUnit.xsd", XmlReader.Create(strm));
+                settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
                 settings.ValidationType = ValidationType.Schema;
 
                 XmlDocument test = new XmlDocument();
                 test.Load(XmlReader.Create(new StreamReader(fileName), settings));
                 if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
                 {
-                    throw new ArgumentException(String.Format("The ssisUnit schema ({0}) was not specified in this XML document.", "http://tempuri.org/ssisUnit.xsd"));
+                    throw new ArgumentException(String.Format("The SsisUnit schema ({0}) was not specified in this XML document.", "http://tempuri.org/SsisUnit.xsd"));
                 }
 
                 return test;
@@ -195,22 +192,35 @@ namespace ssisUnit
             this.Setup(_testCaseDoc.DocumentElement["Setup"], pkg, task);
         }
 
+        private void LoadCommands()
+        {
+            foreach (Type t in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
+            {
+                if (typeof(CommandBase).IsAssignableFrom(t)
+                    && (!object.ReferenceEquals(t, typeof(CommandBase)))
+                    && (!t.IsAbstract))
+                {
+                    CommandBase command;
+                    System.Type[] @params = { typeof(XmlNode), typeof(XmlNamespaceManager) };
+                    System.Reflection.ConstructorInfo con;
+
+                    con = t.GetConstructor(@params);
+                    if (con == null)
+                    {
+                        throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The Command type {0} could not be loaded because it has no constructor.", t.Name));
+                    }
+                    command = (CommandBase)con.Invoke(new object[] { _connections, _namespaceMgr });
+                    _commands.Add(command.CommandName, command);
+                }
+            }
+        }
+
+
         private object RunCommand(XmlNode command, Package pkg, DtsContainer task)
         {
             object returnValue = null;
 
-            if (command.Name == "SQLCommand")
-            {
-                returnValue = RunSQLCommand(command);
-            }
-            else if (command.Name == "ProcessCommand")
-            {
-                returnValue = RunProcessCommand(command);
-            }
-            else if (command.Name == "VariableCommand")
-            {
-                returnValue = RunVariableCommand(command, task.VariableDispenser);
-            }
+            returnValue = _commands[command.Name].Execute(command, pkg, task);
 
             return returnValue;
         }
@@ -300,17 +310,44 @@ namespace ssisUnit
 
                 try
                 {
+                    //Run Pre Asserts
+                    foreach (XmlNode assert in test.SelectNodes("SsisUnit:Assert[@testBefore='true']", _namespaceMgr))
+                    {
+                        validationResult = RunCommand(assert.ChildNodes[0], packageToTest, taskHost);
+                        returnValue = (assert.Attributes["expectedResult"].Value == validationResult.ToString());
+
+                        if (returnValue)
+                        {
+                            resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), assert.Attributes["expectedResult"].Value);
+                        }
+                        else
+                        {
+                            resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), assert.Attributes["expectedResult"].Value);
+                        }
+                        OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.Attributes["package"].Value,
+                        test.Attributes["task"].Value, test.Attributes["name"].Value, resultMessage, returnValue));
+                    }
+                   
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
-                    validationResult = RunCommand(test.ChildNodes[0], packageToTest, taskHost);
-                    returnValue = (test.Attributes["expectedResult"].Value == validationResult.ToString());
-                    if (returnValue)
+
+                    foreach (XmlNode assert in test.SelectNodes("SsisUnit:Assert[@testBefore='false']", _namespaceMgr))
                     {
-                        resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), test.Attributes["expectedResult"].Value);
+                        validationResult = RunCommand(assert.ChildNodes[0], packageToTest, taskHost);
+                        returnValue = (assert.Attributes["expectedResult"].Value == validationResult.ToString());
+
+                        if (returnValue)
+                        {
+                            resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), assert.Attributes["expectedResult"].Value);
+                        }
+                        else
+                        {
+                            resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), assert.Attributes["expectedResult"].Value);
+                        }
+                        OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.Attributes["package"].Value,
+                        test.Attributes["task"].Value, test.Attributes["name"].Value, resultMessage, returnValue));
                     }
-                    else
-                    {
-                        resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), test.Attributes["expectedResult"].Value);
-                    }
+                    resultMessage = "All asserts were completed.";
+
                 }
                 catch (Exception ex)
                 {
@@ -369,117 +406,117 @@ namespace ssisUnit
             this.Teardown(_testCaseDoc.DocumentElement["Teardown"], pkg, task);
         }
 
-        internal object RunSQLCommand(XmlNode command)
-        {
-            string provider = string.Empty;
-            object result = null;
+        //internal object RunSQLCommand(XmlNode command)
+        //{
+        //    string provider = string.Empty;
+        //    object result = null;
 
-            if (command.Name != "SQLCommand")
-            {
-                throw new ArgumentException("The node passed to the command argument is not a SQLCommand element.");
-            }
+        //    if (command.Name != "SqlCommand")
+        //    {
+        //        throw new ArgumentException("The node passed to the command argument is not a SqlCommand element.");
+        //    }
 
-            XmlNode connection = _connections.SelectSingleNode("ssisUnit:Connection[@name='" + command.Attributes["connectionRef"].Value + "']", _namespaceMgr);
-            if (connection == null)
-            {
-                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", command.Attributes["connectionRef"].Value));
-            }
+        //    XmlNode connection = _connections.SelectSingleNode("ssisUnit:Connection[@name='" + command.Attributes["connectionRef"].Value + "']", _namespaceMgr);
+        //    if (connection == null)
+        //    {
+        //        throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", command.Attributes["connectionRef"].Value));
+        //    }
 
-            using (DbCommand dbCommand = GetCommand(connection, command.InnerText))
-            {
-                dbCommand.Connection.Open();
-                if (command.Attributes["returnsValue"].Value == "true")
-                {
-                    result = dbCommand.ExecuteScalar();
-                }
-                else
-                {
-                    dbCommand.ExecuteNonQuery();
-                }
-                dbCommand.Connection.Close();
-            }
-            return result;
-        }
+        //    using (DbCommand dbCommand = GetCommand(connection, command.InnerText))
+        //    {
+        //        dbCommand.Connection.Open();
+        //        if (command.Attributes["returnsValue"].Value == "true")
+        //        {
+        //            result = dbCommand.ExecuteScalar();
+        //        }
+        //        else
+        //        {
+        //            dbCommand.ExecuteNonQuery();
+        //        }
+        //        dbCommand.Connection.Close();
+        //    }
+        //    return result;
+        //}
 
-        internal int RunProcessCommand(XmlNode command)
-        {
-            int exitCode;
+        //internal int RunProcessCommand(XmlNode command)
+        //{
+        //    int exitCode;
 
-            if (command.Name != "ProcessCommand")
-            {
-                throw new ArgumentException("The node passed to the command argument is not a ProcessCommand element.");
-            }
-            Process proc = null;
-            try
-            {
-                XmlNode args = command.Attributes.GetNamedItem("arguments");
-                if (args == null)
-                {
-                    proc = Process.Start(command.Attributes["process"].Value);
-                }
-                else
-                {
-                    proc = Process.Start(command.Attributes["process"].Value, command.Attributes["arguments"].Value);
-                }
-                while (!proc.WaitForExit(ssisUnit.Default.ProcessCheckForExitDelay))
-                {
-                    if (proc.StartTime.AddSeconds(ssisUnit.Default.ProcessTimeout).CompareTo(DateTime.Now) < 0)
-                    {
-                        try
-                        {
-                            proc.CloseMainWindow();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            break;
-                        }
-                    }
-                }
+        //    if (command.Name != "ProcessCommand")
+        //    {
+        //        throw new ArgumentException("The node passed to the command argument is not a ProcessCommand element.");
+        //    }
+        //    Process proc = null;
+        //    try
+        //    {
+        //        XmlNode args = command.Attributes.GetNamedItem("arguments");
+        //        if (args == null)
+        //        {
+        //            proc = Process.Start(command.Attributes["process"].Value);
+        //        }
+        //        else
+        //        {
+        //            proc = Process.Start(command.Attributes["process"].Value, command.Attributes["arguments"].Value);
+        //        }
+        //        while (!proc.WaitForExit(ssisUnit.Default.ProcessCheckForExitDelay))
+        //        {
+        //            if (proc.StartTime.AddSeconds(ssisUnit.Default.ProcessTimeout).CompareTo(DateTime.Now) < 0)
+        //            {
+        //                try
+        //                {
+        //                    proc.CloseMainWindow();
+        //                }
+        //                catch (InvalidOperationException)
+        //                {
+        //                    break;
+        //                }
+        //            }
+        //        }
 
-                exitCode = proc.ExitCode;
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException("The RunProcessNode contained an invalid command or process.", ex);
-            }
-            finally
-            {
-                proc.Close();
-            }
+        //        exitCode = proc.ExitCode;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new ArgumentException("The RunProcessNode contained an invalid command or process.", ex);
+        //    }
+        //    finally
+        //    {
+        //        proc.Close();
+        //    }
 
-            return exitCode;
+        //    return exitCode;
 
-        }
+        //}
 
-        internal object RunVariableCommand(XmlNode command, VariableDispenser dispenser)
-        {
-            object returnValue;
-            Variables vars = null;
+        //internal object RunVariableCommand(XmlNode command, VariableDispenser dispenser)
+        //{
+        //    object returnValue;
+        //    Variables vars = null;
 
-            if (command.Name != "VariableCommand")
-            {
-                throw new ArgumentException("The node passed to the command argument is not a VariableCommand element.");
-            }
+        //    if (command.Name != "VariableCommand")
+        //    {
+        //        throw new ArgumentException("The node passed to the command argument is not a VariableCommand element.");
+        //    }
 
-            string varName = command.Attributes["name"].Value;
+        //    string varName = command.Attributes["name"].Value;
 
-            if (command.Attributes["value"] == null)
-            {
-                dispenser.LockOneForRead(varName, ref vars);
-                returnValue = vars[varName].Value;
-                vars.Unlock();
-            }
-            else
-            {
-                //writing to the variable
-                object varValue = command.Attributes["value"].Value;
-                dispenser.LockOneForWrite(varName, ref vars);
-                vars[varName].Value = System.Convert.ChangeType(varValue, vars[varName].DataType);
-                vars.Unlock();
-                returnValue = varValue;
-            }
-            return returnValue;
-        }
+        //    if (command.Attributes["value"] == null)
+        //    {
+        //        dispenser.LockOneForRead(varName, ref vars);
+        //        returnValue = vars[varName].Value;
+        //        vars.Unlock();
+        //    }
+        //    else
+        //    {
+        //        //writing to the variable
+        //        object varValue = command.Attributes["value"].Value;
+        //        dispenser.LockOneForWrite(varName, ref vars);
+        //        vars[varName].Value = System.Convert.ChangeType(varValue, vars[varName].DataType);
+        //        vars.Unlock();
+        //        returnValue = varValue;
+        //    }
+        //    return returnValue;
+        //}
 
 
         private DbCommand GetCommand(XmlNode connection, string commandText)
@@ -523,31 +560,6 @@ namespace ssisUnit
             return DbProviderFactories.GetFactory(factoryInvariantName);
 
         }
-
-        //static internal TaskHost FindExecutable(IDTSSequence parentExecutable, string taskId)
-        //{
-
-        //    //TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
-
-        //    TaskHost matchingExecutable = null;
-
-        //    if (parentExecutable.Executables.Contains(taskId))
-        //    {
-        //        matchingExecutable = (TaskHost)parentExecutable.Executables[taskId];
-        //    }
-        //    else
-        //    {
-        //        foreach (Executable e in parentExecutable.Executables)
-        //        {
-        //            if (e is IDTSSequence)
-        //            {
-        //                matchingExecutable = FindExecutable((IDTSSequence)e, taskId);
-        //            }
-        //        }
-        //    }
-
-        //    return matchingExecutable;
-        //}
 
         static internal DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
         {
