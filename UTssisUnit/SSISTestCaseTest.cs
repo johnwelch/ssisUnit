@@ -131,7 +131,7 @@ namespace UTssisUnit
             DtsContainer task = SsisTestSuite.FindExecutable(packageToTest, "SELECT COUNT");
 
             int result = target.Setup(setup, packageToTest, task);
-            Assert.AreEqual(6, result);
+            Assert.AreEqual(4, result);
         }
 
         [TestMethod()]

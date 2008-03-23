@@ -11,8 +11,6 @@
       SELECT ProductID FROM Production.Product
     </SqlCommand>
     <ProcessCommand process="CMD.EXE" arguments="/c COPY c:\temp\temp.txt c:\temp\temp2.txt"/>
-    <ProcessCommand process="NOTEPAD.EXE" arguments=""/>
-    <ProcessCommand process="NOTEPAD.EXE"/>
     <VariableCommand name="ProductRowCount"/>
   </Setup>
   <Tests>
@@ -26,7 +24,7 @@
     </Test>
     <Test name="PassedTestProcess" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT">
       <Assert name="Test Process" expectedResult="0" testBefore="true">
-        <ProcessCommand process="NOTEPAD.EXE"/>
+        <ProcessCommand process="CMD.EXE" arguments="/c DIR C:\Temp"/>
       </Assert>
     </Test>
     <Test name="FailedTestSQL" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT" >

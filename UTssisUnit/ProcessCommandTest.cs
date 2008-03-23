@@ -14,8 +14,7 @@ namespace UTssisUnit
     [TestClass()]
     public class ProcessCommandTest
     {
-        private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.xml";
-        private const string TEST_XML_FILE_BAD_DATA_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_BadData.xml";
+        private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_Process.xml";
 
         private TestContext testContextInstance;
 
@@ -86,7 +85,7 @@ namespace UTssisUnit
             XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
             namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             ProcessCommand target = new ProcessCommand(connections, namespaceMgr);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"]["ProcessCommand"];
+            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[0];
             Package package = null; // TODO: Initialize to an appropriate value
             DtsContainer container = null; // TODO: Initialize to an appropriate value
             object actual;
@@ -102,7 +101,7 @@ namespace UTssisUnit
             XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
             namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             ProcessCommand target = new ProcessCommand(connections, namespaceMgr);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[3];
+            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[1];
             Package package = null; // TODO: Initialize to an appropriate value
             DtsContainer container = null; // TODO: Initialize to an appropriate value
             object actual;
@@ -118,7 +117,7 @@ namespace UTssisUnit
             XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
             namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             ProcessCommand target = new ProcessCommand(connections, namespaceMgr);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[4];
+            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[2];
             Package package = null; // TODO: Initialize to an appropriate value
             DtsContainer container = null; // TODO: Initialize to an appropriate value
             object actual;
@@ -129,12 +128,12 @@ namespace UTssisUnit
         [TestMethod()]
         public void RunProcessCommandReturnsFailure()
         {
-            XmlDocument testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_BAD_DATA_PATH);
+            XmlDocument testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
             XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
             XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
             namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             ProcessCommand target = new ProcessCommand(connections, namespaceMgr);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[1];
+            XmlNode command = testCaseDoc.DocumentElement["Teardown"].ChildNodes[0];
             Package package = null; // TODO: Initialize to an appropriate value
             DtsContainer container = null; // TODO: Initialize to an appropriate value
             object actual;

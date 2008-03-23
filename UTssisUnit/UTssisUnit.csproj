@@ -51,6 +51,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DirectoryCommandTest.cs" />
+    <Compile Include="FileCommandTest.cs" />
     <Compile Include="ProcessCommandTest.cs" />
     <Compile Include="ProgramTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,6 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
+    <Content Include="UTSsisUnit_Directory.xml" />
+    <Content Include="UTSsisUnit_File.xml" />
+    <Content Include="UTSsisUnit_Process.xml" />
     <Content Include="UTSsisUnitChild.xml" />
     <Content Include="UTSsisUnitParent.xml" />
     <Content Include="UTSsisUnit_BadData.xml" />
