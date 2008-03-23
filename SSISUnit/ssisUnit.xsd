@@ -11,7 +11,7 @@
         <xs:element name="ConnectionList" minOccurs="1" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Connection" minOccurs="1" maxOccurs="unbounded">
+              <xs:element name="Connection" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:attribute name="name" type="xs:string" use="required"/>
                   <xs:attribute name="connection" type="xs:string" use="required" />
@@ -31,31 +31,48 @@
         <!--Setup Node-->
         <xs:element name="Setup" minOccurs="0" maxOccurs="1">
           <xs:complexType>
-            <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <!--<xs:sequence>-->
               <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:sequence>
+              <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+            <!--</xs:sequence>-->
           </xs:complexType>
         </xs:element>
         <!--Test Node-->
         <xs:element name="Tests" minOccurs="1" maxOccurs="1">
           <xs:complexType>
-            <xs:sequence>
+            <!--<xs:sequence>-->
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
               <xs:element ref="Test" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="TestRef" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:sequence>
+            </xs:choice>
+            <!--</xs:sequence>-->
           </xs:complexType>
         </xs:element>
         <!--Teardown Node-->
         <xs:element name ="Teardown" minOccurs="0" maxOccurs="1">
           <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+          </xs:complexType>
+          <!--<xs:complexType>
             <xs:sequence>
               <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
-          </xs:complexType>
+          </xs:complexType>-->
         </xs:element>
 
       </xs:sequence>
@@ -71,19 +88,42 @@
   </xs:element>
 
   <!--Define Common File Command-->
-  <!--<xs:element name="FileCommand">
+  <xs:element name="FileCommand">
     <xs:complexType>
-      <xs:attribute name="Connection" type="xs:string" use="required" />
-      <xs:attribute name="ConnectionType" use="required">
+      <xs:attribute name="operation" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:string">
-            <xs:enumeration value="ConnectionString" />
-            <xs:enumeration value="ConnectionManager" />
+            <xs:enumeration value="LineCount" />
+            <xs:enumeration value="Exists" />
+            <xs:enumeration value="Copy" />
+            <xs:enumeration value="Move" />
+            <xs:enumeration value="Delete" />
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
+      <xs:attribute name="sourcePath" type="xs:string" use="required" />
+      <xs:attribute name="targetPath" type="xs:string" use="optional" />
     </xs:complexType>
-  </xs:element>-->
+  </xs:element>
+
+  <!--Define Common Directory Command-->
+  <xs:element name="DirectoryCommand">
+    <xs:complexType>
+      <xs:attribute name="operation" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="FileCount" />
+            <xs:enumeration value="Create" />
+            <xs:enumeration value="Move" />
+            <xs:enumeration value="Delete" />
+            <xs:enumeration value="Exists" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="argument1" type="xs:string" use="required" />
+      <xs:attribute name="argument2" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
 
   <!--Define Common Process Command-->
   <xs:element name="ProcessCommand">
@@ -107,13 +147,13 @@
       <xs:sequence>
         <xs:element name="Assert" minOccurs="1" maxOccurs="unbounded">
           <xs:complexType>
-            <xs:sequence>
-              <xs:choice minOccurs="1" maxOccurs="1">
-                <xs:element ref="ProcessCommand"/>
-                <xs:element ref="SqlCommand"/>
-                <xs:element ref="VariableCommand"/>
-              </xs:choice>
-            </xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="1">
+              <xs:element ref="ProcessCommand"/>
+              <xs:element ref="SqlCommand"/>
+              <xs:element ref="VariableCommand"/>
+              <xs:element ref="FileCommand"/>
+              <xs:element ref="DirectoryCommand"/>
+            </xs:choice>
             <xs:attribute name="name" type="xs:string" use="required"/>
             <xs:attribute name="expectedResult" type="xs:string" use="required"/>
             <xs:attribute name="testBefore" type="xs:boolean" use="required"/>

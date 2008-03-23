@@ -14,10 +14,6 @@ namespace SsisUnit
 {
     public class SsisTestSuite : IssisTestSuite
     {
-        private const string TAG_OLEDB = "OLEDB";
-        private const string TAG_SQL = "SqlClient";
-        private const string FACTORY_OLEDB = "System.Data.OleDb";
-        private const string FACTORY_SQL = "System.Data.SqlClient";
         private XmlDocument _testCaseDoc;
         private XmlNode _connections;
         private Application _ssisApp = new Application();
@@ -32,7 +28,9 @@ namespace SsisUnit
             LoadCommands();
         }
 
-
+        //TODO: Add support for Package List - like the connection list
+        //TODO: Add parameters - replaceable values that can be defined one and used anywhere.
+        //TODO: Add creation logic
         #region Events
 
         public event EventHandler<SetupCompletedEventArgs> SetupCompleted;
@@ -404,161 +402,6 @@ namespace SsisUnit
         internal void Teardown(Package pkg, DtsContainer task)
         {
             this.Teardown(_testCaseDoc.DocumentElement["Teardown"], pkg, task);
-        }
-
-        //internal object RunSQLCommand(XmlNode command)
-        //{
-        //    string provider = string.Empty;
-        //    object result = null;
-
-        //    if (command.Name != "SqlCommand")
-        //    {
-        //        throw new ArgumentException("The node passed to the command argument is not a SqlCommand element.");
-        //    }
-
-        //    XmlNode connection = _connections.SelectSingleNode("ssisUnit:Connection[@name='" + command.Attributes["connectionRef"].Value + "']", _namespaceMgr);
-        //    if (connection == null)
-        //    {
-        //        throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", command.Attributes["connectionRef"].Value));
-        //    }
-
-        //    using (DbCommand dbCommand = GetCommand(connection, command.InnerText))
-        //    {
-        //        dbCommand.Connection.Open();
-        //        if (command.Attributes["returnsValue"].Value == "true")
-        //        {
-        //            result = dbCommand.ExecuteScalar();
-        //        }
-        //        else
-        //        {
-        //            dbCommand.ExecuteNonQuery();
-        //        }
-        //        dbCommand.Connection.Close();
-        //    }
-        //    return result;
-        //}
-
-        //internal int RunProcessCommand(XmlNode command)
-        //{
-        //    int exitCode;
-
-        //    if (command.Name != "ProcessCommand")
-        //    {
-        //        throw new ArgumentException("The node passed to the command argument is not a ProcessCommand element.");
-        //    }
-        //    Process proc = null;
-        //    try
-        //    {
-        //        XmlNode args = command.Attributes.GetNamedItem("arguments");
-        //        if (args == null)
-        //        {
-        //            proc = Process.Start(command.Attributes["process"].Value);
-        //        }
-        //        else
-        //        {
-        //            proc = Process.Start(command.Attributes["process"].Value, command.Attributes["arguments"].Value);
-        //        }
-        //        while (!proc.WaitForExit(ssisUnit.Default.ProcessCheckForExitDelay))
-        //        {
-        //            if (proc.StartTime.AddSeconds(ssisUnit.Default.ProcessTimeout).CompareTo(DateTime.Now) < 0)
-        //            {
-        //                try
-        //                {
-        //                    proc.CloseMainWindow();
-        //                }
-        //                catch (InvalidOperationException)
-        //                {
-        //                    break;
-        //                }
-        //            }
-        //        }
-
-        //        exitCode = proc.ExitCode;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new ArgumentException("The RunProcessNode contained an invalid command or process.", ex);
-        //    }
-        //    finally
-        //    {
-        //        proc.Close();
-        //    }
-
-        //    return exitCode;
-
-        //}
-
-        //internal object RunVariableCommand(XmlNode command, VariableDispenser dispenser)
-        //{
-        //    object returnValue;
-        //    Variables vars = null;
-
-        //    if (command.Name != "VariableCommand")
-        //    {
-        //        throw new ArgumentException("The node passed to the command argument is not a VariableCommand element.");
-        //    }
-
-        //    string varName = command.Attributes["name"].Value;
-
-        //    if (command.Attributes["value"] == null)
-        //    {
-        //        dispenser.LockOneForRead(varName, ref vars);
-        //        returnValue = vars[varName].Value;
-        //        vars.Unlock();
-        //    }
-        //    else
-        //    {
-        //        //writing to the variable
-        //        object varValue = command.Attributes["value"].Value;
-        //        dispenser.LockOneForWrite(varName, ref vars);
-        //        vars[varName].Value = System.Convert.ChangeType(varValue, vars[varName].DataType);
-        //        vars.Unlock();
-        //        returnValue = varValue;
-        //    }
-        //    return returnValue;
-        //}
-
-
-        private DbCommand GetCommand(XmlNode connection, string commandText)
-        {
-            DbProviderFactory dbFactory = GetFactory(connection.Attributes["connection"].Value);
-
-            DbConnection conn = dbFactory.CreateConnection();
-            conn.ConnectionString = connection.Attributes["connection"].Value;
-            DbCommand dbCommand = dbFactory.CreateCommand();
-            dbCommand.Connection = conn;
-            dbCommand.CommandText = commandText;
-            return dbCommand;
-
-        }
-
-
-        /// <summary>
-        /// Tries to return the appropriate Provider Factory based on the value passed in. Creating
-        /// the factory depends on having the appropriate provider name, so this method checks for 
-        /// common values that indicate what type of connection it is.
-        /// </summary>
-        /// <param name="providerType">Value that provides a hint on the connection type</param>
-        /// <returns>A generic provider factory based on the provider type passed in.</returns>
-        private DbProviderFactory GetFactory(string providerType)
-        {
-            string factoryInvariantName = string.Empty;
-
-            if (providerType.Contains(TAG_OLEDB))
-            {
-                factoryInvariantName = FACTORY_OLEDB;
-            }
-            else if (providerType.Contains(TAG_SQL))
-            {
-                factoryInvariantName = FACTORY_SQL;
-            }
-            else
-            {
-                throw (new ArgumentException("Connection type not supported"));
-            }
-
-            return DbProviderFactories.GetFactory(factoryInvariantName);
-
         }
 
         static internal DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)

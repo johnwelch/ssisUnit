@@ -47,6 +47,9 @@
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
     <Compile Include="CommandPlugin.cs" />
+    <Compile Include="ConnectionList.cs" />
+    <Compile Include="DirectoryCommand.cs" />
+    <Compile Include="FileCommand.cs" />
     <Compile Include="IssisTestCase.cs" />
     <Compile Include="ProcessCommand.cs" />
     <Compile Include="SqlCommand.cs" />

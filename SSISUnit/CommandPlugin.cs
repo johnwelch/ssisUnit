@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Xml;
+using System.Globalization;
 
 namespace SsisUnit
 {
@@ -19,6 +20,14 @@ namespace SsisUnit
 
         public CommandBase()
         {
+        }
+
+        protected void CheckCommandType(string commandName)
+        {
+            if (commandName != this.CommandName)
+            {
+                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The node passed to the command argument is not a {0} element.", this.CommandName));
+            }
         }
 
         protected XmlNode Connections

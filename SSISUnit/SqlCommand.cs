@@ -9,7 +9,7 @@ namespace SsisUnit
 {
     class SqlCommand : CommandBase
     {
-        private const string TAG_OLEDB = "OLEDB";
+        private const string TAG_OLEDB = "Provider";
         private const string TAG_SQL = "SqlClient";
         private const string FACTORY_OLEDB = "System.Data.OleDb";
         private const string FACTORY_SQL = "System.Data.SqlClient";
@@ -30,10 +30,7 @@ namespace SsisUnit
             string provider = string.Empty;
             object result = null;
 
-            if (command.Name != "SqlCommand")
-            {
-                throw new ArgumentException("The node passed to the command argument is not a SqlCommand element.");
-            }
+            this.CheckCommandType(command.Name);
 
             XmlNode connection = this.Connections.SelectSingleNode("SsisUnit:Connection[@name='" + command.Attributes["connectionRef"].Value + "']", this.NamespaceMgr);
             if (connection == null)

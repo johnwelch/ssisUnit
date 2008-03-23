@@ -18,10 +18,7 @@ namespace SsisUnit
             Variables vars = null;
             VariableDispenser dispenser = container.VariableDispenser;
 
-            if (command.Name != "VariableCommand")
-            {
-                throw new ArgumentException("The node passed to the command argument is not a VariableCommand element.");
-            }
+            this.CheckCommandType(command.Name);
 
             string varName = command.Attributes["name"].Value;
 

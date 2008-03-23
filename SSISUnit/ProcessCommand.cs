@@ -16,10 +16,8 @@ namespace SsisUnit
         {
             int exitCode;
 
-            if (command.Name != "ProcessCommand")
-            {
-                throw new ArgumentException("The node passed to the command argument is not a ProcessCommand element.");
-            }
+            this.CheckCommandType(command.Name);
+
             Process proc = null;
             try
             {
