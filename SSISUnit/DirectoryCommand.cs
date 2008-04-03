@@ -32,7 +32,8 @@ namespace SsisUnit
         public string PersistToXml()
         {
             string returnValue = "<" + this.CommandName + " operation=\"" + _operation + "\" argument1=\"" + _argument1 + "\"";
-            if (_argument2 != string.Empty) returnValue += " argument1=\"" + _argument1 + "\"";
+            if (_argument2 != string.Empty) returnValue += " argument2=\"" + _argument2 + "\"";
+            returnValue += "</" + this.CommandName + ">";
             return returnValue;
         }
 

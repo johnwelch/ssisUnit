@@ -11,6 +11,7 @@ namespace SsisUnit
     {
         private XmlNode _connections;
         private XmlNamespaceManager _namespaceMgr;
+        private System.Collections.Generic.Dictionary<string, string> _properties = new Dictionary<string,string>();
 
         public CommandBase(XmlNode connections, XmlNamespaceManager namespaceMgr)
         {
@@ -28,6 +29,11 @@ namespace SsisUnit
             {
                 throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The node passed to the command argument is not a {0} element.", this.CommandName));
             }
+        }
+
+        protected Dictionary<string, string> Properties
+        {
+            get { return _properties; }
         }
 
         protected XmlNode Connections

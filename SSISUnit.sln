@@ -26,6 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SSISUnit23.vsmdi = SSISUnit23.vsmdi
 		SSISUnit24.vsmdi = SSISUnit24.vsmdi
 		SSISUnit25.vsmdi = SSISUnit25.vsmdi
+		SSISUnit26.vsmdi = SSISUnit26.vsmdi
 		SSISUnit3.vsmdi = SSISUnit3.vsmdi
 		SSISUnit4.vsmdi = SSISUnit4.vsmdi
 		SSISUnit5.vsmdi = SSISUnit5.vsmdi
@@ -54,7 +55,7 @@ Global
 		SccLocalPath3 = UTssisUnit
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = SSISUnit25.vsmdi
+		CategoryFile = SSISUnit26.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

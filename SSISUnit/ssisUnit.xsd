@@ -170,6 +170,7 @@
   <xs:element name="TestRef">
     <xs:complexType>
       <xs:attribute name="path" type="xs:string" use="required"/>
+      <!--Why do I need package and task here?-->
       <xs:attribute name="package" type="xs:string" use="required"/>
       <xs:attribute name="task" type="xs:string" use="required"/>
     </xs:complexType>
