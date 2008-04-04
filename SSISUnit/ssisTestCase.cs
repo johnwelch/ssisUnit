@@ -10,6 +10,7 @@ using System.Globalization;
 using Microsoft.SqlServer.Dts.Runtime;
 
 [assembly: InternalsVisibleTo("UTssisUnit")]
+[assembly: InternalsVisibleTo("UTssisUnit_SQL2008")]
 namespace SsisUnit
 {
     public class SsisTestSuite : IssisTestSuite
