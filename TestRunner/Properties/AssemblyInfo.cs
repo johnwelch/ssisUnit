@@ -36,3 +36,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("0.5.0.0")]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("UTssisUnit")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("UTssisUnit_SQL2008")]

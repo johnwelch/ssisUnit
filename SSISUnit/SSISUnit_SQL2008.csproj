@@ -8,8 +8,8 @@
     <ProjectGuid>{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SSISUnit</RootNamespace>
-    <AssemblyName>SSISUnit</AssemblyName>
+    <RootNamespace>SsisUnit</RootNamespace>
+    <AssemblyName>SsisUnit</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -60,15 +60,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlCommand.cs" />
     <Compile Include="ssisTestCase.cs" />
-    <Compile Include="ssisUnit.cs">
-      <DependentUpon>ssisUnit.xsd</DependentUpon>
+    <Compile Include="SsisUnit.cs">
+      <DependentUpon>SsisUnit.xsd</DependentUpon>
     </Compile>
     <Compile Include="VariableCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="app.settings" />
-    <None Include="ssisUnit.xsd" />
+    <EmbeddedResource Include="SsisUnit.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
