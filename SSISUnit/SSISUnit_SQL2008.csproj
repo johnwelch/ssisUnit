@@ -8,10 +8,14 @@
     <ProjectGuid>{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SSISUnit_SQL2008</RootNamespace>
-    <AssemblyName>SSISUnit_SQL2008</AssemblyName>
+    <RootNamespace>SSISUnit</RootNamespace>
+    <AssemblyName>SSISUnit</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
