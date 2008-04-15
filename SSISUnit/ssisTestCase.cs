@@ -103,6 +103,8 @@ namespace SsisUnit
 
         public void Execute()
         {
+            TestSuiteSetup(_testCaseDoc.SelectSingleNode("SsisUnit:TestSuite/SsisUnit:TestSuiteSetup", _namespaceMgr));
+
             foreach (XmlNode test in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:Test", _namespaceMgr))
             {
                 this.Test(test);
@@ -112,6 +114,8 @@ namespace SsisUnit
             {
                 this.RunTestSuite(testRef);
             }
+
+            TestSuiteTeardown(_testCaseDoc.SelectSingleNode("SsisUnit:TestSuite/SsisUnit:TestSuiteTeardown", _namespaceMgr));
         }
 
         public void Execute(SsisTestSuite ssisTestCase)
@@ -150,7 +154,7 @@ namespace SsisUnit
                 Assembly asm = Assembly.GetExecutingAssembly();
                 Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
 
-                
+
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
                 settings.ValidationType = ValidationType.Schema;
@@ -192,6 +196,25 @@ namespace SsisUnit
             this.Setup(_testCaseDoc.DocumentElement["Setup"], pkg, task);
         }
 
+        internal int TestSuiteTeardown(XmlNode testSuiteTeardown)
+        {
+            if (testSuiteTeardown == null)
+            {
+                return 0;
+            }
+            return Teardown(testSuiteTeardown, null, null);
+        }
+
+        internal int TestSuiteSetup(XmlNode testSuiteSetup)
+        {
+            if (testSuiteSetup==null)
+            {
+                return 0;
+            }
+            return Setup(testSuiteSetup, null, null);
+        }
+
+
         private void LoadCommands()
         {
             foreach (Type t in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
@@ -214,7 +237,6 @@ namespace SsisUnit
                 }
             }
         }
-
 
         private object RunCommand(XmlNode command, Package pkg, DtsContainer task)
         {
@@ -285,6 +307,7 @@ namespace SsisUnit
 
             try
             {
+                //TODO: Decide if this behavior is correct - not sure if we really need to run the parent setups
                 if (_parentSuite != null)
                 {
                     _parentSuite.Setup(packageToTest, taskHost);
@@ -327,7 +350,7 @@ namespace SsisUnit
                         OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.Attributes["package"].Value,
                         test.Attributes["task"].Value, test.Attributes["name"].Value, resultMessage, returnValue));
                     }
-                   
+
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
 
                     foreach (XmlNode assert in test.SelectNodes("SsisUnit:Assert[@testBefore='false']", _namespaceMgr))

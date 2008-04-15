@@ -58,19 +58,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlCommandTest.cs" />
     <Compile Include="SSISTestCaseTest.cs" />
+    <Compile Include="ssisUnit_UTHelper.cs" />
     <Compile Include="VariableCommandTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
-    <Content Include="UTSsisUnit_Directory.xml" />
+    <EmbeddedResource Include="UTSsisUnit_Directory.xml" />
     <Content Include="UTSsisUnit_File.xml" />
     <Content Include="UTSsisUnit_Process.xml" />
     <Content Include="UTSsisUnitChild.xml" />
     <Content Include="UTSsisUnitParent.xml" />
     <Content Include="UTSsisUnit_BadData.xml" />
-    <Content Include="UTSsisUnit.xml">
-    </Content>
+    <EmbeddedResource Include="UTSsisUnit.xml" />
     <Content Include="UTssisUnit_Package.xml" />
+    <Content Include="UTssisUnit_TestSuite.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SSISUnit\SsisUnit.csproj">

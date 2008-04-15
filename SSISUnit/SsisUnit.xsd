@@ -11,71 +11,34 @@
         <xs:element name="ConnectionList" minOccurs="1" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Connection" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required"/>
-                  <xs:attribute name="connection" type="xs:string" use="required" />
-                  <xs:attribute name="connectionType" use="required">
-                    <xs:simpleType>
-                      <xs:restriction base="xs:string">
-                        <xs:enumeration value="ConnectionManager" />
-                        <xs:enumeration value="ConnectionString" />
-                      </xs:restriction>
-                    </xs:simpleType>
-                  </xs:attribute>
-                </xs:complexType>
-              </xs:element>
+              <xs:element ref="Connection" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <!--Setup Node-->
-        <xs:element name="Setup" minOccurs="0" maxOccurs="1">
+        <xs:element name="PackageList" minOccurs="0" maxOccurs="1">
           <xs:complexType>
-            <xs:choice minOccurs="0" maxOccurs="unbounded">
-            <!--<xs:sequence>-->
-              <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:choice>
-            <!--</xs:sequence>-->
+            <xs:sequence>
+              <xs:element ref="Package" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="TestSuiteSetup" type="CommandSet" minOccurs="0" maxOccurs="1" />
+        <!--Setup Node-->
+        <xs:element name="Setup" type="CommandSet" minOccurs="0" maxOccurs="1"/>
         <!--Test Node-->
         <xs:element name="Tests" minOccurs="1" maxOccurs="1">
           <xs:complexType>
-            <!--<xs:sequence>-->
             <xs:choice minOccurs="0" maxOccurs="unbounded">
               <xs:element ref="Test" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element ref="TestRef" minOccurs="0" maxOccurs="unbounded"/>
             </xs:choice>
-            <!--</xs:sequence>-->
           </xs:complexType>
         </xs:element>
         <!--Teardown Node-->
-        <xs:element name ="Teardown" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:choice minOccurs="0" maxOccurs="unbounded">
-              <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:choice>
-          </xs:complexType>
-          <!--<xs:complexType>
-            <xs:sequence>
-              <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:sequence>
-          </xs:complexType>-->
-        </xs:element>
-
+        <xs:element name ="Teardown" type="CommandSet" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="TestSuiteTeardown" type="CommandSet" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
+      
     </xs:complexType>
   </xs:element>
 
@@ -175,5 +138,49 @@
       <xs:attribute name="task" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
+
+  <!--Define Connection-->
+  <xs:element name="Connection">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+      <xs:attribute name="connection" type="xs:string" use="required" />
+      <xs:attribute name="connectionType" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ConnectionManager" />
+            <xs:enumeration value="ConnectionString" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!--Define Package-->
+  <xs:element name="Package">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+      <xs:attribute name="location" type="xs:string" use="required" />
+      <xs:attribute name="packagePath" type="xs:string" use="optional" />
+      <xs:attribute name="storageType" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="File System" />
+            <xs:enumeration value="SQL Server" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!--Define Test Set-->
+  <xs:complexType name="CommandSet">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:choice>
+  </xs:complexType>
 
 </xs:schema>

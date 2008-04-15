@@ -5,6 +5,7 @@ using System.Xml;
 using System.Collections.Generic;
 using Microsoft.SqlServer.Dts.Runtime;
 using System;
+using System.IO;
 namespace UTssisUnit
 {
 
@@ -19,7 +20,6 @@ namespace UTssisUnit
         private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.xml";
         private const string TEST_XML_FILE_BAD_DATA_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_BadData.xml";
         private const string TEST_DTSX_FILE_PATH = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
-
 
         private TestContext testContextInstance;
 
@@ -40,21 +40,13 @@ namespace UTssisUnit
         }
 
         #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
+
+        [ClassCleanup()]
+        public static void Cleanup()
+        {
+            ssisUnit_UTHelper.Cleanup();
+        }
+
         //Use TestInitialize to run code before running each test
         //[TestInitialize()]
         //public void MyTestInitialize()
@@ -82,8 +74,9 @@ namespace UTssisUnit
         [TestMethod()]
         public void LoadXMLFileTest()
         {
+            string filename = ssisUnit_UTHelper.CreateUnitTestFile("UTSsisUnit");
             XmlDocument doc;
-            doc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
+            doc = SsisTestSuite.LoadTestXmlFromFile(filename);
             Assert.IsNotNull(doc);
         }
 
@@ -249,6 +242,22 @@ namespace UTssisUnit
             {
                 Assert.Fail(ex.Message);
             } 
+        }
+
+        [TestMethod()]
+        public void TestSuiteSetupTest()
+        {
+            SsisTestSuite target = new SsisTestSuite("C:\\Projects\\SSISUnit\\UTssisUnit\\UTssisUnit_TestSuite.xml");
+
+            try
+            {
+                target.Execute();
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
 
         [TestMethod()]
