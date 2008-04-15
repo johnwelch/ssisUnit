@@ -17,6 +17,7 @@ namespace SsisUnit
     {
         private XmlDocument _testCaseDoc;
         private XmlNode _connections;
+        private XmlNode _packageList;
         private Application _ssisApp = new Application();
         private XmlNamespaceManager _namespaceMgr;
         private SsisTestSuite _parentSuite;
@@ -135,6 +136,7 @@ namespace SsisUnit
             _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
             _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             _connections = _testCaseDoc.DocumentElement["ConnectionList"];
+            _packageList = _testCaseDoc.DocumentElement["PackageList"];
         }
 
 
@@ -273,9 +275,39 @@ namespace SsisUnit
 
         private void LoadPackageAndTask(string packagePath, string taskID, ref Package package, ref DtsContainer taskHost)
         {
+            string pathToPackage = string.Empty;
+
             try
             {
-                package = _ssisApp.LoadPackage(packagePath, null);
+                if (packagePath.Contains("\\"))
+                {
+                    //Assume that it is a file path.
+                    package = _ssisApp.LoadPackage(packagePath, null);
+                }
+                else
+                {
+                    //PackageList Reference
+                    XmlNode packageRef = this._packageList.SelectSingleNode("SsisUnit:Package[@name='" + packagePath + "']", this._namespaceMgr);
+                    if (packageRef == null)
+                    {
+                        throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
+                    }
+
+                    if (packageRef.Attributes["storageType"].Value == "File System")
+                    {
+                        package = _ssisApp.LoadPackage(packageRef.Attributes["packagePath"].Value, null);
+                    }
+                    else if (packageRef.Attributes["storageType"].Value == "MSDB")
+                    {
+                        package = _ssisApp.LoadFromSqlServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["location"].Value, null, null, null);
+                    }
+                    else if (packageRef.Attributes["storageType"].Value == "Package Store")
+                    {
+                        package = _ssisApp.LoadFromDtsServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["location"].Value, null);
+                    }
+
+                }
+
                 taskHost = FindExecutable(package, taskID);
                 if (taskHost == null)
                 {

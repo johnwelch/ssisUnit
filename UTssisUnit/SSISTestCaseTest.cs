@@ -142,58 +142,6 @@ namespace UTssisUnit
             Assert.AreEqual(2, result);
         }
 
-        //[TestMethod()]
-        //public void RunSQLCommandResultsTest()
-        //{
-        //    SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
-
-        //    XmlDocument doc = new XmlDocument();
-        //    doc.Load(TEST_XML_FILE_PATH);
-        //    //target.InitializeTestCase(TEST_XML_FILE_PATH);
-        //    XmlNode command = doc.DocumentElement["Setup"]["SqlCommand"];
-
-        //    object result = target.RunSQLCommand(command);
-        //    Assert.AreEqual(504, (int)result);
-        //}
-
-        //[TestMethod()]
-        //public void RunSQLCommandNoResultsTest()
-        //{
-        //    SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
-
-        //    XmlDocument doc = new XmlDocument();
-        //    doc.Load(TEST_XML_FILE_PATH);
-        //    XmlNode command = doc.DocumentElement["Setup"].ChildNodes[1];
-
-        //    object result = target.RunSQLCommand(command);
-        //    Assert.IsNull(result);
-        //}
-
-        //[TestMethod()]
-        //public void RunSQLCommandInvalidConnectionRefTest()
-        //{
-        //    SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_BAD_DATA_PATH);
-
-        //    XmlDocument doc = new XmlDocument();
-        //    doc.Load(TEST_XML_FILE_BAD_DATA_PATH);
-        //    XmlNode command = doc.DocumentElement["Setup"].ChildNodes[0];
-
-        //    try
-        //    {
-        //        object result = target.RunSQLCommand(command);
-        //        Assert.Fail("The method did not throw the expected argument exception.");
-        //    }
-        //    catch (System.ArgumentException)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    catch (System.Exception)
-        //    {
-        //        Assert.Fail("The method did not throw the expected argument exception.");
-        //    }
-
-        //}
-
         [TestMethod()]
         public void RunTestTest()
         {
@@ -206,6 +154,22 @@ namespace UTssisUnit
 
             bool result = target.Test(test);
             Assert.IsTrue(result);
+        }
+
+        [TestMethod()]
+        public void RunPackageListTest()
+        {
+            SsisTestSuite target = new SsisTestSuite("C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_PackageList.xml");
+
+            try
+            {
+                target.Execute();
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
 
         [TestMethod()]

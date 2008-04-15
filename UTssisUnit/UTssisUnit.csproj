@@ -63,7 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
-    <EmbeddedResource Include="UTSsisUnit_Directory.xml" />
+    <None Include="UTSsisUnit_Directory.xml" />
+    <None Include="UTSsisUnit_PackageList.xml" />
     <Content Include="UTSsisUnit_File.xml" />
     <Content Include="UTSsisUnit_Process.xml" />
     <Content Include="UTSsisUnitChild.xml" />
