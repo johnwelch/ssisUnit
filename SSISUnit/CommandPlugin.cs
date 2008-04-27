@@ -11,7 +11,8 @@ namespace SsisUnit
     {
         private XmlNode _connections;
         private XmlNamespaceManager _namespaceMgr;
-        private System.Collections.Generic.Dictionary<string, string> _properties = new Dictionary<string,string>();
+        private string _body = string.Empty;
+        private System.Collections.Generic.Dictionary<string, CommandProperty> _properties = new Dictionary<string, CommandProperty>();
 
         public CommandBase(XmlNode connections, XmlNamespaceManager namespaceMgr)
         {
@@ -31,7 +32,7 @@ namespace SsisUnit
             }
         }
 
-        protected Dictionary<string, string> Properties
+        protected Dictionary<string, CommandProperty> Properties
         {
             get { return _properties; }
         }
@@ -39,6 +40,12 @@ namespace SsisUnit
         protected XmlNode Connections
         {
             get { return _connections; }
+        }
+
+        protected string Body
+        {
+            get { return _body; }
+            set { _body = value; }
         }
 
         protected XmlNamespaceManager NamespaceMgr
@@ -53,5 +60,49 @@ namespace SsisUnit
 
 
         abstract public object Execute(XmlNode command, Package package, DtsContainer container);
+
+        public string PersistToXML()
+        {
+            StringBuilder xml = new StringBuilder();
+            xml.Append("<" + this.CommandName);
+            foreach (CommandProperty prop in _properties.Values)
+            {
+                xml.Append(" " + prop.Name + "=\"" + prop.Value + "\"");
+            }
+
+            if (_body==string.Empty)
+            {
+                xml.Append("/>");
+            }
+            else
+            {
+                xml.Append(">" + _body + "</" + this.CommandName + ">");
+            }
+            return xml.ToString();
+        }
+    }
+
+    class CommandProperty
+    {
+        private string _name;
+        private string _value;
+        
+        public CommandProperty(string name, string value)
+        {
+            _name = name;
+            _value = value;
+        }
+       
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
+
+        public string Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
     }
 }

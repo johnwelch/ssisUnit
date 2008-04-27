@@ -10,7 +10,7 @@
   </Setup>
   <Tests>
     <Test name="TestRowCount" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="{5661EB8F-527A-460B-B7F5-2C8E066130B7}" >
-      <Assert name="RowOCunt" expectedResult="1" testBefore="false">
+      <Assert name="RowCount" expectedResult="1" testBefore="false">
         <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
           SELECT COUNT(1) FROM TestTable
         </SqlCommand>

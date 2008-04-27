@@ -5,8 +5,8 @@
   </ConnectionList>
   <PackageList>
     <Package name="filePkg" packagePath="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" storageType="File System"/>
-    <Package name="msdbPkg" packagePath="\\UT Basic Scenario" location="localhost" storageType="MSDB"/>
-    <Package name="ssPkg" packagePath="\File System\UT Basic Scenario" location="localhost" storageType="Package Store"/>
+    <Package name="msdbPkg" packagePath="\\UT Basic Scenario" server="localhost" storageType="MSDB"/>
+    <Package name="ssPkg" packagePath="\File System\UT Basic Scenario" server="localhost" storageType="Package Store"/>
   </PackageList>
   <Setup>
     

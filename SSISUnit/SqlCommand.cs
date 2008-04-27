@@ -9,6 +9,10 @@ namespace SsisUnit
 {
     class SqlCommand : CommandBase
     {
+        //Property constants
+        private const string PROP_CONNECTION = "connectionRef";
+        private const string PROP_RETURNS_VALUE = "returnsValue";
+
         private const string TAG_OLEDB = "Provider";
         private const string TAG_SQL = "SqlClient";
         private const string FACTORY_OLEDB = "System.Data.OleDb";
@@ -16,7 +20,14 @@ namespace SsisUnit
 
         public SqlCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
             : base(connections, namespaceMgr)
-        { }
+        {
+            //    <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
+            //  SELECT 1
+            //</SqlCommand>
+            Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, string.Empty));
+            Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, false.ToString().ToLower()));
+            Body = string.Empty;
+        }
 
         /// <summary>
         /// The Execute Method runs the command specifed by the command node.
@@ -94,6 +105,23 @@ namespace SsisUnit
 
         }
 
+        public string ConnectionRef
+        {
+            get { return Properties[PROP_CONNECTION].Value; }
+            set { Properties[PROP_CONNECTION].Value = value; }
+        }
+
+        public bool ReturnsValue
+        {
+            get { return (Properties[PROP_RETURNS_VALUE].Value == "true"); }
+            set { Properties[PROP_RETURNS_VALUE].Value = value.ToString().ToLower(); }
+        }
+
+        public string SQLStatement
+        {
+            get { return Body; }
+            set { Body = value; }
+        }
     }
 
 }

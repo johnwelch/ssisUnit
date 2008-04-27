@@ -151,5 +151,16 @@ namespace UTssisUnit
             SqlCommand target = new SqlCommand(null, null);
             Assert.AreEqual("SqlCommand", target.CommandName);
         }
+
+        [TestMethod()]
+        public void CommandPersistTest()
+        {
+            SqlCommand target = new SqlCommand(null, null);
+            target.ConnectionRef = "AdventureWorks";
+            target.ReturnsValue = false;
+            target.SQLStatement = "DROP TABLE dbo.TestTable";
+            string result = target.PersistToXML();
+            Assert.AreEqual("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"false\">DROP TABLE dbo.TestTable</SqlCommand>", result);
+        }
     }
 }
