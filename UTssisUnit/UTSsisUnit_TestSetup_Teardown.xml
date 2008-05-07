@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
+  <ConnectionList>
+    <Connection name="Sandbox" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Sandbox" connectionType="ConnectionString"/>
+  </ConnectionList>
+  <PackageList>
+    <Package name="filePkg" packagePath="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" storageType="File System"/>
+  </PackageList>
+  <Setup>
+  </Setup>
+  <Tests>
+    <Test name="testLocal" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT">
+      <TestSetup>
+        <SqlCommand connectionRef="Sandbox" returnsValue="false">
+          INSERT INTO UTTable VALUES('Test')
+        </SqlCommand>
+      </TestSetup>
+      <Assert name="test" expectedResult="1" testBefore="false">
+        <SqlCommand connectionRef="Sandbox" returnsValue="true">
+          SELECT COUNT(1) FROM UTTable
+        </SqlCommand>
+      </Assert>
+      <TestTeardown>
+        <SqlCommand connectionRef="Sandbox" returnsValue="false">
+          DELETE FROM UTTable
+        </SqlCommand>
+      </TestTeardown>
+    </Test>
+  </Tests>
+  <Teardown>
+  </Teardown>
+</TestSuite>

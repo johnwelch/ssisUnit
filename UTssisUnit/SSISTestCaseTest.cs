@@ -278,5 +278,21 @@ namespace UTssisUnit
             DtsContainer result = SsisTestSuite.FindExecutable(packageToTest, "Does Not Exist");
             Assert.IsNull(result);
         }
+
+        [TestMethod()]
+        public void TestSetupAndTeardownTest()
+        {
+            SsisTestSuite target = new SsisTestSuite("C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_TestSetup_Teardown.xml");
+
+            try
+            {
+                target.Execute();
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
     }
 }

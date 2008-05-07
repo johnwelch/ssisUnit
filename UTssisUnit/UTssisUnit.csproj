@@ -65,6 +65,7 @@
     <Content Include="AuthoringTests.txt" />
     <None Include="UTSsisUnit_Directory.xml" />
     <None Include="UTSsisUnit_PackageList.xml" />
+    <None Include="UTSsisUnit_TestSetup_Teardown.xml" />
     <Content Include="UTSsisUnit_File.xml" />
     <Content Include="UTSsisUnit_Process.xml" />
     <Content Include="UTSsisUnitChild.xml" />
