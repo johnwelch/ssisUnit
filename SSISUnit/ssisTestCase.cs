@@ -182,6 +182,10 @@ namespace SsisUnit
 
         internal int Setup(XmlNode setup, Package pkg, DtsContainer task)
         {
+            if (setup==null)
+            {
+                return 0;
+            }
             int commandCount = 0;
             foreach (XmlNode command in setup)
             {
@@ -299,11 +303,11 @@ namespace SsisUnit
                     }
                     else if (packageRef.Attributes["storageType"].Value == "MSDB")
                     {
-                        package = _ssisApp.LoadFromSqlServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["location"].Value, null, null, null);
+                        package = _ssisApp.LoadFromSqlServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null, null, null);
                     }
                     else if (packageRef.Attributes["storageType"].Value == "Package Store")
                     {
-                        package = _ssisApp.LoadFromDtsServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["location"].Value, null);
+                        package = _ssisApp.LoadFromDtsServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null);
                     }
 
                 }
@@ -345,6 +349,7 @@ namespace SsisUnit
                     _parentSuite.Setup(packageToTest, taskHost);
                 }
                 Setup(test.OwnerDocument.DocumentElement["Setup"], packageToTest, taskHost);
+                Setup(test["TestSetup"], packageToTest, taskHost);
                 setupResults = "Setup succeeded.";
                 setupSucceeded = true;
             }
@@ -422,11 +427,12 @@ namespace SsisUnit
 
                 try
                 {
+                    Teardown(test["TestTeardown"], packageToTest, taskHost);
+                    Teardown(test.OwnerDocument.DocumentElement["Teardown"], packageToTest, taskHost);
                     if (_parentSuite != null)
                     {
                         _parentSuite.Teardown(packageToTest, taskHost);
                     }
-                    Teardown(test.OwnerDocument.DocumentElement["Teardown"], packageToTest, taskHost);
                     teardownResults = "Teardown succeeded.";
                 }
                 catch (Exception ex)
@@ -445,6 +451,10 @@ namespace SsisUnit
 
         internal int Teardown(XmlNode teardown, Package pkg, DtsContainer task)
         {
+            if (teardown==null)
+            {
+                return 0;
+            }
             int commandCount = 0;
             foreach (XmlNode command in teardown)
             {
