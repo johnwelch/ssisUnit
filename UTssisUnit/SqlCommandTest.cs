@@ -159,8 +159,18 @@ namespace UTssisUnit
             target.ConnectionRef = "AdventureWorks";
             target.ReturnsValue = false;
             target.SQLStatement = "DROP TABLE dbo.TestTable";
-            string result = target.PersistToXML();
+            string result = target.PersistToXml();
             Assert.AreEqual("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"false\">DROP TABLE dbo.TestTable</SqlCommand>", result);
+        }
+
+        [TestMethod()]
+        public void CommandLoadTest()
+        {
+            SqlCommand target = new SqlCommand(null, null);
+            target.LoadFromXml("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"false\">DROP TABLE dbo.TestTable</SqlCommand>");
+            Assert.AreEqual<string>("AdventureWorks", target.ConnectionRef) ;
+            Assert.AreEqual<bool>(false ,target.ReturnsValue);
+            Assert.AreEqual<string>("DROP TABLE dbo.TestTable", target.SQLStatement);
         }
     }
 }

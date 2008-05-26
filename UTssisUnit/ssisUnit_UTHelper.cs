@@ -27,6 +27,14 @@ namespace UTssisUnit
             return fullPath;
         }
 
+        public static Stream CreateUnitTestStream(string unitTestName)
+        {
+            string filename = unitTestName;
+            
+            Assembly asm = Assembly.GetExecutingAssembly();
+            return asm.GetManifestResourceStream(asm.GetName().Name + "." + filename);
+        }
+
         public static void Cleanup()
         {
             foreach (string file in _tempFiles)
