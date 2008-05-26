@@ -176,7 +176,7 @@
     </xs:complexType>
   </xs:element>
 
-  <!--Define Test Set-->
+  <!--Define Command Set-->
   <xs:complexType name="CommandSet">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>

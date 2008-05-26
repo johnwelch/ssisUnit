@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Reflection;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 
 [assembly: InternalsVisibleTo("UTssisUnit")]
@@ -22,15 +22,46 @@ namespace SsisUnit
         private XmlNamespaceManager _namespaceMgr;
         private SsisTestSuite _parentSuite;
         private Dictionary<string, CommandBase> _commands = new Dictionary<string, CommandBase>(3);
+        private Dictionary<string, ConnectionRef> _connectionRefs = new Dictionary<string, ConnectionRef>();
+        private Dictionary<string, Test> _tests = new Dictionary<string, Test>();
+
+
+
+        #region Constructors
+
+        public SsisTestSuite()
+        {
+            Stream baseTest = GetStreamFromAssembly("BaseTest.xml");
+            Initialize(baseTest);
+        }
 
         public SsisTestSuite(string testCaseFile)
         {
             InitializeTestCase(testCaseFile);
-
             LoadCommands();
         }
 
-        //TODO: Add support for Package List - like the connection list
+        public SsisTestSuite(Stream testCase)
+        {
+            Initialize(testCase);
+        }
+
+        #endregion
+
+        #region Properties
+
+        public Dictionary<string, ConnectionRef> ConnectionRefs
+        {
+            get { return _connectionRefs; }
+        }
+
+        public Dictionary<string, Test> Tests
+        {
+            get { return _tests; }
+        }
+
+        #endregion
+
         //TODO: Add parameters - replaceable values that can be defined one and used anywhere.
         //TODO: Add creation logic
         #region Events
@@ -102,27 +133,32 @@ namespace SsisUnit
 
         #endregion
 
-        public void Execute()
+        public int Execute()
         {
-            TestSuiteSetup(_testCaseDoc.SelectSingleNode("SsisUnit:TestSuite/SsisUnit:TestSuiteSetup", _namespaceMgr));
+            int testCount = 0;
+
+            Setup(_testCaseDoc.SelectSingleNode("SsisUnit:TestSuite/SsisUnit:TestSuiteSetup", _namespaceMgr), null, null);
 
             foreach (XmlNode test in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:Test", _namespaceMgr))
             {
                 this.Test(test);
+                testCount++;
             }
 
             foreach (XmlNode testRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:TestRef", _namespaceMgr))
             {
                 this.RunTestSuite(testRef);
+                testCount++;
             }
 
-            TestSuiteTeardown(_testCaseDoc.SelectSingleNode("SsisUnit:TestSuite/SsisUnit:TestSuiteTeardown", _namespaceMgr));
+            Teardown(_testCaseDoc.SelectSingleNode("SsisUnit:TestSuite/SsisUnit:TestSuiteTeardown", _namespaceMgr), null, null);
+
+            return testCount;
         }
 
         public void Execute(SsisTestSuite ssisTestCase)
         {
             _parentSuite = ssisTestCase;
-
             this.Execute();
         }
 
@@ -130,15 +166,39 @@ namespace SsisUnit
 
         #region Helper Functions
 
+        private void Initialize(Stream testCase)
+        {
+            InitializeTestCase(testCase);
+            LoadCommands();
+        }
+
+        private static Stream GetStreamFromAssembly(string resourceName)
+        {
+            Assembly asm = Assembly.GetExecutingAssembly();
+            Stream resource = asm.GetManifestResourceStream(asm.GetName().Name + "." + resourceName);
+            return resource;
+        }
+
+
         private void InitializeTestCase(string testCaseFile)
         {
             _testCaseDoc = LoadTestXmlFromFile(testCaseFile);
+            CommonSetup();
+        }
+
+        private void CommonSetup()
+        {
             _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
             _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             _connections = _testCaseDoc.DocumentElement["ConnectionList"];
             _packageList = _testCaseDoc.DocumentElement["PackageList"];
         }
 
+        private void InitializeTestCase(Stream testCase)
+        {
+            _testCaseDoc = LoadTestXmlFromStream(testCase);
+            CommonSetup();
+        }
 
         /// <summary>
         /// Loads a test case from an XML file.
@@ -153,6 +213,22 @@ namespace SsisUnit
                 {
                     return null;
                 }
+                return LoadTestXmlFromStream(new StreamReader(fileName).BaseStream);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException("The test case could not be loaded: " + ex.Message);
+            }
+        }
+
+        static internal XmlDocument LoadTestXmlFromStream(Stream file)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    return null;
+                }
                 Assembly asm = Assembly.GetExecutingAssembly();
                 Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
 
@@ -162,7 +238,7 @@ namespace SsisUnit
                 settings.ValidationType = ValidationType.Schema;
 
                 XmlDocument test = new XmlDocument();
-                test.Load(XmlReader.Create(new StreamReader(fileName), settings));
+                test.Load(XmlReader.Create(file, settings));
                 if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
                 {
                     throw new ArgumentException(String.Format("The SsisUnit schema ({0}) was not specified in this XML document.", "http://tempuri.org/SsisUnit.xsd"));
@@ -182,7 +258,7 @@ namespace SsisUnit
 
         internal int Setup(XmlNode setup, Package pkg, DtsContainer task)
         {
-            if (setup==null)
+            if (setup == null)
             {
                 return 0;
             }
@@ -201,25 +277,6 @@ namespace SsisUnit
         {
             this.Setup(_testCaseDoc.DocumentElement["Setup"], pkg, task);
         }
-
-        internal int TestSuiteTeardown(XmlNode testSuiteTeardown)
-        {
-            if (testSuiteTeardown == null)
-            {
-                return 0;
-            }
-            return Teardown(testSuiteTeardown, null, null);
-        }
-
-        internal int TestSuiteSetup(XmlNode testSuiteSetup)
-        {
-            if (testSuiteSetup==null)
-            {
-                return 0;
-            }
-            return Setup(testSuiteSetup, null, null);
-        }
-
 
         private void LoadCommands()
         {
@@ -451,7 +508,7 @@ namespace SsisUnit
 
         internal int Teardown(XmlNode teardown, Package pkg, DtsContainer task)
         {
-            if (teardown==null)
+            if (teardown == null)
             {
                 return 0;
             }
@@ -665,36 +722,55 @@ namespace SsisUnit
     {
         private string _referenceName;
         private string _connectionString;
-        private string _provider;
         private string _connectionType;
 
-        public ConnectionRef(string referenceName, string connectionString, string provider, string connectionType)
+        public ConnectionRef(string referenceName, string connectionString, ConnectionTypeEnum connectionType)
         {
             _referenceName = referenceName;
             _connectionString = connectionString;
-            _provider = provider;
-            _connectionType = connectionType;
+            _connectionType = connectionType.ToString();
             return;
         }
 
         public string ConnectionString
         {
             get { return _connectionString; }
+            set { _connectionString = value; }
         }
 
         public string ReferenceName
         {
             get { return _referenceName; }
+            set { _referenceName = value; }
         }
 
-        public string Provider
+        public ConnectionTypeEnum ConnectionType
         {
-            get { return _provider; }
+            get { return ConvertConnectionTypeString(_connectionType); }
+            set { value.ToString(); }
         }
 
-        public string ConnectionType
+        private static ConnectionTypeEnum ConvertConnectionTypeString(string type)
         {
-            get { return _connectionType; }
+            if (type == "ConnectionManager")
+            {
+                return ConnectionTypeEnum.ConnectionManager;
+            }
+            else if (type == "ConnectionString")
+            {
+                return ConnectionTypeEnum.ConnectionString;
+            }
+            else
+            {
+                throw new ArgumentException(String.Format("The provided connection type ({0}) is not recognized.", type));
+            }
+        }
+
+
+        public enum ConnectionTypeEnum : int
+        {
+            ConnectionManager = 0,
+            ConnectionString = 1
         }
 
     }

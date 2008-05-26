@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace SsisUnit
 {
-    abstract class CommandBase
+    public abstract class CommandBase
     {
         private XmlNode _connections;
         private XmlNamespaceManager _namespaceMgr;
@@ -61,7 +61,7 @@ namespace SsisUnit
 
         abstract public object Execute(XmlNode command, Package package, DtsContainer container);
 
-        public string PersistToXML()
+        public string PersistToXml()
         {
             StringBuilder xml = new StringBuilder();
             xml.Append("<" + this.CommandName);
@@ -70,7 +70,7 @@ namespace SsisUnit
                 xml.Append(" " + prop.Name + "=\"" + prop.Value + "\"");
             }
 
-            if (_body==string.Empty)
+            if (_body == string.Empty)
             {
                 xml.Append("/>");
             }
@@ -80,19 +80,52 @@ namespace SsisUnit
             }
             return xml.ToString();
         }
+
+        public void LoadFromXml(string commandXml)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            XmlDocumentFragment frag = doc.CreateDocumentFragment();
+            frag.InnerXml = commandXml;
+            
+            if (frag[this.CommandName] == null)
+            {
+                throw new ArgumentException(string.Format("The Xml does not contain the correct command type ({0}).", this.CommandName));
+            }
+            LoadFromXml(frag[this.CommandName]);
+        }
+
+        public void LoadFromXml(XmlNode commandXml)
+        {
+            this.CheckCommandType(commandXml.Name);
+
+            foreach (XmlAttribute attrib in commandXml.Attributes)
+            {
+                if (this.Properties.ContainsKey(attrib.Name))
+                {
+                    this.Properties[attrib.Name].Value = attrib.Value;
+                }
+                else
+                {
+                    this.Properties.Add(attrib.Name, new CommandProperty(attrib.Name, attrib.Value));
+                }
+            }
+
+            this.Body = commandXml.InnerText;
+        }
     }
 
-    class CommandProperty
+    public class CommandProperty
     {
         private string _name;
         private string _value;
-        
+
         public CommandProperty(string name, string value)
         {
             _name = name;
             _value = value;
         }
-       
+
         public string Name
         {
             get { return _name; }

@@ -21,13 +21,19 @@ namespace SsisUnit
         public SqlCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
             : base(connections, namespaceMgr)
         {
-            //    <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
-            //  SELECT 1
-            //</SqlCommand>
+            //Initialize properties to default values
             Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, string.Empty));
             Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, false.ToString().ToLower()));
             Body = string.Empty;
         }
+
+        public SqlCommand(string connectionRef, bool returnsValue, string command)
+        {
+            Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, connectionRef));
+            Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, returnsValue.ToString().ToLower()));
+            Body = command;
+        }
+
 
         /// <summary>
         /// The Execute Method runs the command specifed by the command node.
@@ -41,7 +47,9 @@ namespace SsisUnit
             string provider = string.Empty;
             object result = null;
 
-            this.CheckCommandType(command.Name);
+            this.LoadFromXml(command);
+
+            //this.CheckCommandType(command.Name);
 
             XmlNode connection = this.Connections.SelectSingleNode("SsisUnit:Connection[@name='" + command.Attributes["connectionRef"].Value + "']", this.NamespaceMgr);
             if (connection == null)

@@ -46,6 +46,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
+    <Compile Include="Assert.cs" />
     <Compile Include="CommandPlugin.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="DirectoryCommand.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="ssisUnit.cs">
       <DependentUpon>SsisUnit.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Test.cs" />
     <Compile Include="VariableCommand.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +71,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>app.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BaseTest.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
