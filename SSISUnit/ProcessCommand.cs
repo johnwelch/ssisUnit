@@ -8,8 +8,8 @@ namespace SsisUnit
 {
     class ProcessCommand : CommandBase
     {
-        public ProcessCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
-            : base(connections, namespaceMgr)
+        public ProcessCommand(SsisTestSuite testSuite)
+            : base(testSuite)
         { }
 
         public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)

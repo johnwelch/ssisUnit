@@ -18,8 +18,8 @@ namespace SsisUnit
         private const string FACTORY_OLEDB = "System.Data.OleDb";
         private const string FACTORY_SQL = "System.Data.SqlClient";
 
-        public SqlCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
-            : base(connections, namespaceMgr)
+        public SqlCommand(SsisTestSuite testSuite)
+            : base(testSuite)
         {
             //Initialize properties to default values
             Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, string.Empty));
@@ -27,8 +27,19 @@ namespace SsisUnit
             Body = string.Empty;
         }
 
-        public SqlCommand(string connectionRef, bool returnsValue, string command)
+        //public SqlCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
+        //    : base(connections, namespaceMgr)
+        //{
+        //    //Initialize properties to default values
+        //    Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, string.Empty));
+        //    Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, false.ToString().ToLower()));
+        //    Body = string.Empty;
+        //}
+
+        public SqlCommand(SsisTestSuite testSuite, string connectionRef, bool returnsValue, string command)
+            : base(testSuite)
         {
+
             Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, connectionRef));
             Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, returnsValue.ToString().ToLower()));
             Body = command;
@@ -51,16 +62,20 @@ namespace SsisUnit
 
             //this.CheckCommandType(command.Name);
 
-            XmlNode connection = this.Connections.SelectSingleNode("SsisUnit:Connection[@name='" + command.Attributes["connectionRef"].Value + "']", this.NamespaceMgr);
-            if (connection == null)
-            {
-                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", command.Attributes["connectionRef"].Value));
-            }
+            //XmlNode connection = this.Connections.SelectSingleNode("SsisUnit:Connection[@name='" + this.ConnectionReference.ReferenceName + "']", this.NamespaceMgr);
+            //if (connection == null)
+            //{
+            //    throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.ConnectionReference.ReferenceName));
+            //}
 
-            using (DbCommand dbCommand = GetCommand(connection, command.InnerText))
+            DbCommand dbCommand = null;
+
+            try
             {
+                dbCommand = GetCommand(this.ConnectionReference, this.SQLStatement);
+
                 dbCommand.Connection.Open();
-                if (command.Attributes["returnsValue"].Value == "true")
+                if (this.ReturnsValue)
                 {
                     result = dbCommand.ExecuteScalar();
                 }
@@ -68,23 +83,76 @@ namespace SsisUnit
                 {
                     dbCommand.ExecuteNonQuery();
                 }
-                dbCommand.Connection.Close();
             }
+            catch (KeyNotFoundException)
+            {
+                throw new KeyNotFoundException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.Properties[PROP_CONNECTION].Value));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (dbCommand != null)
+                {
+                    dbCommand.Connection.Close();
+                    dbCommand.Dispose();
+                }
+            }
+
             return result;
         }
 
-        private DbCommand GetCommand(XmlNode connection, string commandText)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="testSuite"></param>
+        /// <param name="package"></param>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        //public override object Execute(SsisTestSuite testSuite, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        //{
+        //    string provider = string.Empty;
+        //    object result = null;
+
+        //    ConnectionRef connection = testSuite.ConnectionRefs[this.ConnectionRef];
+        //    //XmlNode connection = this.Connections.SelectSingleNode("SsisUnit:Connection[@name='" + this.ConnectionRef + "']", this.NamespaceMgr);
+        //    if (connection == null)
+        //    {
+        //        throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.ConnectionRef));
+        //    }
+
+        //    using (DbCommand dbCommand = GetCommand(connection, this.SQLStatement))
+        //    {
+        //        dbCommand.Connection.Open();
+        //        if (this.ReturnsValue)
+        //        {
+        //            result = dbCommand.ExecuteScalar();
+        //        }
+        //        else
+        //        {
+        //            dbCommand.ExecuteNonQuery();
+        //        }
+        //        dbCommand.Connection.Close();
+        //    }
+        //    return result;
+
+        //}
+
+        private DbCommand GetCommand(ConnectionRef connectionRef, string commandText)
         {
-            DbProviderFactory dbFactory = GetFactory(connection.Attributes["connection"].Value);
+            DbProviderFactory dbFactory = GetFactory(connectionRef.ConnectionString);
 
             DbConnection conn = dbFactory.CreateConnection();
-            conn.ConnectionString = connection.Attributes["connection"].Value;
+            conn.ConnectionString = connectionRef.ConnectionString;
             DbCommand dbCommand = dbFactory.CreateCommand();
             dbCommand.Connection = conn;
             dbCommand.CommandText = commandText;
             return dbCommand;
 
         }
+
         /// <summary>
         /// Tries to return the appropriate Provider Factory based on the value passed in. Creating
         /// the factory depends on having the appropriate provider name, so this method checks for 
@@ -113,10 +181,10 @@ namespace SsisUnit
 
         }
 
-        public string ConnectionRef
+        public ConnectionRef ConnectionReference
         {
-            get { return Properties[PROP_CONNECTION].Value; }
-            set { Properties[PROP_CONNECTION].Value = value; }
+            get { return TestSuite.ConnectionRefs[Properties[PROP_CONNECTION].Value]; }
+            set { Properties[PROP_CONNECTION].Value = value.ReferenceName; }
         }
 
         public bool ReturnsValue

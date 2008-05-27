@@ -8,9 +8,10 @@ namespace SsisUnit
 {
     class VariableCommand:CommandBase
     {
-         public VariableCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
-            : base(connections, namespaceMgr)
+        public VariableCommand(SsisTestSuite testSuite)
+            : base(testSuite)
         { }
+
 
         public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
+using System.Text;
 
 [assembly: InternalsVisibleTo("UTssisUnit")]
 [assembly: InternalsVisibleTo("UTssisUnit_SQL2008")]
@@ -162,8 +163,6 @@ namespace SsisUnit
             this.Execute();
         }
 
-
-
         #region Helper Functions
 
         private void Initialize(Stream testCase)
@@ -192,6 +191,19 @@ namespace SsisUnit
             _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             _connections = _testCaseDoc.DocumentElement["ConnectionList"];
             _packageList = _testCaseDoc.DocumentElement["PackageList"];
+            _connectionRefs = LoadConnectionRefs(_connections);
+        }
+
+        private Dictionary<string, ConnectionRef> LoadConnectionRefs(XmlNode connections)
+        {
+            Dictionary<string, ConnectionRef> refs = new Dictionary<string, ConnectionRef>(connections.ChildNodes.Count);
+
+            foreach (XmlNode conn in connections)
+            {
+                refs.Add(conn.Attributes["name"].Value, new ConnectionRef(conn));
+            }
+
+            return refs;
         }
 
         private void InitializeTestCase(Stream testCase)
@@ -287,7 +299,7 @@ namespace SsisUnit
                     && (!t.IsAbstract))
                 {
                     CommandBase command;
-                    System.Type[] @params = { typeof(XmlNode), typeof(XmlNamespaceManager) };
+                    System.Type[] @params = { typeof(SsisTestSuite) };
                     System.Reflection.ConstructorInfo con;
 
                     con = t.GetConstructor(@params);
@@ -295,7 +307,7 @@ namespace SsisUnit
                     {
                         throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The Command type {0} could not be loaded because it has no constructor.", t.Name));
                     }
-                    command = (CommandBase)con.Invoke(new object[] { _connections, _namespaceMgr });
+                    command = (CommandBase)con.Invoke(new object[] { this });
                     _commands.Add(command.CommandName, command);
                 }
             }
@@ -718,7 +730,7 @@ namespace SsisUnit
         }
     }
 
-    public struct ConnectionRef
+    public class ConnectionRef
     {
         private string _referenceName;
         private string _connectionString;
@@ -729,6 +741,12 @@ namespace SsisUnit
             _referenceName = referenceName;
             _connectionString = connectionString;
             _connectionType = connectionType.ToString();
+            return;
+        }
+
+        public ConnectionRef(XmlNode connectionRef)
+        {
+            LoadFromXml(connectionRef);
             return;
         }
 
@@ -766,6 +784,42 @@ namespace SsisUnit
             }
         }
 
+        public string PersistToXml()
+        {
+            StringBuilder xml = new StringBuilder();
+            xml.Append("<Connection ");
+            xml.Append("name=\"" + this.ReferenceName + "\" ");
+            xml.Append("connection=\"" + this.ConnectionString + "\" ");
+            xml.Append("connectionType=\"" + this.ConnectionType.ToString() + "\"");
+            xml.Append("/>");
+            return xml.ToString();
+        }
+
+        public void LoadFromXml(string connectionXml)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            XmlDocumentFragment frag = doc.CreateDocumentFragment();
+            frag.InnerXml = connectionXml;
+
+            if (frag["Connection"] == null)
+            {
+                throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Connection"));
+            }
+            LoadFromXml(frag["Connection"]);
+        }
+
+        public void LoadFromXml(XmlNode connectionXml)
+        {
+            if (connectionXml.Name!="Connection")
+            {
+                throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Connection"));
+            }
+
+            _connectionString = connectionXml.Attributes["connection"].Value;
+            _connectionType = connectionXml.Attributes["connectionType"].Value; 
+            _referenceName = connectionXml.Attributes["name"].Value;
+        }
 
         public enum ConnectionTypeEnum : int
         {

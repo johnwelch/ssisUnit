@@ -9,8 +9,8 @@ namespace SsisUnit
 {
     class FileCommand : CommandBase
     {
-        public FileCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
-            : base(connections, namespaceMgr)
+        public FileCommand(SsisTestSuite testSuite)
+            : base(testSuite)
         { }
 
 

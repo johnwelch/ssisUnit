@@ -9,15 +9,27 @@ namespace SsisUnit
 {
     public abstract class CommandBase
     {
-        private XmlNode _connections;
-        private XmlNamespaceManager _namespaceMgr;
+        private SsisTestSuite _testSuite;
+        //private XmlNode _connections;
+        //private XmlNamespaceManager _namespaceMgr;
         private string _body = string.Empty;
         private System.Collections.Generic.Dictionary<string, CommandProperty> _properties = new Dictionary<string, CommandProperty>();
 
-        public CommandBase(XmlNode connections, XmlNamespaceManager namespaceMgr)
+        //public CommandBase(XmlNode connections, XmlNamespaceManager namespaceMgr)
+        //{
+        //    _connections = connections;
+        //    _namespaceMgr = namespaceMgr;
+        //}
+
+        public CommandBase(SsisTestSuite testSuite)
         {
-            _connections = connections;
-            _namespaceMgr = namespaceMgr;
+            _testSuite = testSuite;
+        }
+
+        public CommandBase(SsisTestSuite testSuite, string commandXml)
+        {
+            _testSuite = testSuite;
+            this.LoadFromXml(commandXml);
         }
 
         public CommandBase()
@@ -32,15 +44,20 @@ namespace SsisUnit
             }
         }
 
+        protected SsisTestSuite TestSuite
+        {
+            get { return _testSuite; }
+        }
+
         protected Dictionary<string, CommandProperty> Properties
         {
             get { return _properties; }
         }
 
-        protected XmlNode Connections
-        {
-            get { return _connections; }
-        }
+        //protected XmlNode Connections
+        //{
+        //    get { return _connections; }
+        //}
 
         protected string Body
         {
@@ -48,10 +65,10 @@ namespace SsisUnit
             set { _body = value; }
         }
 
-        protected XmlNamespaceManager NamespaceMgr
-        {
-            get { return _namespaceMgr; }
-        }
+        //protected XmlNamespaceManager NamespaceMgr
+        //{
+        //    get { return _namespaceMgr; }
+        //}
 
         public string CommandName
         {
@@ -59,7 +76,22 @@ namespace SsisUnit
         }
 
 
-        abstract public object Execute(XmlNode command, Package package, DtsContainer container);
+        public abstract object Execute(XmlNode command, Package package, DtsContainer container);
+
+        public virtual object Execute(SsisTestSuite testSuite, Package package, DtsContainer container)
+        {
+            return null;
+        }
+
+        public virtual object Execute(SsisTestSuite testSuite, Package package)
+        {
+            return Execute(testSuite, package, null);
+        }
+
+        public virtual object Execute(SsisTestSuite testSuite)
+        {
+            return Execute(testSuite, null, null);
+        }
 
         public string PersistToXml()
         {
@@ -87,7 +119,7 @@ namespace SsisUnit
 
             XmlDocumentFragment frag = doc.CreateDocumentFragment();
             frag.InnerXml = commandXml;
-            
+
             if (frag[this.CommandName] == null)
             {
                 throw new ArgumentException(string.Format("The Xml does not contain the correct command type ({0}).", this.CommandName));

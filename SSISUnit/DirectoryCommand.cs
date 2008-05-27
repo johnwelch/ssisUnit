@@ -13,10 +13,19 @@ namespace SsisUnit
         private string _argument1 = string.Empty;
         private string _argument2 = string.Empty;
 
+        public DirectoryCommand(SsisTestSuite testSuite)
+            : base(testSuite)
+        {
+            //Initialize properties to default values
 
-        public DirectoryCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
-            : base(connections, namespaceMgr)
-        { }
+            //Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, string.Empty));
+            //Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, false.ToString().ToLower()));
+            //Body = string.Empty;
+        }
+
+        //public DirectoryCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
+        //    : base(connections, namespaceMgr)
+        //{ }
 
         //#region Public Properties
 
@@ -29,13 +38,13 @@ namespace SsisUnit
 
         //#endregion
 
-        public string PersistToXml()
-        {
-            string returnValue = "<" + this.CommandName + " operation=\"" + _operation + "\" argument1=\"" + _argument1 + "\"";
-            if (_argument2 != string.Empty) returnValue += " argument2=\"" + _argument2 + "\"";
-            returnValue += "</" + this.CommandName + ">";
-            return returnValue;
-        }
+        //public string PersistToXml()
+        //{
+        //    string returnValue = "<" + this.CommandName + " operation=\"" + _operation + "\" argument1=\"" + _argument1 + "\"";
+        //    if (_argument2 != string.Empty) returnValue += " argument2=\"" + _argument2 + "\"";
+        //    returnValue += "</" + this.CommandName + ">";
+        //    return returnValue;
+        //}
 
         public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
