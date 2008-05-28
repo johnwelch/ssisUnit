@@ -75,7 +75,7 @@ namespace UTssisUnit
         {
             XmlNode connections = null; // TODO: Initialize to an appropriate value
             XmlNamespaceManager namespaceMgr = null; // TODO: Initialize to an appropriate value
-            VariableCommand target = new VariableCommand(connections, namespaceMgr);
+            VariableCommand target = new VariableCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             Assert.IsNotNull(target);
         }
 
@@ -86,7 +86,7 @@ namespace UTssisUnit
             XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
             XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
             namespaceMgr.AddNamespace("ssisUnit", "http://tempuri.org/ssisUnit.xsd");
-            VariableCommand target = new VariableCommand(connections, namespaceMgr);
+            VariableCommand target = new VariableCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Teardown"]["VariableCommand"];
             Application ssisApp = new Application();
             Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
@@ -103,7 +103,7 @@ namespace UTssisUnit
             XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
             XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
             namespaceMgr.AddNamespace("ssisUnit", "http://tempuri.org/ssisUnit.xsd");
-            VariableCommand target = new VariableCommand(connections, namespaceMgr);
+            VariableCommand target = new VariableCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"]["VariableCommand"];
             Application ssisApp = new Application();
             Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);

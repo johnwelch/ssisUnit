@@ -27,14 +27,15 @@ namespace SsisUnit
             Body = string.Empty;
         }
 
-        //public SqlCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
-        //    : base(connections, namespaceMgr)
-        //{
-        //    //Initialize properties to default values
-        //    Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, string.Empty));
-        //    Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, false.ToString().ToLower()));
-        //    Body = string.Empty;
-        //}
+        public SqlCommand(SsisTestSuite testSuite, XmlNode commandXml)
+            : base(testSuite, commandXml)
+        {
+        }
+
+        public SqlCommand(SsisTestSuite testSuite, string commandXml)
+            : base(testSuite, commandXml)
+        {
+        }
 
         public SqlCommand(SsisTestSuite testSuite, string connectionRef, bool returnsValue, string command)
             : base(testSuite)
@@ -44,7 +45,6 @@ namespace SsisUnit
             Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, returnsValue.ToString().ToLower()));
             Body = command;
         }
-
 
         /// <summary>
         /// The Execute Method runs the command specifed by the command node.

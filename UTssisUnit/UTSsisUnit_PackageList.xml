@@ -4,9 +4,9 @@
     <Connection name="AdventureWorks" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks" connectionType="ConnectionString"/>
   </ConnectionList>
   <PackageList>
-    <Package name="filePkg" packagePath="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" storageType="File System"/>
+    <Package name="filePkg" packagePath="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" storageType="FileSystem"/>
     <Package name="msdbPkg" packagePath="\\UT Basic Scenario" server="localhost" storageType="MSDB"/>
-    <Package name="ssPkg" packagePath="\File System\UT Basic Scenario" server="localhost" storageType="Package Store"/>
+    <Package name="ssPkg" packagePath="\File System\UT Basic Scenario" server="localhost" storageType="PackageStore"/>
   </PackageList>
   <Setup>
     

@@ -32,8 +32,50 @@ namespace SsisUnit
             this.LoadFromXml(commandXml);
         }
 
+        public CommandBase(SsisTestSuite testSuite, XmlNode commandXml)
+        {
+            _testSuite = testSuite;
+            this.LoadFromXml(commandXml);
+        }
+
         public CommandBase()
         {
+        }
+
+        public static CommandBase CreateCommand(SsisTestSuite testSuite, string command)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            XmlDocumentFragment frag = doc.CreateDocumentFragment();
+            frag.InnerXml = command;
+
+            return CommandBase.CreateCommand(testSuite, frag.ChildNodes[0]);
+        }
+
+        public static CommandBase CreateCommand(SsisTestSuite testSuite, XmlNode commandXml)
+        {
+            CommandBase returnValue = null;
+
+            foreach (Type t in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
+            {
+                if (typeof(CommandBase).IsAssignableFrom(t)
+                    && (!object.ReferenceEquals(t, typeof(CommandBase)))
+                    && (!t.IsAbstract)
+                    && (t.Name==commandXml.Name))
+                {
+                    System.Type[] @params = { typeof(SsisTestSuite), typeof(XmlNode) };
+                    System.Reflection.ConstructorInfo con;
+
+                    con = t.GetConstructor(@params);
+                    if (con == null)
+                    {
+                        throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The Command type {0} could not be loaded because it has no constructor.", t.Name));
+                    }
+                    returnValue = (CommandBase)con.Invoke(new object[] { testSuite, commandXml });
+                }
+            }
+
+            return returnValue;
         }
 
         protected void CheckCommandType(string commandName)
@@ -115,16 +157,7 @@ namespace SsisUnit
 
         public void LoadFromXml(string commandXml)
         {
-            XmlDocument doc = new XmlDocument();
-
-            XmlDocumentFragment frag = doc.CreateDocumentFragment();
-            frag.InnerXml = commandXml;
-
-            if (frag[this.CommandName] == null)
-            {
-                throw new ArgumentException(string.Format("The Xml does not contain the correct command type ({0}).", this.CommandName));
-            }
-            LoadFromXml(frag[this.CommandName]);
+            LoadFromXml(Helper.GetXmlNodeFromString(commandXml));
         }
 
         public void LoadFromXml(XmlNode commandXml)

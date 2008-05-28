@@ -35,6 +35,16 @@ namespace UTssisUnit
             return asm.GetManifestResourceStream(asm.GetName().Name + "." + filename);
         }
 
+        public static XmlNode GetXmlNodeFromString(string xmlFragment)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            XmlDocumentFragment frag = doc.CreateDocumentFragment();
+            frag.InnerXml = xmlFragment;
+
+            return frag.ChildNodes[0];
+        }
+
         public static void Cleanup()
         {
             foreach (string file in _tempFiles)

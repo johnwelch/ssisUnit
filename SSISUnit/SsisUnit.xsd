@@ -167,9 +167,9 @@
       <xs:attribute name="storageType" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:string">
-            <xs:enumeration value="File System" />
+            <xs:enumeration value="FileSystem" />
             <xs:enumeration value="MSDB" />
-            <xs:enumeration value="Package Store" />
+            <xs:enumeration value="PackageStore" />
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>

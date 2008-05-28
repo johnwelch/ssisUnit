@@ -51,7 +51,9 @@
     <Compile Include="ConnectionList.cs" />
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="FileCommand.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="IssisTestCase.cs" />
+    <Compile Include="PackageRef.cs" />
     <Compile Include="ProcessCommand.cs" />
     <Compile Include="SqlCommand.cs" />
     <Compile Include="ssisTestCase.cs" />

@@ -79,7 +79,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void CopyTest()
         {
-            FileCommand target = new FileCommand(connections, namespaceMgr);
+            FileCommand target = new FileCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[0];
             object actual;
             actual = target.Execute(command, null, null);
@@ -88,7 +88,7 @@ namespace UTssisUnit
 
         public void CopyWithoutTargetTest()
         {
-            FileCommand target = new FileCommand(connections, namespaceMgr);
+            FileCommand target = new FileCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[5];
             object actual;
             try
@@ -105,7 +105,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void ExistsTest()
         {
-            FileCommand target = new FileCommand(connections, namespaceMgr);
+            FileCommand target = new FileCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[1];
             object actual;
             actual = target.Execute(command, null, null);
@@ -115,7 +115,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void DoesntExistTest()
         {
-            FileCommand target = new FileCommand(connections, namespaceMgr);
+            FileCommand target = new FileCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[2];
             object actual;
             actual = target.Execute(command, null, null);
@@ -125,7 +125,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void MoveTest()
         {
-            FileCommand target = new FileCommand(connections, namespaceMgr);
+            FileCommand target = new FileCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[3];
             object actual;
             actual = target.Execute(command, null, null);
@@ -135,7 +135,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void DeleteTest()
         {
-            FileCommand target = new FileCommand(connections, namespaceMgr);
+            FileCommand target = new FileCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[4];
             object actual;
             actual = target.Execute(command, null, null);
@@ -145,7 +145,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void LineCountTest()
         {
-            FileCommand target = new FileCommand(connections, namespaceMgr);
+            FileCommand target = new FileCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[6];
             object actual;
             actual = target.Execute(command, null, null);

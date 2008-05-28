@@ -4,7 +4,7 @@
     <Connection name="Sandbox" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Sandbox" connectionType="ConnectionString"/>
   </ConnectionList>
   <PackageList>
-    <Package name="filePkg" packagePath="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" storageType="File System"/>
+    <Package name="filePkg" packagePath="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" storageType="FileSystem"/>
   </PackageList>
   <Setup>
   </Setup>

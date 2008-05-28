@@ -24,9 +24,9 @@ namespace SsisUnit
         private SsisTestSuite _parentSuite;
         private Dictionary<string, CommandBase> _commands = new Dictionary<string, CommandBase>(3);
         private Dictionary<string, ConnectionRef> _connectionRefs = new Dictionary<string, ConnectionRef>();
+        private Dictionary<string, PackageRef> _packageRefs = new Dictionary<string, PackageRef>();
         private Dictionary<string, Test> _tests = new Dictionary<string, Test>();
-
-
+        private TestSuiteStatistics _stats = new TestSuiteStatistics();
 
         #region Constructors
 
@@ -51,6 +51,11 @@ namespace SsisUnit
 
         #region Properties
 
+        public TestSuiteStatistics Statistics
+        {
+            get { return _stats; }
+        }
+
         public Dictionary<string, ConnectionRef> ConnectionRefs
         {
             get { return _connectionRefs; }
@@ -59,6 +64,16 @@ namespace SsisUnit
         public Dictionary<string, Test> Tests
         {
             get { return _tests; }
+        }
+
+        public Dictionary<string, PackageRef> PackageRefs
+        {
+            get { return _packageRefs; }
+        }
+
+        internal Application SsisApplication
+        {
+            get { return _ssisApp; }
         }
 
         #endregion
@@ -136,25 +151,26 @@ namespace SsisUnit
 
         public int Execute()
         {
-            int testCount = 0;
-
             Setup(_testCaseDoc.SelectSingleNode("SsisUnit:TestSuite/SsisUnit:TestSuiteSetup", _namespaceMgr), null, null);
+
+            foreach (Test test in this.Tests.Values)
+            {
+
+            }
 
             foreach (XmlNode test in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:Test", _namespaceMgr))
             {
                 this.Test(test);
-                testCount++;
             }
 
             foreach (XmlNode testRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:TestRef", _namespaceMgr))
             {
                 this.RunTestSuite(testRef);
-                testCount++;
             }
 
             Teardown(_testCaseDoc.SelectSingleNode("SsisUnit:TestSuite/SsisUnit:TestSuiteTeardown", _namespaceMgr), null, null);
 
-            return testCount;
+            return _stats.GetStatistic(TestSuiteStatistics.StatisticEnum.TestCount);
         }
 
         public void Execute(SsisTestSuite ssisTestCase)
@@ -366,7 +382,7 @@ namespace SsisUnit
                         throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
                     }
 
-                    if (packageRef.Attributes["storageType"].Value == "File System")
+                    if (packageRef.Attributes["storageType"].Value == "FileSystem")
                     {
                         package = _ssisApp.LoadPackage(packageRef.Attributes["packagePath"].Value, null);
                     }
@@ -374,14 +390,14 @@ namespace SsisUnit
                     {
                         package = _ssisApp.LoadFromSqlServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null, null, null);
                     }
-                    else if (packageRef.Attributes["storageType"].Value == "Package Store")
+                    else if (packageRef.Attributes["storageType"].Value == "PackageStore")
                     {
                         package = _ssisApp.LoadFromDtsServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null);
                     }
 
                 }
 
-                taskHost = FindExecutable(package, taskID);
+                taskHost = Helper.FindExecutable(package, taskID);
                 if (taskHost == null)
                 {
                     throw new Exception("The task host was not found.");
@@ -540,39 +556,6 @@ namespace SsisUnit
             this.Teardown(_testCaseDoc.DocumentElement["Teardown"], pkg, task);
         }
 
-        static internal DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
-        {
-
-            //TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
-
-            DtsContainer matchingExecutable = null;
-            DtsContainer parent = (DtsContainer)parentExecutable;
-
-            if (parent.ID == taskId || parent.Name == taskId)
-            {
-                matchingExecutable = parent;
-            }
-            else
-            {
-
-                if (parentExecutable.Executables.Contains(taskId))
-                {
-                    matchingExecutable = (TaskHost)parentExecutable.Executables[taskId];
-                }
-                else
-                {
-                    foreach (Executable e in parentExecutable.Executables)
-                    {
-                        if (e is IDTSSequence)
-                        {
-                            matchingExecutable = FindExecutable((IDTSSequence)e, taskId);
-                        }
-                    }
-                }
-            }
-
-            return matchingExecutable;
-        }
 
 
         #endregion
@@ -811,13 +794,13 @@ namespace SsisUnit
 
         public void LoadFromXml(XmlNode connectionXml)
         {
-            if (connectionXml.Name!="Connection")
+            if (connectionXml.Name != "Connection")
             {
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Connection"));
             }
 
             _connectionString = connectionXml.Attributes["connection"].Value;
-            _connectionType = connectionXml.Attributes["connectionType"].Value; 
+            _connectionType = connectionXml.Attributes["connectionType"].Value;
             _referenceName = connectionXml.Attributes["name"].Value;
         }
 
@@ -826,6 +809,65 @@ namespace SsisUnit
             ConnectionManager = 0,
             ConnectionString = 1
         }
-
     }
+
+    public class TestSuiteStatistics
+    {
+        private Dictionary<StatisticEnum, TestSuiteStatistic> _statistics = new Dictionary<StatisticEnum, TestSuiteStatistic>(6);
+
+        internal TestSuiteStatistics()
+        {
+            _statistics.Add(StatisticEnum.TestCount, new TestSuiteStatistic(StatisticEnum.TestCount.ToString()));
+            _statistics.Add(StatisticEnum.AssertCount, new TestSuiteStatistic(StatisticEnum.AssertCount.ToString()));
+            _statistics.Add(StatisticEnum.AssertPassedCount, new TestSuiteStatistic(StatisticEnum.AssertPassedCount.ToString()));
+            _statistics.Add(StatisticEnum.AssertFailedCount, new TestSuiteStatistic(StatisticEnum.AssertFailedCount.ToString()));
+            _statistics.Add(StatisticEnum.TestPassedCount, new TestSuiteStatistic(StatisticEnum.TestPassedCount.ToString()));
+            _statistics.Add(StatisticEnum.TestFailedCount, new TestSuiteStatistic(StatisticEnum.TestFailedCount.ToString()));
+        }
+
+        #region Methods
+
+        internal void IncrementStatistic(StatisticEnum statistic)
+        {
+            _statistics[statistic].IncrementValue();
+        }
+
+        public int GetStatistic(StatisticEnum statistic)
+        {
+            return _statistics[statistic].Value;
+        }
+
+        #endregion
+
+        public enum StatisticEnum : int
+        {
+            TestCount = 0,
+            AssertCount = 1,
+            TestPassedCount = 2,
+            TestFailedCount = 3,
+            AssertPassedCount = 4,
+            AssertFailedCount = 5
+        }
+
+        private class TestSuiteStatistic
+        {
+            private string _name;
+            private int _value;
+
+            internal TestSuiteStatistic(string name)
+            {
+                _name = name;
+            }
+
+            public string Name { get { return _name; } }
+            public int Value { get { return _value; } }
+
+            public void IncrementValue()
+            {
+                _value++;
+            }
+        }
+    }
+
+    
 }

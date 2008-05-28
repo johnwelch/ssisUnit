@@ -78,7 +78,7 @@ namespace UTssisUnit
             namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
 
-            SqlCommand target = new SqlCommand(connections, namespaceMgr);
+            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             Assert.IsNotNull(target);
         }
 
@@ -88,12 +88,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void ExecuteNoResultsTest()
         {
-            XmlDocument testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
-            XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
-            namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-            XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
-
-            SqlCommand target = new SqlCommand(connections, namespaceMgr);
+            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlDocument doc = new XmlDocument();
             doc.Load(TEST_XML_FILE_PATH);
             XmlNode command = doc.DocumentElement["Setup"].ChildNodes[1];
@@ -105,12 +100,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void ExecuteResultsTest()
         {
-            XmlDocument testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
-            XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
-            namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-            XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
-
-            SqlCommand target = new SqlCommand(connections, namespaceMgr);
+            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             XmlDocument doc = new XmlDocument();
             doc.Load(TEST_XML_FILE_PATH);
             XmlNode command = doc.DocumentElement["Setup"]["SqlCommand"];
@@ -127,36 +117,36 @@ namespace UTssisUnit
             namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
 
-            SqlCommand target = new SqlCommand(connections, namespaceMgr);
+            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_BAD_DATA_PATH));
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[0];
 
             try
             {
                 object result = target.Execute(command, null, null);
-                Assert.Fail("The method did not throw the expected argument exception.");
+                Assert.Fail("The method did not throw the expected key not found exception.");
             }
-            catch (System.ArgumentException)
+            catch (System.Collections.Generic.KeyNotFoundException)
             {
                 Assert.IsTrue(true);
             }
             catch (System.Exception)
             {
-                Assert.Fail("The method did not throw the expected argument exception.");
+                Assert.Fail("The method did not throw the expected key not found exception.");
             }
         }
 
         [TestMethod()]
         public void CommandTypeTest()
         {
-            SqlCommand target = new SqlCommand(null, null);
+            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             Assert.AreEqual("SqlCommand", target.CommandName);
         }
 
         [TestMethod()]
         public void CommandPersistTest()
         {
-            SqlCommand target = new SqlCommand(null, null);
-            target.ConnectionRef = "AdventureWorks";
+            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
+            target.ConnectionReference = new ConnectionRef("AdventureWorks", "", ConnectionRef.ConnectionTypeEnum.ConnectionString);
             target.ReturnsValue = false;
             target.SQLStatement = "DROP TABLE dbo.TestTable";
             string result = target.PersistToXml();
@@ -166,9 +156,9 @@ namespace UTssisUnit
         [TestMethod()]
         public void CommandLoadTest()
         {
-            SqlCommand target = new SqlCommand(null, null);
+            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             target.LoadFromXml("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"false\">DROP TABLE dbo.TestTable</SqlCommand>");
-            Assert.AreEqual<string>("AdventureWorks", target.ConnectionRef) ;
+            Assert.AreEqual<string>("AdventureWorks", target.ConnectionReference.ReferenceName) ;
             Assert.AreEqual<bool>(false ,target.ReturnsValue);
             Assert.AreEqual<string>("DROP TABLE dbo.TestTable", target.SQLStatement);
         }

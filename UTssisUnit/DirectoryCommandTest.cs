@@ -16,9 +16,10 @@ namespace UTssisUnit
     public class DirectoryCommandTest
     {
         private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_Directory.xml";
-        private XmlNode connections;
+        private SsisTestSuite testSuite;
+        //private XmlNode connections;
         private XmlDocument testCaseDoc;
-        private XmlNamespaceManager namespaceMgr;
+        //private XmlNamespaceManager namespaceMgr;
 
 
         private TestContext testContextInstance;
@@ -59,10 +60,11 @@ namespace UTssisUnit
         [TestInitialize()]
         public void MyTestInitialize()
         {
+            testSuite = new SsisTestSuite(TEST_XML_FILE_PATH);
             testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
-            connections = testCaseDoc.DocumentElement["ConnectionList"];
-            namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
-            namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
+            //connections = testCaseDoc.DocumentElement["ConnectionList"];
+            //namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
+            //namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
         }        //
         //Use TestCleanup to run code after each test has run
         //[TestCleanup()]
@@ -76,7 +78,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void CreateTest()
         {
-            DirectoryCommand target = new DirectoryCommand(connections, namespaceMgr);
+            DirectoryCommand target = new DirectoryCommand(testSuite);
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[0];
             object actual;
             actual = target.Execute(command, null, null);
@@ -86,7 +88,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void MoveTest()
         {
-            DirectoryCommand target = new DirectoryCommand(connections, namespaceMgr);
+            DirectoryCommand target = new DirectoryCommand(testSuite);
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[1];
             object actual;
             actual = target.Execute(command, null, null);
@@ -95,7 +97,7 @@ namespace UTssisUnit
 
         public void MoveWithoutTargetTest()
         {
-            DirectoryCommand target = new DirectoryCommand(connections, namespaceMgr);
+            DirectoryCommand target = new DirectoryCommand(testSuite);
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[2];
             object actual;
             try
@@ -112,7 +114,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void ExistsTest()
         {
-            DirectoryCommand target = new DirectoryCommand(connections, namespaceMgr);
+            DirectoryCommand target = new DirectoryCommand(testSuite);
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[3];
             object actual;
             actual = target.Execute(command, null, null);
@@ -122,7 +124,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void DoesntExistTest()
         {
-            DirectoryCommand target = new DirectoryCommand(connections, namespaceMgr);
+            DirectoryCommand target = new DirectoryCommand(testSuite);
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[4];
             object actual;
             actual = target.Execute(command, null, null);
@@ -133,7 +135,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void DeleteTest()
         {
-            DirectoryCommand target = new DirectoryCommand(connections, namespaceMgr);
+            DirectoryCommand target = new DirectoryCommand(testSuite);
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[5];
             object actual;
             actual = target.Execute(command, null, null);
@@ -143,7 +145,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void FileCountTest()
         {
-            DirectoryCommand target = new DirectoryCommand(connections, namespaceMgr);
+            DirectoryCommand target = new DirectoryCommand(testSuite);
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[6];
             object actual;
             actual = target.Execute(command, null, null);

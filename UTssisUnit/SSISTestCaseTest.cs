@@ -123,7 +123,7 @@ namespace UTssisUnit
             XmlNode setup = doc.DocumentElement["Setup"];
             Application ssisApp = new Application();
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-            DtsContainer task = SsisTestSuite.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer task = Helper.FindExecutable(packageToTest, "SELECT COUNT");
 
             int result = target.Setup(setup, packageToTest, task);
             Assert.AreEqual(4, result);
@@ -138,7 +138,7 @@ namespace UTssisUnit
             XmlNode teardown = doc.DocumentElement["Teardown"];
             Application ssisApp = new Application();
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-            DtsContainer task = SsisTestSuite.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer task = Helper.FindExecutable(packageToTest, "SELECT COUNT");
 
             int result = target.Teardown(teardown, packageToTest, task);
             Assert.AreEqual(2, result);
@@ -233,7 +233,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = SsisTestSuite.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "SELECT COUNT");
             Assert.IsNotNull(result);
         }
 
@@ -244,7 +244,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = SsisTestSuite.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
             Assert.IsNotNull(result);
         }
 
@@ -255,7 +255,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = SsisTestSuite.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
             Assert.IsNotNull(result);
         }
 
@@ -266,7 +266,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = SsisTestSuite.FindExecutable(packageToTest, "{D2D9295A-45D0-4681-B021-F5077CB2EC22}");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "{D2D9295A-45D0-4681-B021-F5077CB2EC22}");
             Assert.IsNotNull(result);
         }
 
@@ -277,7 +277,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = SsisTestSuite.FindExecutable(packageToTest, "Does Not Exist");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "Does Not Exist");
             Assert.IsNull(result);
         }
 
@@ -316,18 +316,18 @@ namespace UTssisUnit
             //TODO: Setup
 
             Assert.AreEqual<int>(0, target.Tests.Count);
-            Test ssisTest = new Test("Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
+            Test ssisTest = new Test(target, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
             Assert.AreEqual<int>(1, target.Tests.Count);
             Assert.AreEqual<string>("Test", target.Tests["Test"].Name);
-            Assert.AreEqual<string>("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", target.Tests["Test"].Package);
+            Assert.AreEqual<string>("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", target.Tests["Test"].PackageLocation);
             Assert.AreEqual<string>("SELECT COUNT", target.Tests["Test"].Task);
 
             //TODO: TestSetup
 
-            SsisAssert ssisAssert = new SsisAssert("Test Count", 504, false);
-            ssisAssert.Command = new SqlCommand("AdventureWorks", true, "SELECT COUNT(*) FROM Production.Product");
+            SsisAssert ssisAssert = new SsisAssert(target, "Test Count", 504, false);
+            ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM Production.Product");
 
             ssisTest.Asserts.Add("Test Count", ssisAssert);
             Assert.AreEqual<int>(1, ssisTest.Asserts.Count);
@@ -338,7 +338,6 @@ namespace UTssisUnit
 
             //TODO: TestTeardown
 
-
             //TODO: Teardown
             //TODO: TestSuiteTeardown
 
@@ -348,6 +347,9 @@ namespace UTssisUnit
             {
                 testCount = target.Execute();
                 Assert.AreEqual<int>(1, testCount);
+                Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.TestPassedCount));
+                Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertFailedCount));
             }
             catch (Exception ex)
             {
