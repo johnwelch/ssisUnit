@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using Microsoft.SqlServer.Dts.Runtime;
+using System.Globalization;
 
 namespace SsisUnit
 {
@@ -36,6 +38,8 @@ namespace SsisUnit
             return;
         }
 
+        #region Properties
+
         public string Name
         {
             get { return _name; }
@@ -58,6 +62,33 @@ namespace SsisUnit
         {
             get { return _command; }
             set { _command = value; }
+        }
+
+        #endregion
+
+        public bool Execute(Package package, DtsContainer task)
+        {
+            _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.AssertCount);
+            bool returnValue;
+            string resultMessage;
+            
+            object validationResult = _command.Execute(package, task);
+
+            returnValue = (_expectedResult.ToString() == validationResult.ToString());
+
+            if (returnValue)
+            {
+                resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
+                _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.AssertPassedCount);
+            }
+            else
+            {
+                resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
+                _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.AssertFailedCount);
+            }
+            _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, _name, resultMessage, returnValue));
+            
+            return returnValue;
         }
 
         public string PersistToXml()

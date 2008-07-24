@@ -109,7 +109,11 @@ namespace SsisUnit
             _packagePath = packageXml.Attributes["packagePath"].Value;
             _storageType = packageXml.Attributes["storageType"].Value;
             _name = packageXml.Attributes["name"].Value;
-            _server = packageXml.Attributes["server"].Value;
+
+            if (packageXml.Attributes["server"]!=null)
+            {
+                _server = packageXml.Attributes["server"].Value;                
+            }            
         }
 
         public enum PackageStorageType : int

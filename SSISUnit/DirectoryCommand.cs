@@ -9,18 +9,34 @@ namespace SsisUnit
 {
     class DirectoryCommand : CommandBase
     {
-        private string _operation = string.Empty;
-        private string _argument1 = string.Empty;
-        private string _argument2 = string.Empty;
+        private const string PROP_OPERATION = "operation";
+        private const string PROP_ARGUMENT_1 = "argument1";
+        private const string PROP_ARGUMENT_2 = "argument2";
 
         public DirectoryCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            //Initialize properties to default values
+            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, string.Empty));
+            Properties.Add(PROP_ARGUMENT_1, new CommandProperty(PROP_ARGUMENT_1, string.Empty));
+            Properties.Add(PROP_ARGUMENT_2, new CommandProperty(PROP_ARGUMENT_2, string.Empty));
+        }
 
-            //Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, string.Empty));
-            //Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, false.ToString().ToLower()));
-            //Body = string.Empty;
+        public DirectoryCommand(SsisTestSuite testSuite, string commandXml)
+            : base(testSuite, commandXml)
+        {
+        }
+
+        public DirectoryCommand(SsisTestSuite testSuite, XmlNode commandXml)
+            : base(testSuite, commandXml)
+        {
+        }
+
+        public DirectoryCommand(SsisTestSuite testSuite, string operation, string argument1, string argument2)
+            : base(testSuite)
+        {
+            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, operation));
+            Properties.Add(PROP_ARGUMENT_1, new CommandProperty(PROP_ARGUMENT_1, argument1));
+            Properties.Add(PROP_ARGUMENT_2, new CommandProperty(PROP_ARGUMENT_2, argument2));
         }
 
         //public DirectoryCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
@@ -48,22 +64,15 @@ namespace SsisUnit
 
         public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
-            string argument1;
-            string argument2 = string.Empty;
-            DirectoryOperation operation;
-
+            
             object returnValue = null;
 
-            this.CheckCommandType(command.Name);
 
-            XmlNode targetPathAttr = command.Attributes.GetNamedItem("argument2");
+            this.LoadFromXml(command);
 
-            if (targetPathAttr != null)
-            {
-                argument2 = targetPathAttr.Value;
-            }
-            argument1 = command.Attributes["argument1"].Value;
-            operation = DirectoryOperationFromString(command.Attributes["operation"].Value);
+            string argument1 = Properties[PROP_ARGUMENT_1].Value;
+            string argument2 = Properties[PROP_ARGUMENT_2].Value;
+            DirectoryOperation operation = DirectoryOperationFromString(Properties[PROP_OPERATION].Value);
 
             if (operation == DirectoryOperation.Move)
             {

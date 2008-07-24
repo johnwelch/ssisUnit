@@ -48,6 +48,7 @@
     </Compile>
     <Compile Include="Assert.cs" />
     <Compile Include="CommandPlugin.cs" />
+    <Compile Include="CommandSet.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="FileCommand.cs" />

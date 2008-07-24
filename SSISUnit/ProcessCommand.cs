@@ -8,27 +8,51 @@ namespace SsisUnit
 {
     class ProcessCommand : CommandBase
     {
+        private const string PROP_PROCESS = "process";
+        private const string PROP_ARGUMENTS = "arguments";
+
         public ProcessCommand(SsisTestSuite testSuite)
             : base(testSuite)
-        { }
+        {
+            Properties.Add(PROP_PROCESS, new CommandProperty(PROP_PROCESS, string.Empty));
+            Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, string.Empty));
+        }
+
+        public ProcessCommand(SsisTestSuite testSuite, string commandXml)
+            : base(testSuite, commandXml)
+        {
+        }
+
+        public ProcessCommand(SsisTestSuite testSuite, XmlNode commandXml)
+            : base(testSuite, commandXml)
+        {
+        }
+
+        public ProcessCommand(SsisTestSuite testSuite, string process, string arguments)
+            : base(testSuite)
+        {
+            Properties.Add(PROP_PROCESS, new CommandProperty(PROP_PROCESS, process));
+            Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, arguments));
+        }
 
         public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
             int exitCode;
 
-            this.CheckCommandType(command.Name);
+            this.LoadFromXml(command);
 
             Process proc = null;
             try
             {
-                XmlNode args = command.Attributes.GetNamedItem("arguments");
-                if (args == null)
+                string args = Properties[PROP_ARGUMENTS].Value;
+                string process = Properties[PROP_PROCESS].Value;
+                if (args == string.Empty)
                 {
-                    proc = Process.Start(command.Attributes["process"].Value);
+                    proc = Process.Start(process);
                 }
                 else
                 {
-                    proc = Process.Start(command.Attributes["process"].Value, command.Attributes["arguments"].Value);
+                    proc = Process.Start(process, args);
                 }
                 while (!proc.WaitForExit(app.Default.ProcessCheckForExitDelay))
                 {
@@ -57,8 +81,6 @@ namespace SsisUnit
             }
 
             return exitCode;
-
-
         }
     }
 }

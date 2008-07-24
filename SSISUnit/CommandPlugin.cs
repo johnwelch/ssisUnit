@@ -120,19 +120,19 @@ namespace SsisUnit
 
         public abstract object Execute(XmlNode command, Package package, DtsContainer container);
 
-        public virtual object Execute(SsisTestSuite testSuite, Package package, DtsContainer container)
+        public virtual object Execute(Package package, DtsContainer container)
         {
             return null;
         }
 
-        public virtual object Execute(SsisTestSuite testSuite, Package package)
+        public virtual object Execute(Package package)
         {
-            return Execute(testSuite, package, null);
+            return Execute(package, null);
         }
 
-        public virtual object Execute(SsisTestSuite testSuite)
+        public virtual object Execute()
         {
-            return Execute(testSuite, null, null);
+            return Execute(null, null);
         }
 
         public string PersistToXml()

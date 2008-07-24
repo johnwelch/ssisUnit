@@ -40,7 +40,6 @@ namespace SsisUnit
         public SqlCommand(SsisTestSuite testSuite, string connectionRef, bool returnsValue, string command)
             : base(testSuite)
         {
-
             Properties.Add(PROP_CONNECTION, new CommandProperty(PROP_CONNECTION, connectionRef));
             Properties.Add(PROP_RETURNS_VALUE, new CommandProperty(PROP_RETURNS_VALUE, returnsValue.ToString().ToLower()));
             Body = command;
@@ -59,14 +58,6 @@ namespace SsisUnit
             object result = null;
 
             this.LoadFromXml(command);
-
-            //this.CheckCommandType(command.Name);
-
-            //XmlNode connection = this.Connections.SelectSingleNode("SsisUnit:Connection[@name='" + this.ConnectionReference.ReferenceName + "']", this.NamespaceMgr);
-            //if (connection == null)
-            //{
-            //    throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.ConnectionReference.ReferenceName));
-            //}
 
             DbCommand dbCommand = null;
 
@@ -102,6 +93,48 @@ namespace SsisUnit
             }
 
             return result;
+        }
+
+        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        {
+            string provider = string.Empty;
+            object result = null;
+
+            DbCommand dbCommand = null;
+
+            try
+            {
+                dbCommand = GetCommand(this.ConnectionReference, this.SQLStatement);
+
+                dbCommand.Connection.Open();
+                if (this.ReturnsValue)
+                {
+                    result = dbCommand.ExecuteScalar();
+                }
+                else
+                {
+                    dbCommand.ExecuteNonQuery();
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new KeyNotFoundException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.Properties[PROP_CONNECTION].Value));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (dbCommand != null)
+                {
+                    dbCommand.Connection.Close();
+                    dbCommand.Dispose();
+                }
+            }
+
+            return result;
+            
         }
 
         /// <summary>

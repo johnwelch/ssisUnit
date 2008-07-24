@@ -8,9 +8,32 @@ namespace SsisUnit
 {
     class VariableCommand:CommandBase
     {
+        private const string PROP_NAME = "name";
+        private const string PROP_VALUE = "value";
+
         public VariableCommand(SsisTestSuite testSuite)
             : base(testSuite)
-        { }
+        {
+            Properties.Add(PROP_NAME, new CommandProperty(PROP_NAME, string.Empty));
+            Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, string.Empty));
+        }
+
+        public VariableCommand(SsisTestSuite testSuite, string commandXml)
+            : base(testSuite, commandXml)
+        {
+        }
+
+        public VariableCommand(SsisTestSuite testSuite, XmlNode commandXml)
+            : base(testSuite, commandXml)
+        {
+        }
+
+        public VariableCommand(SsisTestSuite testSuite, string name, string value)
+            : base(testSuite)
+        {
+            Properties.Add(PROP_NAME, new CommandProperty(PROP_NAME, name));
+            Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, value));
+        }
 
 
         public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
@@ -19,9 +42,9 @@ namespace SsisUnit
             Variables vars = null;
             VariableDispenser dispenser = container.VariableDispenser;
 
-            this.CheckCommandType(command.Name);
+            this.LoadFromXml(command);
 
-            string varName = command.Attributes["name"].Value;
+            string varName = Properties[PROP_NAME].Value;
 
             if (command.Attributes["value"] == null)
             {
