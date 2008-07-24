@@ -151,5 +151,13 @@ namespace UTssisUnit
             actual = target.Execute(command, null, null);
             Assert.AreEqual(15, actual);
         }
+
+        [TestMethod()]
+        public void CreateTest()
+        {
+            FileCommand target = new FileCommand(new SsisTestSuite(), "Copy", "C:\\temp\\temp.txt", "C:\\temp\\temp2.txt");
+            object actual = target.Execute();
+            Assert.AreEqual<int>(0, (int)actual);
+        }
     }
 }

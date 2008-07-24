@@ -18,7 +18,7 @@
       <Assert name="Test Row Count Variable" expectedResult="504" testBefore="false">
         <VariableCommand name="ProductRowCount"/>
       </Assert>
-      <Assert name="Test Row Count Variable" expectedResult="0" testBefore="true">
+      <Assert name="Test Row Count Variable Prev" expectedResult="0" testBefore="true">
         <VariableCommand name="ProductRowCount"/>
       </Assert>
     </Test>

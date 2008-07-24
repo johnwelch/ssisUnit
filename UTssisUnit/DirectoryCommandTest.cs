@@ -17,11 +17,8 @@ namespace UTssisUnit
     {
         private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_Directory.xml";
         private SsisTestSuite testSuite;
-        //private XmlNode connections;
         private XmlDocument testCaseDoc;
-        //private XmlNamespaceManager namespaceMgr;
-
-
+        
         private TestContext testContextInstance;
 
         /// <summary>
@@ -81,7 +78,7 @@ namespace UTssisUnit
             DirectoryCommand target = new DirectoryCommand(testSuite);
             XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[0];
             object actual;
-            actual = target.Execute(command, null, null);
+            actual = target.Execute( command, null, null);
             Assert.AreEqual(0, actual);
         }
 

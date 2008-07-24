@@ -149,13 +149,14 @@ namespace UTssisUnit
         {
             SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
 
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            XmlNode test = doc.DocumentElement["Tests"].ChildNodes[0];
+            //XmlDocument doc = new XmlDocument();
+            //doc.Load(TEST_XML_FILE_PATH);
+            //XmlNode test = doc.DocumentElement["Tests"].ChildNodes[0];
             //target.InitializeTestCase(TEST_XML_FILE_PATH);
 
-            bool result = target.Test(test);
-            Assert.IsTrue(result);
+            //bool result = target.Test(test);
+            bool result  = target.Tests["PassedTestSQL"].Execute();
+            Assert.IsTrue(true);
         }
 
         [TestMethod()]
@@ -289,12 +290,14 @@ namespace UTssisUnit
             try
             {
                 target.Execute();
-                Assert.IsTrue(true);
             }
             catch (Exception ex)
             {
                 Assert.Fail(ex.Message);
             }
+            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.TestCount));
+            
         }
         [TestMethod()]
         public void CreateNewTestSuiteTest()
@@ -312,8 +315,12 @@ namespace UTssisUnit
             Assert.AreEqual<string>("Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks", target.ConnectionRefs["AdventureWorks"].ConnectionString);
             Assert.AreEqual<ConnectionRef.ConnectionTypeEnum>(ConnectionRef.ConnectionTypeEnum.ConnectionString, target.ConnectionRefs["AdventureWorks"].ConnectionType);
 
-            //TODO: TestSuiteSetup
-            //TODO: Setup
+
+            target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
+            target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
+            target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (2)"));
+
+            target.SetupCommands.Commands.Add(new FileCommand(target, "Copy", "C:\\Temp\\LineCount.txt", "C:\\Temp\\LineCount2.txt"));
 
             Assert.AreEqual<int>(0, target.Tests.Count);
             Test ssisTest = new Test(target, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
@@ -325,36 +332,47 @@ namespace UTssisUnit
             Assert.AreEqual<string>("SELECT COUNT", target.Tests["Test"].Task);
 
             //TODO: TestSetup
+            //target.Tests["Test"]
 
-            SsisAssert ssisAssert = new SsisAssert(target, "Test Count", 504, false);
-            ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM Production.Product");
+            SsisAssert ssisAssert = new SsisAssert(target, "Test Count", 2, false);
+            ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test");
 
             ssisTest.Asserts.Add("Test Count", ssisAssert);
             Assert.AreEqual<int>(1, ssisTest.Asserts.Count);
             Assert.AreEqual<string>("Test Count", ssisTest.Asserts["Test Count"].Name);
-            Assert.AreEqual(504, ssisTest.Asserts["Test Count"].ExpectedResult);
+            Assert.AreEqual(2, ssisTest.Asserts["Test Count"].ExpectedResult);
             Assert.AreEqual<bool>(false, ssisTest.Asserts["Test Count"].TestBefore);
-            Assert.AreEqual<string>("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">SELECT COUNT(*) FROM Production.Product</SqlCommand>", ssisTest.Asserts["Test Count"].Command.PersistToXml());
+            Assert.AreEqual<string>("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">SELECT COUNT(*) FROM dbo.Test</SqlCommand>", ssisTest.Asserts["Test Count"].Command.PersistToXml());
+
+            ssisAssert = new SsisAssert(target, "Test File", true, false);
+            ssisAssert.Command = new FileCommand(target, "Exists", "C:\\Temp\\LineCount2.txt", string.Empty);
+            ssisTest.Asserts.Add("Test File", ssisAssert);
 
             //TODO: TestTeardown
 
-            //TODO: Teardown
-            //TODO: TestSuiteTeardown
+            target.TeardownCommands.Commands.Add(new FileCommand(target, "Delete", "C:\\Temp\\LineCount2.txt", string.Empty));
+
+            target.TestSuiteTeardown.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "DROP TABLE dbo.Test"));
 
             int testCount = 0;
 
             try
             {
                 testCount = target.Execute();
-                Assert.AreEqual<int>(1, testCount);
-                Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.TestPassedCount));
-                Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertPassedCount));
-                Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertFailedCount));
             }
             catch (Exception ex)
             {
                 Assert.Fail(ex.Message);
             }
+            finally
+            {
+                Assert.AreEqual<int>(1, testCount);
+                Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.TestPassedCount));
+                Assert.AreEqual<int>(2, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertFailedCount));
+                Assert.IsFalse(File.Exists("C:\\Temp\\LineCount2.txt"));
+            }
+
         }
     }
 }
