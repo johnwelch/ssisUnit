@@ -19,12 +19,12 @@
   <Tests>
     <Test name="Test Get Starting Row Count" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="Get Starting Row Count">
       <Assert name="Check Row Count" expectedResult="0" testBefore="false">
-        <VariableCommand name="RowCount"/>
+        <VariableCommand operation="Get" name="RowCount"/>
       </Assert>
     </Test>
     <Test name="Test Get Ending Row Count" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="Get Ending Row Count" >
       <Assert name="Test Row Count" expectedResult="504" testBefore="false">
-        <VariableCommand name="RowCount"/>
+        <VariableCommand operation="Get" name="RowCount"/>
       </Assert>
     </Test>
   </Tests>

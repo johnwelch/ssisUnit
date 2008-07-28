@@ -62,13 +62,9 @@ namespace SsisUnit
         //    return returnValue;
         //}
 
-        public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
-            
             object returnValue = null;
-
-
-            this.LoadFromXml(command);
 
             string argument1 = Properties[PROP_ARGUMENT_1].Value;
             string argument2 = Properties[PROP_ARGUMENT_2].Value;
@@ -118,6 +114,12 @@ namespace SsisUnit
             }
 
             return returnValue;
+        }
+
+        public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        {
+            this.LoadFromXml(command);
+            return this.Execute(package, container);
         }
 
         private string DirectoryOperationToString(DirectoryOperation dirOperation)

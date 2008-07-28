@@ -68,11 +68,21 @@ namespace SsisUnit
             get { return _asserts; }
         }
 
+        public CommandSet TestSetup
+        {
+            get { return _setup; }
+        }
+
+        public CommandSet TestTeardown
+        {
+            get { return _teardown; }
+        }
+
         #endregion
 
         public bool Execute()
         {
-            _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.TestCount);
+            _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestCount);
 
             bool returnValue = false;
 
@@ -133,12 +143,12 @@ namespace SsisUnit
                     }
                     resultMessage = "All asserts were completed.";
                     returnValue = true;
-                    _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.TestPassedCount);
+                    _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestPassedCount);
 
                 }
                 catch (Exception ex)
                 {
-                    _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.TestFailedCount);
+                    _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
                     returnValue = false;
                     resultMessage = "Exception occurred: " + ex.Message;
                 }

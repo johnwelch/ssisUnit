@@ -68,7 +68,7 @@ namespace SsisUnit
 
         public bool Execute(Package package, DtsContainer task)
         {
-            _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.AssertCount);
+            _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertCount);
             bool returnValue;
             string resultMessage;
             
@@ -79,12 +79,12 @@ namespace SsisUnit
             if (returnValue)
             {
                 resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
-                _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.AssertPassedCount);
+                _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
             }
             else
             {
                 resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
-                _testSuite.Statistics.IncrementStatistic(TestSuiteStatistics.StatisticEnum.AssertFailedCount);
+                _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
             }
             _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, _name, resultMessage, returnValue));
             

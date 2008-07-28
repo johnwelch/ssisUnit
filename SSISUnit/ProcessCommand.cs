@@ -35,11 +35,9 @@ namespace SsisUnit
             Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, arguments));
         }
 
-        public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
             int exitCode;
-
-            this.LoadFromXml(command);
 
             Process proc = null;
             try
@@ -81,6 +79,8 @@ namespace SsisUnit
             }
 
             return exitCode;
+            
         }
+
     }
 }

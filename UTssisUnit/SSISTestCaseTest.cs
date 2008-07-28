@@ -156,7 +156,7 @@ namespace UTssisUnit
 
             //bool result = target.Test(test);
             bool result  = target.Tests["PassedTestSQL"].Execute();
-            Assert.IsTrue(true);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
@@ -295,8 +295,8 @@ namespace UTssisUnit
             {
                 Assert.Fail(ex.Message);
             }
-            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.TestCount));
+            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount));
             
         }
         [TestMethod()]
@@ -306,6 +306,7 @@ namespace UTssisUnit
 
             Assert.AreEqual(0, target.ConnectionRefs.Count);
 
+            //Add connection ref
             target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
                 "Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
@@ -315,6 +316,8 @@ namespace UTssisUnit
             Assert.AreEqual<string>("Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks", target.ConnectionRefs["AdventureWorks"].ConnectionString);
             Assert.AreEqual<ConnectionRef.ConnectionTypeEnum>(ConnectionRef.ConnectionTypeEnum.ConnectionString, target.ConnectionRefs["AdventureWorks"].ConnectionType);
 
+            //Add package ref
+            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", PackageRef.PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
@@ -323,16 +326,15 @@ namespace UTssisUnit
             target.SetupCommands.Commands.Add(new FileCommand(target, "Copy", "C:\\Temp\\LineCount.txt", "C:\\Temp\\LineCount2.txt"));
 
             Assert.AreEqual<int>(0, target.Tests.Count);
-            Test ssisTest = new Test(target, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
+            Test ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
             Assert.AreEqual<int>(1, target.Tests.Count);
             Assert.AreEqual<string>("Test", target.Tests["Test"].Name);
-            Assert.AreEqual<string>("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", target.Tests["Test"].PackageLocation);
+            Assert.AreEqual<string>("UT Basic Scenario", target.Tests["Test"].PackageLocation);
             Assert.AreEqual<string>("SELECT COUNT", target.Tests["Test"].Task);
 
-            //TODO: TestSetup
-            //target.Tests["Test"]
+            target.Tests["Test"].TestSetup.Commands.Add(new FileCommand(target, "Copy", "C:\\Temp\\LineCount.txt", "C:\\Temp\\LineCount3.txt"));
 
             SsisAssert ssisAssert = new SsisAssert(target, "Test Count", 2, false);
             ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test");
@@ -348,30 +350,56 @@ namespace UTssisUnit
             ssisAssert.Command = new FileCommand(target, "Exists", "C:\\Temp\\LineCount2.txt", string.Empty);
             ssisTest.Asserts.Add("Test File", ssisAssert);
 
-            //TODO: TestTeardown
+            ssisAssert = new SsisAssert(target, "Test File 2", true, false);
+            ssisAssert.Command = new FileCommand(target, "Exists", "C:\\Temp\\LineCount3.txt", string.Empty);
+            ssisTest.Asserts.Add("Test File 2", ssisAssert);
+
+            target.Tests["Test"].TestTeardown.Commands.Add(new FileCommand(target, "Delete", "C:\\Temp\\LineCount3.txt", string.Empty));
+
+            //TODO: Add a TestRef test
 
             target.TeardownCommands.Commands.Add(new FileCommand(target, "Delete", "C:\\Temp\\LineCount2.txt", string.Empty));
 
             target.TestSuiteTeardown.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "DROP TABLE dbo.Test"));
+
+            //Test Save of File
+            target.Save("C:\\Temp\\Test.ssisUnit");
+            Assert.IsTrue(File.Exists("C:\\Temp\\Test.ssisUnit"));
+            //Assert.AreEqual<string>(File.OpenText("C:\\Temp\\Test.ssisUnit").ReadToEnd(), 
+
 
             int testCount = 0;
 
             try
             {
                 testCount = target.Execute();
+                Assert.AreEqual<int>(1, testCount);
+                Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
+                Assert.AreEqual<int>(3, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+                Assert.IsFalse(File.Exists("C:\\Temp\\LineCount2.txt"));
             }
             catch (Exception ex)
             {
                 Assert.Fail(ex.Message);
             }
-            finally
+            //TODO: add ability to grancefully handle bad package refs - right now it blows the test case out of the water - no teardown
+            try
             {
+                target = new SsisTestSuite("C:\\Temp\\Test.ssisUnit");
+                testCount = target.Execute();
                 Assert.AreEqual<int>(1, testCount);
-                Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.TestPassedCount));
-                Assert.AreEqual<int>(2, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertPassedCount));
-                Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteStatistics.StatisticEnum.AssertFailedCount));
+                Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
+                Assert.AreEqual<int>(3, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
                 Assert.IsFalse(File.Exists("C:\\Temp\\LineCount2.txt"));
             }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+
+
 
         }
     }

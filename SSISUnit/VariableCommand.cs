@@ -10,10 +10,12 @@ namespace SsisUnit
     {
         private const string PROP_NAME = "name";
         private const string PROP_VALUE = "value";
+        private const string PROP_OPERATION = "operation";
 
         public VariableCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
+            //TODO: Got a problem here with Values - can be a number of types - or not provided
             Properties.Add(PROP_NAME, new CommandProperty(PROP_NAME, string.Empty));
             Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, string.Empty));
         }
@@ -35,18 +37,15 @@ namespace SsisUnit
             Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, value));
         }
 
-
-        public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        public override object Execute(Package package, DtsContainer container)
         {
             object returnValue;
             Variables vars = null;
             VariableDispenser dispenser = container.VariableDispenser;
 
-            this.LoadFromXml(command);
+            string varName = this.Name;
 
-            string varName = Properties[PROP_NAME].Value;
-
-            if (command.Attributes["value"] == null)
+            if (this.Operation=="Get")
             {
                 dispenser.LockOneForRead(varName, ref vars);
                 returnValue = vars[varName].Value;
@@ -55,14 +54,31 @@ namespace SsisUnit
             else
             {
                 //writing to the variable
-                object varValue = command.Attributes["value"].Value;
+                object varValue = this.Value;
                 dispenser.LockOneForWrite(varName, ref vars);
                 vars[varName].Value = System.Convert.ChangeType(varValue, vars[varName].DataType);
                 vars.Unlock();
                 returnValue = varValue;
             }
             return returnValue;
+        }
 
+        public string Name
+        {
+            get { return Properties[PROP_NAME].Value; }
+            set { Properties[PROP_NAME].Value = value; }
+        }
+
+        public string Value
+        {
+            get { return Properties[PROP_VALUE].Value; }
+            set { Properties[PROP_VALUE].Value = value; }
+        }
+
+        public string Operation
+        {
+            get { return Properties[PROP_OPERATION].Value; }
+            set { Properties[PROP_OPERATION].Value = value; }
         }
     }
 }

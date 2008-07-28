@@ -99,6 +99,14 @@
   <!--Define Common Variable Command-->
   <xs:element name="VariableCommand">
     <xs:complexType>
+      <xs:attribute name="operation" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Get" />
+            <xs:enumeration value="Set" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
       <xs:attribute name="name" type ="xs:string" use="required"/>
       <xs:attribute name="value" type="xs:string" use="optional"/>
     </xs:complexType>

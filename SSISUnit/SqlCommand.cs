@@ -45,56 +45,6 @@ namespace SsisUnit
             Body = command;
         }
 
-        /// <summary>
-        /// The Execute Method runs the command specifed by the command node.
-        /// </summary>
-        /// <param name="command">An XmlNode containing the command to execute.</param>
-        /// <param name="package">The SSIS Package object that provides the context for the command execution.</param>
-        /// <param name="container">The SSIS TaskHost (or Package) that provides additional context for the command execution.</param>
-        /// <returns>The results of the command execution</returns>
-        public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
-        {
-            string provider = string.Empty;
-            object result = null;
-
-            this.LoadFromXml(command);
-
-            DbCommand dbCommand = null;
-
-            try
-            {
-                dbCommand = GetCommand(this.ConnectionReference, this.SQLStatement);
-
-                dbCommand.Connection.Open();
-                if (this.ReturnsValue)
-                {
-                    result = dbCommand.ExecuteScalar();
-                }
-                else
-                {
-                    dbCommand.ExecuteNonQuery();
-                }
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new KeyNotFoundException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.Properties[PROP_CONNECTION].Value));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                if (dbCommand != null)
-                {
-                    dbCommand.Connection.Close();
-                    dbCommand.Dispose();
-                }
-            }
-
-            return result;
-        }
-
         public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
             string provider = string.Empty;

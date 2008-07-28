@@ -29,7 +29,7 @@
     <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
       TRUNCATE TABLE TestTableA
     </SqlCommand>
-    <VariableCommand name="ProductRowCount" value="10"/>
+    <VariableCommand operation="Set"  name="ProductRowCount" value="10"/>
   </Teardown>
   <TestSuiteTeardown>
     <SqlCommand connectionRef="Sandbox" returnsValue="false">

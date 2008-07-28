@@ -96,7 +96,12 @@ namespace SsisUnit
 
             foreach (XmlNode command in commands)
             {
-                returnValue.Add(CommandBase.CreateCommand(_testSuite, command));
+                CommandBase commandObj = CommandBase.CreateCommand(_testSuite, command);
+                if (commandObj != null)
+                {
+                    returnValue.Add(commandObj);
+                }
+                
             }
             return returnValue;
         }

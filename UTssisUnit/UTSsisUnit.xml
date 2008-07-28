@@ -11,15 +11,15 @@
       SELECT ProductID FROM Production.Product
     </SqlCommand>
     <ProcessCommand process="CMD.EXE" arguments="/c COPY c:\temp\temp.txt c:\temp\temp2.txt"/>
-    <VariableCommand name="ProductRowCount"/>
+    <VariableCommand operation="Get" name="ProductRowCount"/>
   </Setup>
   <Tests>
     <Test name="PassedTestSQL" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT">
       <Assert name="Test Row Count Variable" expectedResult="504" testBefore="false">
-        <VariableCommand name="ProductRowCount"/>
+        <VariableCommand operation="Get" name="ProductRowCount"/>
       </Assert>
       <Assert name="Test Row Count Variable Prev" expectedResult="0" testBefore="true">
-        <VariableCommand name="ProductRowCount"/>
+        <VariableCommand operation="Get" name="ProductRowCount"/>
       </Assert>
     </Test>
     <Test name="PassedTestProcess" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT">
@@ -40,6 +40,6 @@
     <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
       SELECT COUNT(ProductID) FROM Production.Product
     </SqlCommand>
-    <VariableCommand name="ProductRowCount" value="10"/>
+    <VariableCommand operation="Set" name="ProductRowCount" value="10"/>
   </Teardown>
 </TestSuite>

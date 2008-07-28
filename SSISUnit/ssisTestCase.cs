@@ -30,32 +30,31 @@ namespace SsisUnit
         private CommandSet _testSuiteTeardown;
         private CommandSet _setup;
         private CommandSet _teardown;
-        private TestSuiteStatistics _stats = new TestSuiteStatistics();
+        private TestSuiteResults _stats = new TestSuiteResults();
 
         #region Constructors
 
         public SsisTestSuite()
         {
             Stream baseTest = GetStreamFromAssembly("BaseTest.xml");
-            Initialize(baseTest);
+            InitializeTestCase(baseTest);
         }
 
         public SsisTestSuite(string testCaseFile)
         {
             InitializeTestCase(testCaseFile);
-            LoadCommands();
         }
 
         public SsisTestSuite(Stream testCase)
         {
-            Initialize(testCase);
+            InitializeTestCase(testCase);
         }
 
         #endregion
 
         #region Properties
 
-        public TestSuiteStatistics Statistics
+        public TestSuiteResults Statistics
         {
             get { return _stats; }
         }
@@ -108,7 +107,6 @@ namespace SsisUnit
         #endregion
 
         //TODO: Add parameters - replaceable values that can be defined one and used anywhere.
-        //TODO: Add creation logic
 
         #region Events
 
@@ -185,27 +183,66 @@ namespace SsisUnit
 
         #endregion
 
-        public string PersistToXml()
+        public void Save(string fileName)
         {
-            StringBuilder xml = new StringBuilder();
-            //xml.Append("<Package ");
-            //xml.Append("name=\"" + _name + "\" ");
-            //xml.Append("packagePath=\"" + _packagePath + "\" ");
-            //if (_server != string.Empty)
+            System.IO.File.WriteAllText(fileName, PersistToXml(), Encoding.UTF8);
+        }
+
+        internal string PersistToXml()
+        {
+            StringBuilder xml = new StringBuilder(2416);
+            xml.AppendFormat(@"<?xml version=""1.0"" encoding=""utf-8"" ?>{0}", Environment.NewLine);
+            xml.AppendFormat(@"<TestSuite xmlns=""http://tempuri.org/SsisUnit.xsd"">{0}", Environment.NewLine);
+            xml.AppendFormat(@"  <ConnectionList>{0}", Environment.NewLine);
+            foreach (ConnectionRef conn in _connectionRefs.Values)
+            {
+                xml.Append(conn.PersistToXml());
+            }
+            xml.AppendFormat(@"  </ConnectionList>{0}", Environment.NewLine);
+            xml.AppendFormat(@"  <PackageList>{0}", Environment.NewLine);
+            foreach (PackageRef pkg in _packageRefs.Values)
+            {
+                xml.Append(pkg.PersistToXml());
+            }
+            xml.AppendFormat(@"  </PackageList>{0}", Environment.NewLine);
+            xml.AppendFormat(@"  <TestSuiteSetup>{0}", Environment.NewLine);
+            xml.Append(this.TestSuiteSetup.PersistToXml());
+            xml.AppendFormat(@"  </TestSuiteSetup>{0}", Environment.NewLine);
+
+            xml.AppendFormat(@"  <Setup>{0}", Environment.NewLine);
+            xml.Append(this.SetupCommands.PersistToXml()); 
+            xml.AppendFormat(@"  </Setup>{0}", Environment.NewLine);
+
+            xml.AppendFormat(@"  <Tests>{0}", Environment.NewLine);
+            foreach (Test test in this.Tests.Values)
+            {
+                xml.Append(test.PersistToXml());
+            }
+            //TODO: Implement test refs
+            //foreach (TestRef testRef in this.TestRefs)
             //{
-            //    xml.Append("server=\"" + _server + "\" ");
+            //    xml.Append(testRef.PersistToXml);
             //}
-            //xml.Append("storageType=\"" + this.StorageType.ToString() + "\"");
-            //xml.Append("/>");
+            xml.AppendFormat(@"  </Tests>{0}", Environment.NewLine);
+
+            xml.AppendFormat(@"  <Teardown>{0}", Environment.NewLine);
+            xml.Append(this.TeardownCommands.PersistToXml());
+            xml.AppendFormat(@"  </Teardown>{0}", Environment.NewLine);
+
+            xml.AppendFormat(@"  <TestSuiteTeardown>{0}", Environment.NewLine);
+            xml.Append(this.TestSuiteTeardown.PersistToXml());
+            xml.AppendFormat(@"  </TestSuiteTeardown>{0}", Environment.NewLine);
+
+            xml.AppendFormat(@"</TestSuite>");
             return xml.ToString();
         }
 
-        public void LoadFromXml(string packageXml)
+        internal void LoadFromXml(string packageXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(packageXml));
         }
 
-        public void LoadFromXml(XmlNode packageXml)
+        internal void LoadFromXml(XmlNode packageXml)
         {
             //if (packageXml.Name != "Package")
             //{
@@ -217,7 +254,7 @@ namespace SsisUnit
             //_name = packageXml.Attributes["name"].Value;
             //_server = packageXml.Attributes["server"].Value;
         }
-        
+
         public int Execute()
         {
             _testSuiteSetup.Execute();
@@ -234,7 +271,7 @@ namespace SsisUnit
 
             _testSuiteTeardown.Execute();
 
-            return _stats.GetStatistic(TestSuiteStatistics.StatisticEnum.TestCount);
+            return _stats.GetStatistic(TestSuiteResults.StatisticEnum.TestCount);
         }
 
         public void Execute(SsisTestSuite ssisTestCase)
@@ -267,6 +304,7 @@ namespace SsisUnit
 
         private void CommonSetup()
         {
+            LoadCommands();
             _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
             _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
             _connections = _testCaseDoc.DocumentElement["ConnectionList"];
@@ -917,11 +955,12 @@ namespace SsisUnit
         }
     }
 
-    public class TestSuiteStatistics
+    public class TestSuiteResults
     {
         private Dictionary<StatisticEnum, TestSuiteStatistic> _statistics = new Dictionary<StatisticEnum, TestSuiteStatistic>(6);
+        private List<string> _results = new List<string>();
 
-        internal TestSuiteStatistics()
+        internal TestSuiteResults()
         {
             _statistics.Add(StatisticEnum.TestCount, new TestSuiteStatistic(StatisticEnum.TestCount.ToString()));
             _statistics.Add(StatisticEnum.AssertCount, new TestSuiteStatistic(StatisticEnum.AssertCount.ToString()));
@@ -975,5 +1014,5 @@ namespace SsisUnit
         }
     }
 
-    
+
 }

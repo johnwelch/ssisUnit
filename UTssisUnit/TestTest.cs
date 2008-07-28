@@ -15,6 +15,7 @@ namespace UTssisUnit
     public class TestTest
     {
         string _xmlTest;
+        string _xmlTestFull;
 
         private TestContext testContextInstance;
 
@@ -62,6 +63,23 @@ namespace UTssisUnit
             _xmlTest += "</Assert>";
             _xmlTest += "</Test>";
 
+            _xmlTestFull = "<Test name=\"Test\" package=\"C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx\" task=\"SELECT COUNT\">";
+            _xmlTestFull += "<TestSetup>";
+            _xmlTestFull += "<SqlCommand connectionRef=\"Sandbox\" returnsValue=\"false\">";
+            _xmlTestFull += "INSERT INTO UTTable VALUES('Test')";
+            _xmlTestFull += "</SqlCommand>";
+            _xmlTestFull += "</TestSetup>";
+            _xmlTestFull += "<Assert name=\"Test\" expectedResult=\"100\" testBefore=\"false\">";
+            _xmlTestFull += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
+            _xmlTestFull += "SELECT COUNT(*) FROM Production.Product";
+            _xmlTestFull += "</SqlCommand>";
+            _xmlTestFull += "</Assert>";
+            _xmlTestFull += "<TestTeardown>";
+            _xmlTestFull += "<SqlCommand connectionRef=\"Sandbox\" returnsValue=\"false\">";
+            _xmlTestFull += "DELETE FROM UTTable";
+            _xmlTestFull += "</SqlCommand>";
+            _xmlTestFull += "</TestTeardown>";
+            _xmlTestFull += "</Test>";
         }
         //
         //Use TestCleanup to run code after each test has run
@@ -97,7 +115,7 @@ namespace UTssisUnit
             target.Asserts.Add("Test", new SsisAssert(testSuite, "Test", 100, false));
             target.Asserts["Test"].Command = new SqlCommand(testSuite, "AdventureWorks", true, "SELECT COUNT(*) FROM Production.Product");
 
-            
+
             string actual = target.PersistToXml();
             Assert.AreEqual(_xmlTest, actual);
         }
@@ -107,9 +125,9 @@ namespace UTssisUnit
         ///</summary>
         [TestMethod()]
         public void LoadFromXmlTest1()
-        {            
+        {
             SsisTestSuite testSuite = new SsisTestSuite();
-            Test target = new Test(testSuite,"","","" );
+            Test target = new Test(testSuite, "", "", "");
             target.LoadFromXml(_xmlTest);
 
             Assert.AreEqual<string>(_xmlTest, target.PersistToXml());
@@ -128,6 +146,16 @@ namespace UTssisUnit
             Assert.AreEqual<string>(_xmlTest, target.PersistToXml());
         }
 
+        [TestMethod()]
+        public void LoadFromXmlTestFull()
+        {
+            SsisTestSuite testSuite = new SsisTestSuite();
+            Test target = new Test(testSuite, "", "", "");
+            XmlNode node = ssisUnit_UTHelper.GetXmlNodeFromString(_xmlTestFull);
+            target.LoadFromXml(node);
+            Assert.AreEqual<string>(_xmlTestFull, target.PersistToXml());
+        }
+
         /// <summary>
         ///A test for Test Constructor
         ///</summary>
@@ -138,7 +166,7 @@ namespace UTssisUnit
             string package = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
             string task = "SELECT COUNT";
             Test target = new Test(new SsisTestSuite(), name, package, task);
-            
+
             Assert.AreEqual<string>("Test", target.Name);
             Assert.AreEqual<string>("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", target.PackageLocation);
             Assert.AreEqual<string>("SELECT COUNT", target.Task);

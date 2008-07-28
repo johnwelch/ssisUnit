@@ -98,6 +98,7 @@ namespace ssisUnitTestRunner
 
                 SsisTestSuite unitTest = new SsisTestSuite(testCase);
                 unitTest.TestCompleted += new EventHandler<TestCompletedEventArgs>(unitRunner_TestCompleted);
+                unitTest.AssertCompleted += new EventHandler<AssertCompletedEventArgs>(unitTest_AssertCompleted);
 
                 if (this.reportLevel==0)
                 {
@@ -105,9 +106,6 @@ namespace ssisUnitTestRunner
                     unitTest.SetupCompleted += new EventHandler<SetupCompletedEventArgs>(unitTest_SetupCompleted);
                     unitTest.TeardownCompleted += new EventHandler<TeardownCompletedEventArgs>(unitTest_TeardownCompleted);
                 }
-
-
-
 
                 object[] vals = new object[] { "Execution Time", "Package Name", "Task Name", "Test Name", "Test Result", "Passed" };
                 Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", vals);
@@ -121,6 +119,29 @@ namespace ssisUnitTestRunner
                 unitTest.Execute();
                 return;
 
+            }
+
+            void unitTest_AssertCompleted(object sender, AssertCompletedEventArgs e)
+            {
+                object[] vals = new object[] { e.TestExecResult.TestExecutionTime.ToString(), e.TestExecResult.PackageName, e.TestExecResult.TaskName, e.TestExecResult.TestName, e.TestExecResult.TestResultMsg, e.TestExecResult.TestPassed };
+                switch (reportLevel)
+                {
+                    case 1:
+                        if (e.TestExecResult.TestPassed)
+                        {
+                            WriteOutput(vals);
+                        }
+                        break;
+                    case 2:
+                        if (!e.TestExecResult.TestPassed)
+                        {
+                            WriteOutput(vals);
+                        }
+                        break;
+                    default:
+                        WriteOutput(vals);
+                        break;
+                }
             }
 
             void unitTest_TeardownCompleted(object sender, TeardownCompletedEventArgs e)

@@ -117,14 +117,14 @@ namespace SsisUnit
             get { return this.GetType().Name; }
         }
 
-
-        public abstract object Execute(XmlNode command, Package package, DtsContainer container);
-
-        public virtual object Execute(Package package, DtsContainer container)
+        public virtual object Execute(XmlNode command, Package package, DtsContainer container)
         {
-            return null;
+            this.LoadFromXml(command);
+            return this.Execute(package, container);
         }
 
+        public abstract object Execute(Package package, DtsContainer container);
+        
         public virtual object Execute(Package package)
         {
             return Execute(package, null);
