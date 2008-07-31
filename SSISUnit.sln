@@ -24,11 +24,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunner", "TestR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitVS2005", "ssisUnitVS2005\ssisUnitVS2005.csproj", "{91DC24DB-1337-41F8-BD07-9F1EC781583B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitAddIn", "ssisUnitAddIn\ssisUnitAddIn.csproj", "{22BC7DDB-81A5-4ED1-8AE3-CC2FB48D37AA}"
-EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs04.codeplex.com/
 		SccLocalPath0 = .
@@ -44,12 +42,6 @@ Global
 		SccProjectUniqueName4 = ssisUnitVS2005\\ssisUnitVS2005.csproj
 		SccProjectName4 = ssisUnitVS2005
 		SccLocalPath4 = ssisUnitVS2005
-		SccProjectUniqueName5 = ssisUnitAddIn\\ssisUnitAddIn.csproj
-		SccProjectName5 = ssisUnitAddIn
-		SccLocalPath5 = ssisUnitAddIn
-	EndGlobalSection
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = SSISUnit34.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,10 +64,6 @@ Global
 		{91DC24DB-1337-41F8-BD07-9F1EC781583B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91DC24DB-1337-41F8-BD07-9F1EC781583B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91DC24DB-1337-41F8-BD07-9F1EC781583B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22BC7DDB-81A5-4ED1-8AE3-CC2FB48D37AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22BC7DDB-81A5-4ED1-8AE3-CC2FB48D37AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22BC7DDB-81A5-4ED1-8AE3-CC2FB48D37AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22BC7DDB-81A5-4ED1-8AE3-CC2FB48D37AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

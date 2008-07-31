@@ -77,19 +77,16 @@ namespace UTssisUnit
         public void LoadXMLFileTest()
         {
             string filename = ssisUnit_UTHelper.CreateUnitTestFile("UTSsisUnit");
-            XmlDocument doc;
-            doc = SsisTestSuite.LoadTestXmlFromFile(filename);
-            Assert.IsNotNull(doc);
+            SsisTestSuite ts = new SsisTestSuite(filename);
+            Assert.IsNotNull(ts);
         }
 
         [TestMethod()]
         public void LoadInvalidXMLFileTest()
         {
-            XmlDocument doc;
-
             try
             {
-                doc = SsisTestSuite.LoadTestXmlFromFile("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT_Simple.dtsx");
+                SsisTestSuite ts = new SsisTestSuite("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT_Simple.dtsx");
                 Assert.Fail("Expected argument exception not thrown.");
             }
             catch (ArgumentException)
@@ -118,14 +115,11 @@ namespace UTssisUnit
         public void SetupTest()
         {
             SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
-            XmlDocument doc = new XmlDocument();
-            doc.Load(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
-            XmlNode setup = doc.DocumentElement["Setup"];
             Application ssisApp = new Application();
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-            DtsContainer task = Helper.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer task = ssisUnit_UTHelper.FindExecutable(packageToTest, "SELECT COUNT");
 
-            int result = target.Setup(setup, packageToTest, task);
+            int result = target.SetupCommands.Execute(packageToTest, task);
             Assert.AreEqual(4, result);
         }
 
@@ -133,14 +127,11 @@ namespace UTssisUnit
         public void TeardownTest()
         {
             SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
-            XmlNode teardown = doc.DocumentElement["Teardown"];
             Application ssisApp = new Application();
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-            DtsContainer task = Helper.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer task = ssisUnit_UTHelper.FindExecutable(packageToTest, "SELECT COUNT");
 
-            int result = target.Teardown(teardown, packageToTest, task);
+            int result = target.TeardownCommands.Execute( packageToTest, task);
             Assert.AreEqual(2, result);
         }
 
@@ -234,7 +225,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = Helper.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "SELECT COUNT");
             Assert.IsNotNull(result);
         }
 
@@ -245,7 +236,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = Helper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
+            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
             Assert.IsNotNull(result);
         }
 
@@ -256,7 +247,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = Helper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
+            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
             Assert.IsNotNull(result);
         }
 
@@ -267,7 +258,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = Helper.FindExecutable(packageToTest, "{D2D9295A-45D0-4681-B021-F5077CB2EC22}");
+            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "{D2D9295A-45D0-4681-B021-F5077CB2EC22}");
             Assert.IsNotNull(result);
         }
 
@@ -278,7 +269,7 @@ namespace UTssisUnit
 
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
 
-            DtsContainer result = Helper.FindExecutable(packageToTest, "Does Not Exist");
+            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "Does Not Exist");
             Assert.IsNull(result);
         }
 
@@ -383,7 +374,7 @@ namespace UTssisUnit
             {
                 Assert.Fail(ex.Message);
             }
-            //TODO: add ability to grancefully handle bad package refs - right now it blows the test case out of the water - no teardown
+            //TODO: add ability to gracefully handle bad package refs - right now it blows the test case out of the water - no teardown
             try
             {
                 target = new SsisTestSuite("C:\\Temp\\Test.ssisUnit");

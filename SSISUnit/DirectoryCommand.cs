@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace SsisUnit
 {
-    class DirectoryCommand : CommandBase
+    public class DirectoryCommand : CommandBase
     {
         private const string PROP_OPERATION = "operation";
         private const string PROP_ARGUMENT_1 = "argument1";

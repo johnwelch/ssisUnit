@@ -10,8 +10,8 @@ using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
 
-[assembly: InternalsVisibleTo("UTssisUnit")]
-[assembly: InternalsVisibleTo("UTssisUnit_SQL2008")]
+//[assembly: InternalsVisibleTo("UTssisUnit")]
+//[assembly: InternalsVisibleTo("UTssisUnit_SQL2008")]
 namespace SsisUnit
 {
     public class SsisTestSuite : IssisTestSuite
@@ -350,7 +350,7 @@ namespace SsisUnit
         /// </summary>
         /// <param name="fileName">The complete filename (including path) for the test case.</param>
         /// <returns>An xml document</returns>
-        static internal XmlDocument LoadTestXmlFromFile(string fileName)
+        static private XmlDocument LoadTestXmlFromFile(string fileName)
         {
             try
             {

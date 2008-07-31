@@ -58,7 +58,8 @@ namespace UTssisUnit
         public void MyTestInitialize()
         {
             testSuite = new SsisTestSuite(TEST_XML_FILE_PATH);
-            testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
+            testCaseDoc = new XmlDocument();
+            testCaseDoc.Load(TEST_XML_FILE_PATH);
             //connections = testCaseDoc.DocumentElement["ConnectionList"];
             //namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
             //namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");

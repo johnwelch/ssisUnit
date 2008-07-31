@@ -16,6 +16,8 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>SsisUnit.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
-    <Shadow Include="Test References\SsisUnit1.accessor" />
+    <None Include="SsisUnit.pfx" />
     <None Include="UTSsisUnit_Directory.xml" />
     <None Include="UTSsisUnit_PackageList.xml" />
     <None Include="UTSsisUnit_TestSetup_Teardown.xml" />
@@ -90,10 +92,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Shadow Include="Test References\ssisUnitTestRunner.accessor" />
-  </ItemGroup>
-  <ItemGroup>
-    <Shadow Include="Test References\ssisUnit.accessor" />
+    <Folder Include="Test References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
