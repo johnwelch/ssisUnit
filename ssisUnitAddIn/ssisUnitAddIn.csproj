@@ -38,6 +38,8 @@
     <Reference Include="Extensibility, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -47,9 +49,25 @@
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TestBrowser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TestBrowser.Designer.cs">
+      <DependentUpon>TestBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TestBuilder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TestBuilder.Designer.cs">
+      <DependentUpon>TestBuilder.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CommandBar.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestBrowser.resx">
+      <DependentUpon>TestBrowser.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -100,6 +118,12 @@
       <Link>ssisUnitAddIn - For Testing.AddIn</Link>
     </Content>
     <Content Include="ssisUnitAddIn.AddIn" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SSISUnit\SsisUnit.csproj">
+      <Project>{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}</Project>
+      <Name>SsisUnit</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
