@@ -73,8 +73,8 @@ namespace UTssisUnit
         [TestMethod()]
         public void VariableCommandConstructorTest()
         {
-            XmlNode connections = null; // TODO: Initialize to an appropriate value
-            XmlNamespaceManager namespaceMgr = null; // TODO: Initialize to an appropriate value
+            //XmlNode connections = null; // TODO: Initialize to an appropriate value
+            //XmlNamespaceManager namespaceMgr = null; // TODO: Initialize to an appropriate value
             VariableCommand target = new VariableCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             Assert.IsNotNull(target);
         }
@@ -82,34 +82,27 @@ namespace UTssisUnit
         [TestMethod()]
         public void RunVariableCommandSetTest()
         {
-            XmlDocument testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
-            XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
-            XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
-            namespaceMgr.AddNamespace("ssisUnit", "http://tempuri.org/ssisUnit.xsd");
-            VariableCommand target = new VariableCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
-            XmlNode command = testCaseDoc.DocumentElement["Teardown"]["VariableCommand"];
+            SsisTestSuite ts = new SsisTestSuite(TEST_XML_FILE_PATH);
+            VariableCommand target = (VariableCommand)ts.TeardownCommands.Commands[1];
             Application ssisApp = new Application();
             Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
             DtsContainer container = package;
             string actual;
-            actual = target.Execute(command, package, container).ToString();
+            actual = target.Execute(package, container).ToString();
             Assert.AreEqual("10", actual);
         }
 
         [TestMethod()]
         public void RunVariableCommandGetTest()
         {
-            XmlDocument testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
-            XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
-            XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
-            namespaceMgr.AddNamespace("ssisUnit", "http://tempuri.org/ssisUnit.xsd");
-            VariableCommand target = new VariableCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
-            XmlNode command = testCaseDoc.DocumentElement["Setup"]["VariableCommand"];
+            SsisTestSuite ts = new SsisTestSuite(TEST_XML_FILE_PATH);
+            VariableCommand target = (VariableCommand)ts.SetupCommands.Commands[3];
+
             Application ssisApp = new Application();
             Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
             DtsContainer container = package;
             object actual;
-            actual = target.Execute(command, package, container);
+            actual = target.Execute(package, container);
             Assert.AreEqual(100, actual);
         }
 

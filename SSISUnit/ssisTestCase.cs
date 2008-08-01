@@ -26,6 +26,7 @@ namespace SsisUnit
         private Dictionary<string, ConnectionRef> _connectionRefs = new Dictionary<string, ConnectionRef>();
         private Dictionary<string, PackageRef> _packageRefs = new Dictionary<string, PackageRef>();
         private Dictionary<string, Test> _tests = new Dictionary<string, Test>();
+        private Dictionary<string, Test> _testRefs = new Dictionary<string, Test>(); 
         private CommandSet _testSuiteSetup;
         private CommandSet _testSuiteTeardown;
         private CommandSet _setup;

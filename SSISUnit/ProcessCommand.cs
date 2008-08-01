@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace SsisUnit
 {
-    class ProcessCommand : CommandBase
+    public class ProcessCommand : CommandBase
     {
         private const string PROP_PROCESS = "process";
         private const string PROP_ARGUMENTS = "arguments";

@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace SsisUnit
 {
-    class SqlCommand : CommandBase
+    public class SqlCommand : CommandBase
     {
         //Property constants
         private const string PROP_CONNECTION = "connectionRef";

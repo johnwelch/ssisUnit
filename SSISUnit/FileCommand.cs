@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace SsisUnit
 {
-    class FileCommand : CommandBase
+    public class FileCommand : CommandBase
     {
         private const string PROP_OPERATION = "operation";
         private const string PROP_SOURCE_PATH = "sourcePath";

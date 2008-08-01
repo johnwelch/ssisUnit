@@ -6,7 +6,7 @@ using Microsoft.SqlServer.Dts.Runtime;
 
 namespace SsisUnit
 {
-    class VariableCommand:CommandBase
+    public class VariableCommand:CommandBase
     {
         private const string PROP_NAME = "name";
         private const string PROP_VALUE = "value";

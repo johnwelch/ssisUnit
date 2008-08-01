@@ -73,11 +73,6 @@ namespace UTssisUnit
         [TestMethod()]
         public void SqlCommandConstructorTest()
         {
-            XmlDocument testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_PATH);
-            XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
-            namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-            XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
-
             SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
             Assert.IsNotNull(target);
         }
@@ -112,17 +107,13 @@ namespace UTssisUnit
         [TestMethod()]
         public void ExecuteNoConnectionRefTest()
         {
-            XmlDocument testCaseDoc = SsisTestSuite.LoadTestXmlFromFile(TEST_XML_FILE_BAD_DATA_PATH);
-            XmlNamespaceManager namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
-            namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-            XmlNode connections = testCaseDoc.DocumentElement["ConnectionList"];
-
-            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_BAD_DATA_PATH));
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[0];
+            XmlDocument testCaseDoc = new XmlDocument();
+            testCaseDoc.Load(TEST_XML_FILE_BAD_DATA_PATH);
+            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_BAD_DATA_PATH), testCaseDoc.DocumentElement["Setup"].ChildNodes[0]);
 
             try
             {
-                object result = target.Execute(command, null, null);
+                object result = target.Execute(null, null);
                 Assert.Fail("The method did not throw the expected key not found exception.");
             }
             catch (System.Collections.Generic.KeyNotFoundException)
