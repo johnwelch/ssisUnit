@@ -9,24 +9,22 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
+using System.ComponentModel;
 
-//[assembly: InternalsVisibleTo("UTssisUnit")]
-//[assembly: InternalsVisibleTo("UTssisUnit_SQL2008")]
+//[assembly: InternalsVisibleTo("SsisUnit.Design, PublicKey=002400000480000094000000060200000024000052534131000400000100010045b2c89ef896e065cf3aed9ec4b44f0f3c00c09f7313d4b535925fb59708ab52e9907ebbd1435d4cd19b1533aa2ba99118d8ba8ab1dd6aeb97051d7979a69400b042a32bb7ab699f594ed818a68034da5502d11d454da442d8deba50c804dc0f6634d8b01e9ef52059cc6860469fa24c722a27d25bc5f5a7e48be1fa25a08bcb")]
 namespace SsisUnit
 {
     public class SsisTestSuite : IssisTestSuite
     {
         private XmlDocument _testCaseDoc;
-        private XmlNode _connections;
-        private XmlNode _packageList;
         private Application _ssisApp = new Application();
         private XmlNamespaceManager _namespaceMgr;
         private SsisTestSuite _parentSuite;
-        private Dictionary<string, CommandBase> _commands = new Dictionary<string, CommandBase>(3);
+        //private Dictionary<string, CommandBase> _commands = new Dictionary<string, CommandBase>(3);
         private Dictionary<string, ConnectionRef> _connectionRefs = new Dictionary<string, ConnectionRef>();
         private Dictionary<string, PackageRef> _packageRefs = new Dictionary<string, PackageRef>();
         private Dictionary<string, Test> _tests = new Dictionary<string, Test>();
-        private Dictionary<string, Test> _testRefs = new Dictionary<string, Test>(); 
+        private Dictionary<string, TestRef> _testRefs = new Dictionary<string, TestRef>();
         private CommandSet _testSuiteSetup;
         private CommandSet _testSuiteTeardown;
         private CommandSet _setup;
@@ -68,6 +66,11 @@ namespace SsisUnit
         public Dictionary<string, Test> Tests
         {
             get { return _tests; }
+        }
+
+        public Dictionary<string, TestRef> TestRefs
+        {
+            get { return _testRefs; }
         }
 
         public Dictionary<string, PackageRef> PackageRefs
@@ -211,7 +214,7 @@ namespace SsisUnit
             xml.AppendFormat(@"  </TestSuiteSetup>{0}", Environment.NewLine);
 
             xml.AppendFormat(@"  <Setup>{0}", Environment.NewLine);
-            xml.Append(this.SetupCommands.PersistToXml()); 
+            xml.Append(this.SetupCommands.PersistToXml());
             xml.AppendFormat(@"  </Setup>{0}", Environment.NewLine);
 
             xml.AppendFormat(@"  <Tests>{0}", Environment.NewLine);
@@ -219,11 +222,11 @@ namespace SsisUnit
             {
                 xml.Append(test.PersistToXml());
             }
-            //TODO: Implement test refs
-            //foreach (TestRef testRef in this.TestRefs)
-            //{
-            //    xml.Append(testRef.PersistToXml);
-            //}
+
+            foreach (TestRef testRef in this._testRefs.Values)
+            {
+                xml.Append(testRef.PersistToXml());
+            }
             xml.AppendFormat(@"  </Tests>{0}", Environment.NewLine);
 
             xml.AppendFormat(@"  <Teardown>{0}", Environment.NewLine);
@@ -265,9 +268,9 @@ namespace SsisUnit
                 test.Execute();
             }
 
-            foreach (XmlNode testRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:TestRef", _namespaceMgr))
+            foreach (TestRef testRef in this._testRefs.Values)
             {
-                this.RunTestSuite(testRef);
+                testRef.Execute();
             }
 
             _testSuiteTeardown.Execute();
@@ -286,7 +289,7 @@ namespace SsisUnit
         private void Initialize(Stream testCase)
         {
             InitializeTestCase(testCase);
-            LoadCommands();
+            //LoadCommands();
         }
 
         private static Stream GetStreamFromAssembly(string resourceName)
@@ -305,12 +308,12 @@ namespace SsisUnit
 
         private void CommonSetup()
         {
-            LoadCommands();
+            //LoadCommands();
             _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
             _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-            _connections = _testCaseDoc.DocumentElement["ConnectionList"];
-            _packageList = _testCaseDoc.DocumentElement["PackageList"];
-            _connectionRefs = LoadConnectionRefs(_connections);
+            //_connections = _testCaseDoc.DocumentElement["ConnectionList"];
+            //_packageList = _testCaseDoc.DocumentElement["PackageList"];
+            _connectionRefs = LoadConnectionRefs(_testCaseDoc.DocumentElement["ConnectionList"]);
             _testSuiteSetup = new CommandSet(this, _testCaseDoc.DocumentElement["TestSuiteSetup"]);
             _testSuiteTeardown = new CommandSet(this, _testCaseDoc.DocumentElement["TestSuiteTeardown"]);
             _setup = new CommandSet(this, _testCaseDoc.DocumentElement["Setup"]);
@@ -324,6 +327,11 @@ namespace SsisUnit
             foreach (XmlNode test in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:Test", _namespaceMgr))
             {
                 _tests.Add(test.Attributes["name"].Value, new Test(this, test));
+            }
+
+            foreach (XmlNode testRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:TestRef", _namespaceMgr))
+            {
+                _testRefs.Add(testRef.Attributes["path"].Value, new TestRef(testRef));
             }
 
         }
@@ -369,12 +377,13 @@ namespace SsisUnit
 
         static internal XmlDocument LoadTestXmlFromStream(Stream file)
         {
+            if (file == null)
+            {
+                return null;
+            }
             try
             {
-                if (file == null)
-                {
-                    return null;
-                }
+
                 Assembly asm = Assembly.GetExecutingAssembly();
                 Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
 
@@ -399,6 +408,10 @@ namespace SsisUnit
             catch (Exception ex)
             {
                 throw new ArgumentException("The test case could not be loaded: " + ex.Message);
+            }
+            finally
+            {
+                file.Close();
             }
         }
 
@@ -426,37 +439,37 @@ namespace SsisUnit
             return this.SetupCommands.Execute(pkg, task);
         }
 
-        private void LoadCommands()
-        {
-            foreach (Type t in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
-            {
-                if (typeof(CommandBase).IsAssignableFrom(t)
-                    && (!object.ReferenceEquals(t, typeof(CommandBase)))
-                    && (!t.IsAbstract))
-                {
-                    CommandBase command;
-                    System.Type[] @params = { typeof(SsisTestSuite) };
-                    System.Reflection.ConstructorInfo con;
+        //private void LoadCommands()
+        //{
+        //    foreach (Type t in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
+        //    {
+        //        if (typeof(CommandBase).IsAssignableFrom(t)
+        //            && (!object.ReferenceEquals(t, typeof(CommandBase)))
+        //            && (!t.IsAbstract))
+        //        {
+        //            CommandBase command;
+        //            System.Type[] @params = { typeof(SsisTestSuite) };
+        //            System.Reflection.ConstructorInfo con;
 
-                    con = t.GetConstructor(@params);
-                    if (con == null)
-                    {
-                        throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The Command type {0} could not be loaded because it has no constructor.", t.Name));
-                    }
-                    command = (CommandBase)con.Invoke(new object[] { this });
-                    _commands.Add(command.CommandName, command);
-                }
-            }
-        }
+        //            con = t.GetConstructor(@params);
+        //            if (con == null)
+        //            {
+        //                throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The Command type {0} could not be loaded because it has no constructor.", t.Name));
+        //            }
+        //            command = (CommandBase)con.Invoke(new object[] { this });
+        //            _commands.Add(command.CommandName, command);
+        //        }
+        //    }
+        //}
 
-        private object RunCommand(XmlNode command, Package pkg, DtsContainer task)
-        {
-            object returnValue = null;
+        //private object RunCommand(XmlNode command, Package pkg, DtsContainer task)
+        //{
+        //    object returnValue = null;
 
-            returnValue = _commands[command.Name].Execute(command, pkg, task);
+        //    returnValue = _commands[command.Name].Execute(command, pkg, task);
 
-            return returnValue;
-        }
+        //    return returnValue;
+        //}
 
         internal void RunTestSuite(XmlNode test)
         {
@@ -486,52 +499,52 @@ namespace SsisUnit
 
         #endregion
 
-        private void LoadPackageAndTask(string packagePath, string taskID, ref Package package, ref DtsContainer taskHost)
-        {
-            string pathToPackage = string.Empty;
+        //private void LoadPackageAndTask(string packagePath, string taskID, ref Package package, ref DtsContainer taskHost)
+        //{
+        //    string pathToPackage = string.Empty;
 
-            try
-            {
-                if (packagePath.Contains("\\"))
-                {
-                    //Assume that it is a file path.
-                    package = _ssisApp.LoadPackage(packagePath, null);
-                }
-                else
-                {
-                    //PackageList Reference
-                    XmlNode packageRef = this._packageList.SelectSingleNode("SsisUnit:Package[@name='" + packagePath + "']", this._namespaceMgr);
-                    if (packageRef == null)
-                    {
-                        throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
-                    }
+        //    try
+        //    {
+        //        if (packagePath.Contains("\\"))
+        //        {
+        //            //Assume that it is a file path.
+        //            package = _ssisApp.LoadPackage(packagePath, null);
+        //        }
+        //        else
+        //        {
+        //            //PackageList Reference
+        //            XmlNode packageRef = this._packageList.SelectSingleNode("SsisUnit:Package[@name='" + packagePath + "']", this._namespaceMgr);
+        //            if (packageRef == null)
+        //            {
+        //                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
+        //            }
 
-                    if (packageRef.Attributes["storageType"].Value == "FileSystem")
-                    {
-                        package = _ssisApp.LoadPackage(packageRef.Attributes["packagePath"].Value, null);
-                    }
-                    else if (packageRef.Attributes["storageType"].Value == "MSDB")
-                    {
-                        package = _ssisApp.LoadFromSqlServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null, null, null);
-                    }
-                    else if (packageRef.Attributes["storageType"].Value == "PackageStore")
-                    {
-                        package = _ssisApp.LoadFromDtsServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null);
-                    }
+        //            if (packageRef.Attributes["storageType"].Value == "FileSystem")
+        //            {
+        //                package = _ssisApp.LoadPackage(packageRef.Attributes["packagePath"].Value, null);
+        //            }
+        //            else if (packageRef.Attributes["storageType"].Value == "MSDB")
+        //            {
+        //                package = _ssisApp.LoadFromSqlServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null, null, null);
+        //            }
+        //            else if (packageRef.Attributes["storageType"].Value == "PackageStore")
+        //            {
+        //                package = _ssisApp.LoadFromDtsServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null);
+        //            }
 
-                }
+        //        }
 
-                taskHost = Helper.FindExecutable(package, taskID);
-                if (taskHost == null)
-                {
-                    throw new Exception("The task host was not found.");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException(string.Format("The package path ({0}) or the task host ({1}) is not valid." + ex.Message, packagePath, taskID));
-            }
-        }
+        //        taskHost = Helper.FindExecutable(package, taskID);
+        //        if (taskHost == null)
+        //        {
+        //            throw new Exception("The task host was not found.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new ArgumentException(string.Format("The package path ({0}) or the task host ({1}) is not valid." + ex.Message, packagePath, taskID));
+        //    }
+        //}
 
         //internal bool Test(XmlNode test)
         //{
@@ -878,18 +891,23 @@ namespace SsisUnit
             return;
         }
 
+        //TODO: Add TypeConverter?
+        [DescriptionAttribute("Connection String used by SQL Commands or the name of a ConnectionManager in the package"),
+         Editor("SsisUnit.Design.ConnectionStringEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string ConnectionString
         {
             get { return _connectionString; }
             set { _connectionString = value; }
         }
 
+        [DescriptionAttribute("The name that a SQLCommand will use to reference this connection")]
         public string ReferenceName
         {
             get { return _referenceName; }
             set { _referenceName = value; }
         }
 
+        [DescriptionAttribute("The type of the ConnectionRef\nConnectionString - The connection string is provided directly\nConnectionManager - The connection string is obtained from a ConnectionManager in the Package - Not supported currently")]
         public ConnectionTypeEnum ConnectionType
         {
             get { return ConvertConnectionTypeString(_connectionType); }
@@ -956,6 +974,69 @@ namespace SsisUnit
         }
     }
 
+    public class TestRef
+    {
+        private string _path;
+
+        public TestRef(string path)
+        {
+            _path = path;
+            return;
+        }
+
+        public TestRef(XmlNode testRef)
+        {
+            LoadFromXml(testRef);
+            return;
+        }
+
+        public string Path
+        {
+            get { return _path; }
+            set { _path = value; }
+        }
+
+        public string PersistToXml()
+        {
+            StringBuilder xml = new StringBuilder();
+            xml.Append("<TestRef ");
+            xml.Append("path=\"" + this.Path + "\"");
+            xml.Append("/>");
+            return xml.ToString();
+        }
+
+        public void LoadFromXml(string connectionXml)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            XmlDocumentFragment frag = doc.CreateDocumentFragment();
+            frag.InnerXml = connectionXml;
+
+            if (frag["TestRef"] == null)
+            {
+                throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "TestRef"));
+            }
+            LoadFromXml(frag["Connection"]);
+        }
+
+        public void LoadFromXml(XmlNode connectionXml)
+        {
+            if (connectionXml.Name != "TestRef")
+            {
+                throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "TestRef"));
+            }
+
+            _path = connectionXml.Attributes["path"].Value;
+        }
+
+
+        public void Execute()
+        {
+            SsisTestSuite ts = new SsisTestSuite(this._path);
+            ts.Execute();
+        }
+    }
+
     public class TestSuiteResults
     {
         private Dictionary<StatisticEnum, TestSuiteStatistic> _statistics = new Dictionary<StatisticEnum, TestSuiteStatistic>(6);
@@ -1014,6 +1095,5 @@ namespace SsisUnit
             }
         }
     }
-
 
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
+using System.ComponentModel;
 
 namespace SsisUnit
 {
@@ -32,7 +33,7 @@ namespace SsisUnit
 
         #region Properties
 
-
+        [Browsable(false)]
         public List<CommandBase> Commands
         {
             get { return _commands; }

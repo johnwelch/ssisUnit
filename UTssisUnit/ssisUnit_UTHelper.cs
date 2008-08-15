@@ -16,7 +16,7 @@ namespace UTssisUnit
         public static string CreateUnitTestFile(string unitTestName)
         {
             string tempPath = Environment.GetEnvironmentVariable("TEMP");
-            string filename = unitTestName + ".xml";
+            string filename = unitTestName + ".ssisUnit";
             string fullPath = tempPath + "\\" + filename;
             
             Assembly asm = Assembly.GetExecutingAssembly();

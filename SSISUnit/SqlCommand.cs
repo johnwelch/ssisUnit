@@ -4,6 +4,7 @@ using System.Text;
 using System.Data.Common;
 using System.Xml;
 using System.Globalization;
+using System.ComponentModel;
 
 namespace SsisUnit
 {
@@ -84,7 +85,7 @@ namespace SsisUnit
             }
 
             return result;
-            
+
         }
 
         /// <summary>
@@ -164,18 +165,44 @@ namespace SsisUnit
 
         }
 
+        [Description("The Connection that the SQLCommand will use"),
+         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482")]
         public ConnectionRef ConnectionReference
         {
-            get { return TestSuite.ConnectionRefs[Properties[PROP_CONNECTION].Value]; }
-            set { Properties[PROP_CONNECTION].Value = value.ReferenceName; }
+            get
+            {
+                if (TestSuite.ConnectionRefs.ContainsKey(Properties[PROP_CONNECTION].Value))
+                {
+                    return TestSuite.ConnectionRefs[Properties[PROP_CONNECTION].Value];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if (value == null)
+                {
+                    Properties[PROP_CONNECTION].Value = string.Empty;
+                }
+                else
+                {
+                    Properties[PROP_CONNECTION].Value = value.ReferenceName;
+                }
+            }
         }
 
+        [Description("Whether the SQL Statement returns a scalar value"),
+         DefaultValue(false)]
         public bool ReturnsValue
         {
             get { return (Properties[PROP_RETURNS_VALUE].Value == "true"); }
             set { Properties[PROP_RETURNS_VALUE].Value = value.ToString().ToLower(); }
         }
 
+        [Description("The SQL statement to be executed by the SQLCommand"),
+         Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string SQLStatement
         {
             get { return Body; }

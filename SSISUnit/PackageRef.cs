@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.ComponentModel;
 
 namespace SsisUnit
 {
@@ -36,6 +37,8 @@ namespace SsisUnit
             return;
         }
 
+
+        [Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string PackagePath
         {
             get { return _packagePath; }
@@ -110,10 +113,10 @@ namespace SsisUnit
             _storageType = packageXml.Attributes["storageType"].Value;
             _name = packageXml.Attributes["name"].Value;
 
-            if (packageXml.Attributes["server"]!=null)
+            if (packageXml.Attributes["server"] != null)
             {
-                _server = packageXml.Attributes["server"].Value;                
-            }            
+                _server = packageXml.Attributes["server"].Value;
+            }
         }
 
         public enum PackageStorageType : int

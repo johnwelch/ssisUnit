@@ -85,8 +85,9 @@ namespace UTssisUnit
             //int actual;
             //actual = Program_Accessor.Main(args);
             //Assert.AreEqual(expected, actual);
-            Process.Start("C:\\Projects\\ssisUnit\\TestRunner\\bin\\Debug\\ssisUnitTestRunner.exe", "/TESTCASE C:\\Projects\\SSISUnit\\UTssisUnit\\UTssisUnit_Package.xml");
-            Assert.Inconclusive("Not yet implemented");
+            Process proc = Process.Start("C:\\Projects\\ssisUnit\\TestRunner\\bin\\Debug\\ssisUnitTestRunner.exe", "/TESTCASE C:\\Projects\\SSISUnit\\UTssisUnit\\UTssisUnit_Package.xml");
+            proc.WaitForExit(50000);
+            Assert.AreEqual<int>(0, proc.ExitCode, "Test Runner fails");
         }
     }
 }

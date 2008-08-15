@@ -21,18 +21,28 @@ namespace SsisUnit
         public ProcessCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
         {
+            if (!Properties.ContainsKey(PROP_ARGUMENTS))
+            {
+                Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, string.Empty));
+            }
         }
 
         public ProcessCommand(SsisTestSuite testSuite, XmlNode commandXml)
             : base(testSuite, commandXml)
         {
+            if (!Properties.ContainsKey(PROP_ARGUMENTS))
+            {
+                Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, string.Empty));
+            }
         }
 
         public ProcessCommand(SsisTestSuite testSuite, string process, string arguments)
             : base(testSuite)
         {
-            Properties.Add(PROP_PROCESS, new CommandProperty(PROP_PROCESS, process));
-            Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, arguments));
+            if (!Properties.ContainsKey(PROP_ARGUMENTS))
+            {
+                Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, string.Empty));
+            }
         }
 
         public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
@@ -46,11 +56,11 @@ namespace SsisUnit
                 string process = Properties[PROP_PROCESS].Value;
                 if (args == string.Empty)
                 {
-                    proc = Process.Start(process);
+                    proc = System.Diagnostics.Process.Start(process);
                 }
                 else
                 {
-                    proc = Process.Start(process, args);
+                    proc = System.Diagnostics.Process.Start(process, args);
                 }
                 while (!proc.WaitForExit(app.Default.ProcessCheckForExitDelay))
                 {
@@ -80,6 +90,18 @@ namespace SsisUnit
 
             return exitCode;
             
+        }
+
+        public string Process
+        {
+            get { return this.Properties[PROP_PROCESS].Value; }
+            set { this.Properties[PROP_PROCESS].Value = value; }
+        }
+
+        public string Arguments
+        {
+            get { return this.Properties[PROP_ARGUMENTS].Value; }
+            set { this.Properties[PROP_ARGUMENTS].Value = value; }
         }
 
     }

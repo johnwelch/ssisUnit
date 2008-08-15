@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Xml;
 using System.Globalization;
+using System.ComponentModel;
 
 namespace SsisUnit
 {
@@ -44,12 +45,27 @@ namespace SsisUnit
 
         public static CommandBase CreateCommand(SsisTestSuite testSuite, string command)
         {
-            XmlDocument doc = new XmlDocument();
+            CommandBase returnValue = null;
 
-            XmlDocumentFragment frag = doc.CreateDocumentFragment();
-            frag.InnerXml = command;
+            foreach (Type t in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
+            {
+                if (typeof(CommandBase).IsAssignableFrom(t)
+                    && (!object.ReferenceEquals(t, typeof(CommandBase)))
+                    && (!t.IsAbstract)
+                    && (t.Name == command))
+                {
+                    System.Type[] @params = { typeof(SsisTestSuite) };
+                    System.Reflection.ConstructorInfo con;
 
-            return CommandBase.CreateCommand(testSuite, frag.ChildNodes[0]);
+                    con = t.GetConstructor(@params);
+                    if (con == null)
+                    {
+                        throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The Command type {0} could not be loaded because it has no constructor.", t.Name));
+                    }
+                    returnValue = (CommandBase)con.Invoke(new object[] { testSuite });
+                }
+            }
+            return returnValue;
         }
 
         public static CommandBase CreateCommand(SsisTestSuite testSuite, XmlNode commandXml)
@@ -86,7 +102,8 @@ namespace SsisUnit
             }
         }
 
-        protected SsisTestSuite TestSuite
+        [Browsable(false)]
+        public SsisTestSuite TestSuite
         {
             get { return _testSuite; }
         }
@@ -112,6 +129,7 @@ namespace SsisUnit
         //    get { return _namespaceMgr; }
         //}
 
+        [Browsable(false)]
         public string CommandName
         {
             get { return this.GetType().Name; }

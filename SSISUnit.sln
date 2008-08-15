@@ -18,15 +18,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SSISUnit32.vsmdi = SSISUnit32.vsmdi
 		SSISUnit33.vsmdi = SSISUnit33.vsmdi
 		SSISUnit34.vsmdi = SSISUnit34.vsmdi
+		SSISUnit35.vsmdi = SSISUnit35.vsmdi
+		SSISUnit36.vsmdi = SSISUnit36.vsmdi
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunner", "TestRunner\ssisUnitTestRunner.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitVS2005", "ssisUnitVS2005\ssisUnitVS2005.csproj", "{91DC24DB-1337-41F8-BD07-9F1EC781583B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunnerUI", "ssisUnitTestRunnerUI\ssisUnitTestRunnerUI.csproj", "{A943E51D-D0CC-4EF1-875B-937D0B179241}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitVS2008", "ssisUnitVS2008\ssisUnitVS2008.csproj", "{54848B1B-D5CE-4F88-A7CC-10FC390AB7AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit.Design", "SsisUnitDesign\SsisUnit.Design.csproj", "{3B38F252-0DE8-4639-9AF9-AB8B216B685C}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs04.codeplex.com/
 		SccLocalPath0 = .
@@ -39,9 +45,18 @@ Global
 		SccProjectUniqueName3 = UTssisUnit\\UTssisUnit.csproj
 		SccProjectName3 = UTssisUnit
 		SccLocalPath3 = UTssisUnit
-		SccProjectUniqueName4 = ssisUnitVS2005\\ssisUnitVS2005.csproj
-		SccProjectName4 = ssisUnitVS2005
-		SccLocalPath4 = ssisUnitVS2005
+		SccProjectUniqueName4 = ssisUnitTestRunnerUI\\ssisUnitTestRunnerUI.csproj
+		SccProjectName4 = ssisUnitTestRunnerUI
+		SccLocalPath4 = ssisUnitTestRunnerUI
+		SccProjectUniqueName5 = ssisUnitVS2008\\ssisUnitVS2008.csproj
+		SccProjectName5 = ssisUnitVS2008
+		SccLocalPath5 = ssisUnitVS2008
+		SccProjectUniqueName6 = SsisUnitDesign\\SsisUnit.Design.csproj
+		SccProjectName6 = SsisUnitDesign
+		SccLocalPath6 = SsisUnitDesign
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = SSISUnit36.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,10 +75,18 @@ Global
 		{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91DC24DB-1337-41F8-BD07-9F1EC781583B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91DC24DB-1337-41F8-BD07-9F1EC781583B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91DC24DB-1337-41F8-BD07-9F1EC781583B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91DC24DB-1337-41F8-BD07-9F1EC781583B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A943E51D-D0CC-4EF1-875B-937D0B179241}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A943E51D-D0CC-4EF1-875B-937D0B179241}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A943E51D-D0CC-4EF1-875B-937D0B179241}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A943E51D-D0CC-4EF1-875B-937D0B179241}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54848B1B-D5CE-4F88-A7CC-10FC390AB7AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54848B1B-D5CE-4F88-A7CC-10FC390AB7AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54848B1B-D5CE-4F88-A7CC-10FC390AB7AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54848B1B-D5CE-4F88-A7CC-10FC390AB7AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B38F252-0DE8-4639-9AF9-AB8B216B685C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B38F252-0DE8-4639-9AF9-AB8B216B685C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B38F252-0DE8-4639-9AF9-AB8B216B685C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B38F252-0DE8-4639-9AF9-AB8B216B685C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

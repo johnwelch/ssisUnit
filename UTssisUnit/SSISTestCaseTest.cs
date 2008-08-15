@@ -17,9 +17,9 @@ namespace UTssisUnit
     [TestClass()]
     public class SSISTestCaseTest
     {
-        private const string TEST_XML_FILENAME = "UTSsisUnit.xml";
+        private const string TEST_XML_FILENAME = "UTSsisUnit.ssisUnit";
 
-        private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.xml";
+        private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.ssisUnit";
         private const string TEST_XML_FILE_BAD_DATA_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_BadData.xml";
         private const string TEST_DTSX_FILE_PATH = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
 
@@ -185,22 +185,20 @@ namespace UTssisUnit
         [TestMethod()]
         public void TestExecuteWithParent()
         {
-            //SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
+            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
 
-            //XmlDocument doc = new XmlDocument();
-            //doc.Load(TEST_XML_FILE_PATH);
             //XmlNode test = doc.DocumentElement["Tests"]["TestRef"];
 
-            //try
-            //{
-            //    target.RunTestSuite(test);
-            //    Assert.IsTrue(true);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Assert.Fail(ex.Message);
-            //}
-            Assert.Inconclusive("Not yet implemented.");
+            try
+            {
+                target.TestRefs["C:\\Projects\\SSISUnit\\UTssisUnit\\UTssisUnit_Package.xml"].Execute();
+                //target.RunTestSuite(test);
+                Assert.IsTrue(true);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
 
         [TestMethod()]

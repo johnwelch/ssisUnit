@@ -34,7 +34,7 @@
         </SqlCommand>
       </Assert>
     </Test>
-    <TestRef path="C:\Projects\SSISUnit\UTssisUnit\UTssisUnit_Package.xml" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="{03894FFA-8636-4E81-B0CD-3F78E2CFBBEF}"/>
+    <TestRef path="C:\Projects\SSISUnit\UTssisUnit\UTssisUnit_Package.xml" />
   </Tests>
   <Teardown>
     <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
