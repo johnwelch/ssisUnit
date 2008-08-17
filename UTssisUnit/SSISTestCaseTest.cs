@@ -87,12 +87,14 @@ namespace UTssisUnit
             try
             {
                 SsisTestSuite ts = new SsisTestSuite("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT_Simple.dtsx");
-                Assert.Fail("Expected argument exception not thrown.");
+                Assert.Fail("Test Case was not reported as invalid.");
             }
-            catch (ArgumentException)
+            catch (ApplicationException ex)
             {
-                Assert.IsTrue(true);
+                Assert.AreEqual<string>("The unit test file is malformed or corrupt. Please verify that the file format conforms to the ssisUnit schema, provided in the SsisUnit.xsd file.", ex.Message);
             }
+
+           
         }
 
 
@@ -131,7 +133,7 @@ namespace UTssisUnit
             Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
             DtsContainer task = ssisUnit_UTHelper.FindExecutable(packageToTest, "SELECT COUNT");
 
-            int result = target.TeardownCommands.Execute( packageToTest, task);
+            int result = target.TeardownCommands.Execute(packageToTest, task);
             Assert.AreEqual(2, result);
         }
 
@@ -146,7 +148,7 @@ namespace UTssisUnit
             //target.InitializeTestCase(TEST_XML_FILE_PATH);
 
             //bool result = target.Test(test);
-            bool result  = target.Tests["PassedTestSQL"].Execute();
+            bool result = target.Tests["PassedTestSQL"].Execute();
             Assert.IsTrue(result);
         }
 
@@ -287,7 +289,7 @@ namespace UTssisUnit
             }
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount));
-            
+
         }
         [TestMethod()]
         public void CreateNewTestSuiteTest()

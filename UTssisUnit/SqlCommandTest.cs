@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Data.Common;
+using System;
 
 namespace UTssisUnit
 {
@@ -116,7 +117,7 @@ namespace UTssisUnit
                 object result = target.Execute(null, null);
                 Assert.Fail("The method did not throw the expected key not found exception.");
             }
-            catch (System.Collections.Generic.KeyNotFoundException)
+            catch (ApplicationException)
             {
                 Assert.IsTrue(true);
             }

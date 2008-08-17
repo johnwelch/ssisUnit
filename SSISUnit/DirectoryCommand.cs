@@ -4,6 +4,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using System.Globalization;
+using System.ComponentModel;
 
 namespace SsisUnit
 {
@@ -16,7 +17,7 @@ namespace SsisUnit
         public DirectoryCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, string.Empty));
+            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, DirectoryOperation.Exists.ToString()));
             Properties.Add(PROP_ARGUMENT_1, new CommandProperty(PROP_ARGUMENT_1, string.Empty));
             Properties.Add(PROP_ARGUMENT_2, new CommandProperty(PROP_ARGUMENT_2, string.Empty));
         }
@@ -151,6 +152,28 @@ namespace SsisUnit
             throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The specified operation ({0}) is not valid.", dirOperation));
         }
 
+        [Description("The first argument to the operation."),
+         Editor("System.Windows.Forms.Design.FolderNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+        public string Argument1
+        {
+            get { return Properties[PROP_ARGUMENT_1].Value; }
+            set { Properties[PROP_ARGUMENT_1].Value = value; }
+        }
+
+        [Description("The second argument to the operation."),
+        Editor("System.Windows.Forms.Design.FolderNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+        public string Argument2
+        {
+            get { return Properties[PROP_ARGUMENT_2].Value; }
+            set { Properties[PROP_ARGUMENT_2].Value = value; }
+        }
+
+        [Description("The operation to perform on the specified directory.")]
+        public DirectoryOperation Operation
+        {
+            get { return DirectoryOperationFromString(Properties[PROP_OPERATION].Value); }
+            set { Properties[PROP_OPERATION].Value= value.ToString(); }
+        }
     }
 
     public enum DirectoryOperation

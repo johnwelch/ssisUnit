@@ -4,23 +4,28 @@ using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Globalization;
+using System.Reflection;
+using System.IO;
+using System.ComponentModel;
 
 namespace SsisUnit
 {
-    public class Test
+    public class Test : SsisUnitBaseObject
     {
         private SsisTestSuite _testSuite;
-        private string _name;
+        //private string _name;
         private string _task;
+        private string _taskName;
         private string _package;
         private Dictionary<string, SsisAssert> _asserts = new Dictionary<string, SsisAssert>();
         private CommandSet _setup;
         private CommandSet _teardown;
+        //private string _validationMessages = string.Empty;
 
         public Test(SsisTestSuite testSuite, string name, string package, string task)
         {
             _testSuite = testSuite;
-            _name = name;
+            Name = name;
             _task = task;
             _package = package;
             _setup = new CommandSet(_testSuite);
@@ -44,35 +49,51 @@ namespace SsisUnit
 
         #region Properties
 
-        public string Name
+        [Browsable(false)]
+        public SsisTestSuite TestSuite
         {
-            get { return _name; }
-            set { _name = value; }
+            get { return _testSuite; }
         }
 
+        //[Description("The name of this test.")]
+        //public string Name
+        //{
+        //    get { return _name; }
+        //    set { _name = value; }
+        //}
+
+        //TODO: Add converter for tasks?
+        [Description("The task that this test will run against."),
+         TypeConverter("SsisUnit.Design.TaskConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482"),
+         Editor("SsisUnit.Design.PackageBrowserEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string Task
         {
             get { return _task; }
             set { _task = value; }
         }
 
+        [Description("The package that this test will run against."),
+         TypeConverter("SsisUnit.Design.PackageRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482")]
         public string PackageLocation
         {
-            //TODO: Add validation that package is a path or that it exists in PackageRef
+            //TODO: Add a custom type editor to pick file or package ref
             get { return _package; }
             set { _package = value; }
         }
 
+        [Browsable(false)]
         public Dictionary<string, SsisAssert> Asserts
         {
             get { return _asserts; }
         }
 
+        [Browsable(false)]
         public CommandSet TestSetup
         {
             get { return _setup; }
         }
 
+        [Browsable(false)]
         public CommandSet TestTeardown
         {
             get { return _teardown; }
@@ -93,6 +114,7 @@ namespace SsisUnit
 
             string setupResults = string.Empty;
             bool setupSucceeded = false;
+            _taskName = taskHost.Name;
 
             try
             {
@@ -105,7 +127,7 @@ namespace SsisUnit
                 _testSuite.SetupCommands.Execute(packageToTest, taskHost);
 
                 _setup.Execute(packageToTest, taskHost);
-                
+
                 setupResults = "Setup succeeded.";
                 setupSucceeded = true;
             }
@@ -116,7 +138,7 @@ namespace SsisUnit
             }
             finally
             {
-                _testSuite.OnRaiseSetupCompleted(new SetupCompletedEventArgs(DateTime.Now, _name, _package, _task, setupResults));
+                _testSuite.OnRaiseSetupCompleted(new SetupCompletedEventArgs(DateTime.Now, Name, _package, _taskName, setupResults));
             }
 
             if (setupSucceeded)
@@ -134,6 +156,10 @@ namespace SsisUnit
                     }
 
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
+                    foreach (DtsError err in packageToTest.Errors)
+                    {
+                        _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
+                    }
 
                     foreach (SsisAssert assert in _asserts.Values)
                     {
@@ -154,7 +180,7 @@ namespace SsisUnit
                 }
                 finally
                 {
-                    _testSuite.OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, _package, _task, _name, resultMessage, returnValue));
+                    _testSuite.OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, _package, _taskName, this.Name, resultMessage, returnValue));
                 }
 
             }
@@ -179,7 +205,7 @@ namespace SsisUnit
                 }
                 finally
                 {
-                    _testSuite.OnRaiseTeardownCompleted(new TeardownCompletedEventArgs(DateTime.Now, _name, _package, _task, teardownResults));
+                    _testSuite.OnRaiseTeardownCompleted(new TeardownCompletedEventArgs(DateTime.Now, this.Name, _package, _taskName, teardownResults));
                 }
             }
 
@@ -192,29 +218,30 @@ namespace SsisUnit
 
             try
             {
-                if (packagePath.Contains("\\"))
-                {
-                    //Assume that it is a file path.
-                    package = _testSuite.SsisApplication.LoadPackage(packagePath, null);
-                }
-                else
-                {
-                    //PackageList Reference
-                    PackageRef packageRef = _testSuite.PackageRefs[packagePath];
+                //if (packagePath.Contains("\\"))
+                //{
+                //    //Assume that it is a file path.
+                //    package = _testSuite.SsisApplication.LoadPackage(packagePath, null);
+                //}
+                //else
+                //{
+                //    //PackageList Reference
+                //    PackageRef packageRef = _testSuite.PackageRefs[packagePath];
 
-                    if (packageRef.StorageType == PackageRef.PackageStorageType.FileSystem)
-                    {
-                        package = _testSuite.SsisApplication.LoadPackage(packageRef.PackagePath, null);
-                    }
-                    else if (packageRef.StorageType == PackageRef.PackageStorageType.MSDB)
-                    {
-                        package = _testSuite.SsisApplication.LoadFromSqlServer(packageRef.PackagePath, packageRef.Server, null, null, null);
-                    }
-                    else if (packageRef.StorageType == PackageRef.PackageStorageType.PackageStore)
-                    {
-                        package = _testSuite.SsisApplication.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
-                    }
-                }
+                //    if (packageRef.StorageType == PackageRef.PackageStorageType.FileSystem)
+                //    {
+                //        package = _testSuite.SsisApplication.LoadPackage(packageRef.PackagePath, null);
+                //    }
+                //    else if (packageRef.StorageType == PackageRef.PackageStorageType.MSDB)
+                //    {
+                //        package = _testSuite.SsisApplication.LoadFromSqlServer(packageRef.PackagePath, packageRef.Server, null, null, null);
+                //    }
+                //    else if (packageRef.StorageType == PackageRef.PackageStorageType.PackageStore)
+                //    {
+                //        package = _testSuite.SsisApplication.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
+                //    }
+                //}
+                package = Helper.LoadPackage(_testSuite, packagePath);
 
                 taskHost = Helper.FindExecutable(package, taskID);
                 if (taskHost == null)
@@ -232,7 +259,7 @@ namespace SsisUnit
             }
         }
 
-        public string PersistToXml()
+        public override string PersistToXml()
         {
             StringBuilder xml = new StringBuilder();
             xml.Append("<Test ");
@@ -257,25 +284,79 @@ namespace SsisUnit
             return xml.ToString();
         }
 
-        public void LoadFromXml(string testXml)
+        public override void LoadFromXml(string testXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(testXml));
         }
 
-        public void LoadFromXml(XmlNode testXml)
+        public override void LoadFromXml(XmlNode testXml)
         {
             if (testXml.Name != "Test")
             {
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Test"));
             }
 
-            _name = testXml.Attributes["name"].Value;
+            this.Name = testXml.Attributes["name"].Value;
             _package = testXml.Attributes["package"].Value;
             _task = testXml.Attributes["task"].Value;
             _asserts = LoadAsserts(testXml);
             _setup = new CommandSet(_testSuite, testXml["TestSetup"]);
             _teardown = new CommandSet(_testSuite, testXml["TestTeardown"]);
         }
+
+        public override bool Validate()
+        {
+            _validationMessages = string.Empty;
+            if (this.Asserts.Count < 1)
+            {
+                _validationMessages += "There must be one or more asserts for each test." + Environment.NewLine;
+            }
+            if (_validationMessages == string.Empty)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            //try
+            //{
+            //    Assembly asm = Assembly.GetExecutingAssembly();
+            //    Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
+
+
+            //    XmlReaderSettings settings = new XmlReaderSettings();
+            //    settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
+            //    settings.ValidationType = ValidationType.Schema;
+
+            //    Byte[] bytes = System.Text.Encoding.ASCII.GetBytes(this.PersistToXml());
+
+            //    XmlDocument test = new XmlDocument();
+            //    test.Load(XmlReader.Create(new MemoryStream(bytes), settings));
+
+            //    //Don't test for existence of the schema node at this level
+            //    //if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
+            //    //{
+            //    //    return false;
+            //    //}
+
+            //    return true;
+            //}
+            //catch (System.Xml.Schema.XmlSchemaValidationException)
+            //{
+            //    return false;
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new ArgumentException("The test case could not be loaded: " + ex.Message);
+            //}
+        }
+
+        //[Browsable(false)]
+        //public string ValidationMessages
+        //{
+        //    get { return _validationMessages; }
+        //}
 
         private Dictionary<string, SsisAssert> LoadAsserts(XmlNode asserts)
         {

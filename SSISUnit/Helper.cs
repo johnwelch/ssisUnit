@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.Globalization;
 using Microsoft.SqlServer.Dts.Runtime;
 
 namespace SsisUnit
@@ -28,14 +29,24 @@ namespace SsisUnit
 
             if (parent.ID == taskId || parent.Name == taskId)
             {
-                matchingExecutable = parent;
+                return parent;
             }
             else
             {
+                if (parent is EventsProvider)
+                {
+                    EventsProvider ep = (EventsProvider)parent;
+                    
+                    foreach (DtsEventHandler eh in ep.EventHandlers)
+                    {
+                        matchingExecutable = FindExecutable((IDTSSequence)eh, taskId);
+                        if (matchingExecutable != null) return matchingExecutable;
+                    }
+                }
 
                 if (parentExecutable.Executables.Contains(taskId))
                 {
-                    matchingExecutable = (TaskHost)parentExecutable.Executables[taskId];
+                    return (TaskHost)parentExecutable.Executables[taskId];
                 }
                 else
                 {
@@ -44,6 +55,7 @@ namespace SsisUnit
                         if (e is IDTSSequence)
                         {
                             matchingExecutable = FindExecutable((IDTSSequence)e, taskId);
+                            if (matchingExecutable != null) return matchingExecutable;
                         }
                     }
                 }
@@ -51,6 +63,47 @@ namespace SsisUnit
 
             return matchingExecutable;
         }
+
+        public static Package LoadPackage(SsisTestSuite testSuite, string packagePath)
+        {
+            Application ssisApp = new Application();
+            Package package = null;
+            string pathToPackage = string.Empty;
+
+            try
+            {
+                if (packagePath.Contains(".dtsx"))
+                {
+                    //Assume that it is a file path.
+                    package = ssisApp.LoadPackage(packagePath, null);
+                }
+                else
+                {
+                    //PackageList Reference
+                    PackageRef packageRef = testSuite.PackageRefs[packagePath];
+
+                    if (packageRef.StorageType == PackageRef.PackageStorageType.FileSystem)
+                    {
+                        package = ssisApp.LoadPackage(packageRef.PackagePath, null);
+                    }
+                    else if (packageRef.StorageType == PackageRef.PackageStorageType.MSDB)
+                    {
+                        package = ssisApp.LoadFromSqlServer(packageRef.PackagePath, packageRef.Server, null, null, null);
+                    }
+                    else if (packageRef.StorageType == PackageRef.PackageStorageType.PackageStore)
+                    {
+                        package = ssisApp.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
+                    }
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new KeyNotFoundException(String.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
+            }
+
+            return package;
+        }
+
 
     }
 }

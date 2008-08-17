@@ -35,7 +35,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.VisualStudio.TeamSystem.Data.UnitTesting, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -43,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatabaseSetup.cs" />
     <Compile Include="TestBuilder.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +76,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -92,8 +98,13 @@
     <Compile Include="TestResults.Designer.cs">
       <DependentUpon>TestResults.cs</DependentUpon>
     </Compile>
+    <Compile Include="UIHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SsisUnitDesign\SsisUnit.Design.csproj">
+      <Project>{3B38F252-0DE8-4639-9AF9-AB8B216B685C}</Project>
+      <Name>SsisUnit.Design</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SSISUnit\SsisUnit.csproj">
       <Project>{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}</Project>
       <Name>SsisUnit</Name>

@@ -8,19 +8,11 @@ using System.ComponentModel;
 
 namespace SsisUnit
 {
-    public abstract class CommandBase
+    public abstract class CommandBase : SsisUnitBaseObject
     {
         private SsisTestSuite _testSuite;
-        //private XmlNode _connections;
-        //private XmlNamespaceManager _namespaceMgr;
         private string _body = string.Empty;
         private System.Collections.Generic.Dictionary<string, CommandProperty> _properties = new Dictionary<string, CommandProperty>();
-
-        //public CommandBase(XmlNode connections, XmlNamespaceManager namespaceMgr)
-        //{
-        //    _connections = connections;
-        //    _namespaceMgr = namespaceMgr;
-        //}
 
         public CommandBase(SsisTestSuite testSuite)
         {
@@ -102,6 +94,13 @@ namespace SsisUnit
             }
         }
 
+        //TODO: Implement support for names - need to add to XSD and persistence logic, then delete this - it hides the name in the base class.
+        [Browsable(false)]
+        public new string Name
+        {
+            get { return string.Empty; }
+        }
+
         [Browsable(false)]
         public SsisTestSuite TestSuite
         {
@@ -113,21 +112,11 @@ namespace SsisUnit
             get { return _properties; }
         }
 
-        //protected XmlNode Connections
-        //{
-        //    get { return _connections; }
-        //}
-
         protected string Body
         {
             get { return _body; }
             set { _body = value; }
         }
-
-        //protected XmlNamespaceManager NamespaceMgr
-        //{
-        //    get { return _namespaceMgr; }
-        //}
 
         [Browsable(false)]
         public string CommandName
@@ -153,7 +142,7 @@ namespace SsisUnit
             return Execute(null, null);
         }
 
-        public string PersistToXml()
+        public override string PersistToXml()
         {
             StringBuilder xml = new StringBuilder();
             xml.Append("<" + this.CommandName);
@@ -173,12 +162,12 @@ namespace SsisUnit
             return xml.ToString();
         }
 
-        public void LoadFromXml(string commandXml)
+        public override void LoadFromXml(string commandXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(commandXml));
         }
 
-        public void LoadFromXml(XmlNode commandXml)
+        public override void LoadFromXml(XmlNode commandXml)
         {
             this.CheckCommandType(commandXml.Name);
 

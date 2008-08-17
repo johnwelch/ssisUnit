@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.SqlServer.Dts.Runtime;
+using System.Globalization;
 
 namespace SsisUnit.Design
 {
-    public class ConnectionStringEditor : System.Drawing.Design.UITypeEditor
+    public class PackageBrowserEditor : System.Drawing.Design.UITypeEditor
     {
-
-        public ConnectionStringEditor()
+        //FIgure out a way to display the name instead of the GUID?
+        public PackageBrowserEditor()
         {
         }
 
@@ -23,31 +25,22 @@ namespace SsisUnit.Design
           System.IServiceProvider provider,
           object value)
         {
-            return this.EditValue(value as string);
-        }
-
-        public string EditValue()
-        {
-            return this.EditValue(string.Empty);
-        }
-
-        public string EditValue(string value)
-        {
-
-            string newValue = string.Empty;
-
-            ConnectionStringBuilder csBuilder = new ConnectionStringBuilder();
-            csBuilder.ConnectionString = value;
-            if (csBuilder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //Get the TestSuite reference
+            Test test = (Test)context.Instance;
+            
+            Package pkg = Helper.LoadPackage(test.TestSuite, test.PackageLocation);
+            
+            PackageBrowser csBuilder = new PackageBrowser();
+            if (csBuilder.ShowDialog(pkg, value.ToString()) == System.Windows.Forms.DialogResult.OK)
             {
-                return csBuilder.ConnectionString;
+                return csBuilder.SelectedTaskID;
             }
             else
             {
                 return value;
             }
-
         }
+
     }
 
 }

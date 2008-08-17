@@ -53,6 +53,11 @@ namespace SsisUnit
 
             DbCommand dbCommand = null;
 
+            if (this.ConnectionReference==null)
+            {
+                throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.Properties[PROP_CONNECTION].Value));
+            }
+
             try
             {
                 dbCommand = GetCommand(this.ConnectionReference, this.SQLStatement);
@@ -66,10 +71,6 @@ namespace SsisUnit
                 {
                     dbCommand.ExecuteNonQuery();
                 }
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new KeyNotFoundException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.Properties[PROP_CONNECTION].Value));
             }
             catch (Exception ex)
             {

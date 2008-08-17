@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace SsisUnit
 {
@@ -92,12 +93,15 @@ namespace SsisUnit
             
         }
 
+        [Description("The process to execute."),
+         Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string Process
         {
             get { return this.Properties[PROP_PROCESS].Value; }
             set { this.Properties[PROP_PROCESS].Value = value; }
         }
 
+        [Description("The arguments to pass to the process.")]
         public string Arguments
         {
             get { return this.Properties[PROP_ARGUMENTS].Value; }

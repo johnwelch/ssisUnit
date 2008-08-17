@@ -57,6 +57,7 @@ namespace SsisUnit
             set { value.ToString(); }
         }
 
+        [Browsable(false)]
         public string Server
         {
             get { return _server; }

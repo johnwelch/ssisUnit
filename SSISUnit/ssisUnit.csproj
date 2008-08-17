@@ -57,9 +57,12 @@
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="IssisTestCase.cs" />
+    <Compile Include="ISsisUnitPersist.cs" />
+    <Compile Include="IValidate.cs" />
     <Compile Include="PackageRef.cs" />
     <Compile Include="ProcessCommand.cs" />
     <Compile Include="SqlCommand.cs" />
+    <Compile Include="SsisBaseObject.cs" />
     <Compile Include="ssisTestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ssisUnit.cs">

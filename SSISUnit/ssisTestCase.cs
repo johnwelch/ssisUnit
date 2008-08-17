@@ -11,10 +11,10 @@ using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
 using System.ComponentModel;
 
-//[assembly: InternalsVisibleTo("SsisUnit.Design, PublicKey=002400000480000094000000060200000024000052534131000400000100010045b2c89ef896e065cf3aed9ec4b44f0f3c00c09f7313d4b535925fb59708ab52e9907ebbd1435d4cd19b1533aa2ba99118d8ba8ab1dd6aeb97051d7979a69400b042a32bb7ab699f594ed818a68034da5502d11d454da442d8deba50c804dc0f6634d8b01e9ef52059cc6860469fa24c722a27d25bc5f5a7e48be1fa25a08bcb")]
+[assembly: InternalsVisibleTo("SsisUnit.Design, PublicKey=002400000480000094000000060200000024000052534131000400000100010045b2c89ef896e065cf3aed9ec4b44f0f3c00c09f7313d4b535925fb59708ab52e9907ebbd1435d4cd19b1533aa2ba99118d8ba8ab1dd6aeb97051d7979a69400b042a32bb7ab699f594ed818a68034da5502d11d454da442d8deba50c804dc0f6634d8b01e9ef52059cc6860469fa24c722a27d25bc5f5a7e48be1fa25a08bcb")]
 namespace SsisUnit
 {
-    public class SsisTestSuite : IssisTestSuite
+    public class SsisTestSuite : IssisTestSuite, IValidate
     {
         private XmlDocument _testCaseDoc;
         private Application _ssisApp = new Application();
@@ -30,6 +30,9 @@ namespace SsisUnit
         private CommandSet _setup;
         private CommandSet _teardown;
         private TestSuiteResults _stats = new TestSuiteResults();
+        private string _validationMessages = string.Empty;
+
+
 
         #region Constructors
 
@@ -106,6 +109,12 @@ namespace SsisUnit
         internal SsisTestSuite ParentTestSuite
         {
             get { return _parentSuite; }
+        }
+
+        public string ValidationMessages
+        {
+            get { return _validationMessages; }
+            set { _validationMessages = value; }
         }
 
         #endregion
@@ -259,8 +268,47 @@ namespace SsisUnit
             //_server = packageXml.Attributes["server"].Value;
         }
 
+        public bool Validate()
+        {
+            try
+            {
+                Assembly asm = Assembly.GetExecutingAssembly();
+                Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
+
+
+                XmlReaderSettings settings = new XmlReaderSettings();
+                settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
+                settings.ValidationType = ValidationType.Schema;
+
+                Byte[] bytes = System.Text.Encoding.ASCII.GetBytes(this.PersistToXml());
+
+                XmlDocument test = new XmlDocument();
+                test.Load(XmlReader.Create(new MemoryStream(bytes), settings));
+
+                if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (System.Xml.Schema.XmlSchemaValidationException)
+            {
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException("The test case could not be loaded: " + ex.Message);
+            }
+        }
+
         public int Execute()
         {
+            if (!this.Validate())
+            {
+                throw new ApplicationException("The test suite is not in a valid format. It cannot be executed until the errors have been corrected.");
+            }
+
             _testSuiteSetup.Execute();
 
             foreach (Test test in this.Tests.Values)
@@ -308,32 +356,39 @@ namespace SsisUnit
 
         private void CommonSetup()
         {
-            //LoadCommands();
-            _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
-            _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-            //_connections = _testCaseDoc.DocumentElement["ConnectionList"];
-            //_packageList = _testCaseDoc.DocumentElement["PackageList"];
-            _connectionRefs = LoadConnectionRefs(_testCaseDoc.DocumentElement["ConnectionList"]);
-            _testSuiteSetup = new CommandSet(this, _testCaseDoc.DocumentElement["TestSuiteSetup"]);
-            _testSuiteTeardown = new CommandSet(this, _testCaseDoc.DocumentElement["TestSuiteTeardown"]);
-            _setup = new CommandSet(this, _testCaseDoc.DocumentElement["Setup"]);
-            _teardown = new CommandSet(this, _testCaseDoc.DocumentElement["Teardown"]);
-
-            foreach (XmlNode pkgRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:PackageList/SsisUnit:Package", _namespaceMgr))
+            try
             {
-                _packageRefs.Add(pkgRef.Attributes["name"].Value, new PackageRef(pkgRef));
-            }
+                //LoadCommands();
+                _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
+                _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
+                //_connections = _testCaseDoc.DocumentElement["ConnectionList"];
+                //_packageList = _testCaseDoc.DocumentElement["PackageList"];
+                _connectionRefs = LoadConnectionRefs(_testCaseDoc.DocumentElement["ConnectionList"]);
+                _testSuiteSetup = new CommandSet(this, _testCaseDoc.DocumentElement["TestSuiteSetup"]);
+                _testSuiteTeardown = new CommandSet(this, _testCaseDoc.DocumentElement["TestSuiteTeardown"]);
+                _setup = new CommandSet(this, _testCaseDoc.DocumentElement["Setup"]);
+                _teardown = new CommandSet(this, _testCaseDoc.DocumentElement["Teardown"]);
 
-            foreach (XmlNode test in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:Test", _namespaceMgr))
+                foreach (XmlNode pkgRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:PackageList/SsisUnit:Package", _namespaceMgr))
+                {
+                    _packageRefs.Add(pkgRef.Attributes["name"].Value, new PackageRef(pkgRef));
+                }
+
+                foreach (XmlNode test in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:Test", _namespaceMgr))
+                {
+                    _tests.Add(test.Attributes["name"].Value, new Test(this, test));
+                }
+
+                foreach (XmlNode testRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:TestRef", _namespaceMgr))
+                {
+                    _testRefs.Add(testRef.Attributes["path"].Value, new TestRef(testRef));
+                }
+
+            }
+            catch (Exception)
             {
-                _tests.Add(test.Attributes["name"].Value, new Test(this, test));
+                throw new ApplicationException(string.Format("The unit test file is malformed or corrupt. Please verify that the file format conforms to the ssisUnit schema, provided in the SsisUnit.xsd file."));
             }
-
-            foreach (XmlNode testRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:TestRef", _namespaceMgr))
-            {
-                _testRefs.Add(testRef.Attributes["path"].Value, new TestRef(testRef));
-            }
-
         }
 
         private Dictionary<string, ConnectionRef> LoadConnectionRefs(XmlNode connections)
@@ -390,14 +445,14 @@ namespace SsisUnit
 
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
-                settings.ValidationType = ValidationType.Schema;
+                //settings.ValidationType = ValidationType.Schema;
 
                 XmlDocument test = new XmlDocument();
                 test.Load(XmlReader.Create(file, settings));
-                if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
-                {
-                    throw new ArgumentException(String.Format("The SsisUnit schema ({0}) was not specified in this XML document.", "http://tempuri.org/SsisUnit.xsd"));
-                }
+                //if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
+                //{
+                //    throw new ArgumentException(String.Format("The SsisUnit schema ({0}) was not specified in this XML document.", "http://tempuri.org/SsisUnit.xsd"));
+                //}
 
                 return test;
             }

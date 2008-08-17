@@ -6,20 +6,29 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using SsisUnit;
+using Microsoft.SqlServer.Dts.Runtime;
+using SsisUnit.Design;
 
 namespace ssisUnitTestRunnerUI
 {
     public partial class TestBrowser : UserControl
     {
         private SsisTestSuite _testSuite;
+
         private object _originalItem; //Will hold the originally selected node when the node is changed
+        private Dictionary<string, SsisTestSuite> _testSuites = new Dictionary<string, SsisTestSuite>();
+        private Microsoft.SqlServer.Dts.Runtime.Application _ssisApp = new Microsoft.SqlServer.Dts.Runtime.Application();
 
         public TestBrowser()
         {
             InitializeComponent();
             dlgFileOpen.FileName = string.Empty;
             dlgFileOpen.Filter = "Test Files(*.ssisUnit)|*.ssisUnit|All files (*.*)|*.*";
+            treeTest.ShowNodeToolTips = true;
+            LoadCommands();
         }
+
+        //TODO: Get rid of file dialogs and use UIHelper instead
 
         #region Events
 
@@ -55,21 +64,44 @@ namespace ssisUnitTestRunnerUI
             get { return treeTest.SelectedNode.Tag; }
         }
 
-        public void CreateTest(string fileName)
+        public SsisTestSuite TestSuite
+        {
+            get { return _testSuite; }
+        }
+
+        public void CreateTest()
         {
             SsisTestSuite newTs = new SsisTestSuite();
-            newTs.Save(fileName);
-            LoadTest(fileName);
+            
+            LoadTest(newTs, GetUnusedName());
+        }
+
+        private string GetUnusedName()
+        {
+            int counter = 1;
+            while (cboTests.Items.Contains("TestSuite " + counter.ToString()))
+            {
+                counter++;
+            }
+
+            return "TestSuite " + counter.ToString();
         }
 
         public void AddTestSuite(string fileName)
         {
-            LoadTest(fileName);
+            _testSuite = new SsisTestSuite(fileName);
+            LoadTest(_testSuite, fileName);
         }
 
-        public void SaveTest(string fileName)
+        public void SaveTestSuite(string fileName)
         {
             _testSuite.Save(fileName);
+            if (fileName!=cboTests.SelectedItem.ToString())
+            {
+                cboTests.Items.Remove(cboTests.SelectedItem);
+                UpdateTestSelection(fileName);
+                treeTest.Nodes[0].Text = fileName;
+            }
         }
 
         public void AddCommand(string commandType)
@@ -96,6 +128,7 @@ namespace ssisUnitTestRunnerUI
                 treeTest.SelectedNode.Nodes.Add(commandNode);
             }
             commandNode.EnsureVisible();
+            treeTest.SelectedNode = commandNode;
         }
 
         public void AddConnectionRef()
@@ -112,6 +145,7 @@ namespace ssisUnitTestRunnerUI
             tn.Tag = cr;
             crNode.Nodes.Add(tn);
             tn.EnsureVisible();
+            treeTest.SelectedNode = tn;
         }
 
         public void AddPackageRef()
@@ -128,6 +162,7 @@ namespace ssisUnitTestRunnerUI
             tn.Tag = pr;
             prNode.Nodes.Add(tn);
             tn.EnsureVisible();
+            treeTest.SelectedNode = tn;
         }
 
         public void DeleteItem()
@@ -193,43 +228,51 @@ namespace ssisUnitTestRunnerUI
         {
             if (dlgFileOpen.ShowDialog() == DialogResult.OK)
             {
-                LoadTest(dlgFileOpen.FileName);
+                LoadTest(new SsisTestSuite(dlgFileOpen.FileName), dlgFileOpen.FileName);
             }
         }
 
-        private void LoadTest(string fileName)
+        private void LoadTest(SsisTestSuite testSuite, string name)
         {
-            _testSuite = new SsisTestSuite(fileName);
             treeTest.Nodes.Clear();
-            TreeNode testSuiteNode = new TreeNode(fileName);
+            TreeNode testSuiteNode = new TreeNode(name);
 
             treeTest.Nodes.Add(testSuiteNode);
-            testSuiteNode.Nodes.Add(CreateConnectionListNode());
-            testSuiteNode.Nodes.Add(CreatePackageListNode());
-            testSuiteNode.Nodes.Add(CreateCommandSetNode("Test Suite Setup", _testSuite.TestSuiteSetup));
-            testSuiteNode.Nodes.Add(CreateCommandSetNode("Setup", _testSuite.SetupCommands));
-            testSuiteNode.Nodes.Add(CreateTestsNode());
-            testSuiteNode.Nodes.Add(CreateCommandSetNode("Teardown", _testSuite.TeardownCommands));
-            testSuiteNode.Nodes.Add(CreateCommandSetNode("Test Suite Teardown", _testSuite.TestSuiteTeardown));
+            testSuiteNode.Nodes.Add(CreateConnectionListNode(testSuite));
+            testSuiteNode.Nodes.Add(CreatePackageListNode(testSuite));
+            testSuiteNode.Nodes.Add(CreateCommandSetNode("Test Suite Setup", testSuite.TestSuiteSetup));
+            testSuiteNode.Nodes.Add(CreateCommandSetNode("Setup", testSuite.SetupCommands));
+            testSuiteNode.Nodes.Add(CreateTestsNode(testSuite));
+            testSuiteNode.Nodes.Add(CreateCommandSetNode("Teardown", testSuite.TeardownCommands));
+            testSuiteNode.Nodes.Add(CreateCommandSetNode("Test Suite Teardown", testSuite.TestSuiteTeardown));
             testSuiteNode.Expand();
+            testSuiteNode.EnsureVisible();
+            treeTest.SelectedNode = testSuiteNode;
 
             if (cboTests.SelectedItem == null)
             {
-                OnRaiseTestSuiteSelected(new TestSuiteSelectedEventArgs(string.Empty, fileName));
+                OnRaiseTestSuiteSelected(new TestSuiteSelectedEventArgs(string.Empty, name));
             }
             else
             {
-                OnRaiseTestSuiteSelected(new TestSuiteSelectedEventArgs(cboTests.SelectedItem.ToString(), fileName));
+                OnRaiseTestSuiteSelected(new TestSuiteSelectedEventArgs(cboTests.SelectedItem.ToString(), name));
             }
+            _testSuite = testSuite;
 
-            UpdateTestSelection(fileName);
+            
+            if (_testSuites.ContainsKey(name))
+            {
+                _testSuites.Remove(name);
+            }
+            _testSuites.Add(name, testSuite);
+            UpdateTestSelection(name);
         }
 
-        private TreeNode CreateTestsNode()
+        private TreeNode CreateTestsNode(SsisTestSuite testSuite)
         {
             TreeNode testsNode = new TreeNode("Tests");
             testsNode.Name = "Tests";
-            foreach (Test test in _testSuite.Tests.Values)
+            foreach (Test test in testSuite.Tests.Values)
             {
                 testsNode.Nodes.Add(CreateTestNode(test));
             }
@@ -241,6 +284,13 @@ namespace ssisUnitTestRunnerUI
             TreeNode testNode = new TreeNode(test.Name);
             testNode.Tag = test;
             testNode.Nodes.Add(CreateCommandSetNode("Test Setup", test.TestSetup));
+
+            if (! test.Validate())
+            {
+                testNode.ForeColor = Color.Red;
+                testNode.ToolTipText = test.ValidationMessages;
+            }
+
             foreach (SsisAssert assert in test.Asserts.Values)
             {
                 testNode.Nodes.Add(CreateAssertNode(assert));
@@ -254,6 +304,11 @@ namespace ssisUnitTestRunnerUI
             TreeNode assertNode = new TreeNode(assert.Name);
             assertNode.Name = assert.Name;
             assertNode.Tag = assert;
+            if (!assert.Validate())
+            {
+                assertNode.ForeColor = Color.Red;
+                assertNode.ToolTipText = assert.ValidationMessages;
+            }
             TreeNode commandNode = new TreeNode(assert.Command.CommandName);
             commandNode.Tag = assert.Command;
             assertNode.Nodes.Add(commandNode);
@@ -274,11 +329,11 @@ namespace ssisUnitTestRunnerUI
             return commandSetNode;
         }
 
-        private TreeNode CreatePackageListNode()
+        private TreeNode CreatePackageListNode(SsisTestSuite testSuite)
         {
             TreeNode packageList = new TreeNode("Package List");
             packageList.Name = "Package List";
-            foreach (PackageRef pkg in _testSuite.PackageRefs.Values)
+            foreach (PackageRef pkg in testSuite.PackageRefs.Values)
             {
                 TreeNode pkgNode = new TreeNode(pkg.Name);
                 pkgNode.Tag = pkg;
@@ -287,11 +342,11 @@ namespace ssisUnitTestRunnerUI
             return packageList;
         }
 
-        private TreeNode CreateConnectionListNode()
+        private TreeNode CreateConnectionListNode(SsisTestSuite testSuite)
         {
             TreeNode connectionList = new TreeNode("Connection List");
             connectionList.Name = "Connection List";
-            foreach (ConnectionRef conn in _testSuite.ConnectionRefs.Values)
+            foreach (ConnectionRef conn in testSuite.ConnectionRefs.Values)
             {
                 TreeNode connNode = new TreeNode(conn.ReferenceName);
                 connNode.Tag = conn;
@@ -317,22 +372,62 @@ namespace ssisUnitTestRunnerUI
             }
             if (_originalItem is Test)
             {
-                treeTest.SelectedNode.Text = ((Test)_originalItem).Name;
+                Test test = (Test)_originalItem;
+                treeTest.SelectedNode.Text = test.Name;
             }
             if (_originalItem is SsisAssert)
             {
                 treeTest.SelectedNode.Text = ((SsisAssert)_originalItem).Name;
+            }
+            if (_originalItem is IValidate)
+            {
+                Validate((IValidate)_originalItem, treeTest.SelectedNode);
+            }
+        }
+
+        private void Validate(IValidate item, TreeNode node)
+        {
+            if (item.Validate())
+            {
+                node.ForeColor = Color.Black;
+                node.ToolTipText = string.Empty;
+            }
+            else
+            {
+                node.ForeColor = Color.Red;
+                node.ToolTipText = item.ValidationMessages;
             }
         }
 
         private void treeTest_AfterSelect(object sender, TreeViewEventArgs e)
         {
             OnRaiseNodeSelected(new NodeSelectedEventArgs(_originalItem, e.Node.Tag));
+            EnableMenuItems(e.Node.Tag);
+        }
+
+        private void EnableMenuItems(object p)
+        {
+            if (p is CommandSet || p is SsisAssert)
+            {
+                addCommandToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                addCommandToolStripMenuItem.Enabled = false;
+            }
+            if (p is Test)
+            {
+                addAssertToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                addAssertToolStripMenuItem.Enabled = false;
+            }
         }
 
         private void cboTests_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            LoadTest(cboTests.SelectedItem.ToString());
+            LoadTest(_testSuites[cboTests.SelectedItem.ToString()],cboTests.SelectedItem.ToString());
         }
 
         public void AddAssert()
@@ -350,6 +445,7 @@ namespace ssisUnitTestRunnerUI
             tn.Tag = assert;
             treeTest.SelectedNode.Nodes.Add(tn);
             tn.EnsureVisible();
+            treeTest.SelectedNode = tn;
         }
 
         public void AddTest()
@@ -366,6 +462,7 @@ namespace ssisUnitTestRunnerUI
             tn.Tag = test;
             prNode.Nodes.Add(tn);
             tn.EnsureVisible();
+            treeTest.SelectedNode = tn;
         }
 
         public void RunSuite()
@@ -379,6 +476,90 @@ namespace ssisUnitTestRunnerUI
             if (!(treeTest.SelectedNode.Tag is Test)) return;
             TestResults ts = new TestResults(_testSuite);
             ts.RunTest(((Test)treeTest.SelectedNode.Tag).Name);
+        }
+
+        internal void AddTestSuite(SsisTestSuite ts)
+        {
+            LoadTest(ts, GetUnusedName());
+        }
+
+        private void addAssertToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.AddAssert();
+        }
+
+        private void addTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.AddTest();
+        }
+
+        private void addConnectionRefToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.AddConnectionRef();
+        }
+
+        private void addPackageRefToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.AddPackageRef();
+        }
+
+        private void deleteItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.DeleteItem();
+        }
+        
+        private void addGenericCommandToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem tsItem = (ToolStripMenuItem)sender;
+            this.AddCommand(tsItem.Name);
+        }
+
+        private void LoadCommands()
+        {
+            foreach (Type t in System.Reflection.Assembly.GetAssembly(typeof(CommandBase)).GetTypes())
+            {
+                if (typeof(CommandBase).IsAssignableFrom(t)
+                    && (!object.ReferenceEquals(t, typeof(CommandBase)))
+                    && (!t.IsAbstract))
+                {
+                    ToolStripMenuItem addGenericCommandToolStripMenuItem = new ToolStripMenuItem(t.Name);
+                    addGenericCommandToolStripMenuItem.Name = t.Name;
+                    addGenericCommandToolStripMenuItem.Click += new EventHandler(addGenericCommandToolStripMenuItem_Click);
+                    addCommandToolStripMenuItem.DropDownItems.Add(addGenericCommandToolStripMenuItem);
+                }
+            }
+        }
+
+        //private void AddTestFromPackagetoolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    string packageFileName = string.Empty;
+        //    if (UIHelper.ShowOpen(ref packageFileName, UIHelper.FILE_FILTER_DTSX, true) == DialogResult.OK)
+        //    {
+        //        AddTestFromPackage(packageFileName);
+        //    }
+        //}
+
+        //private void AddTestFromPackage(string fileName)
+        //{
+        //    Package package = _ssisApp.LoadPackage(fileName, null);
+        //    PackageBrowser pb = new PackageBrowser();
+        //    pb.MultiSelect = true;
+        //    if (pb.ShowDialog(package) == DialogResult.OK)
+        //    {
+        //        if (_testSuite.PackageRefs.ContainsKey()
+        //        {
+                    
+        //        }
+        //        AddConnectionRefs(ts, package);
+        //        AddPackageRefs(ts, package, fileName);
+        //        AddTests(ts, package, pb.SelectedTasks);
+        //    }
+        //    return ts;
+        //}
+
+        public void RefreshTestSuite()
+        {
+            LoadTest(_testSuite, cboTests.SelectedItem.ToString());
         }
     }
 

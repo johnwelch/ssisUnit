@@ -30,10 +30,19 @@
         {
             this.components = new System.ComponentModel.Container();
             this.treeTest = new System.Windows.Forms.TreeView();
+            this.mnuContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addAssertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addCommandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addConnectionRefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addPackageRefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.deleteItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cboTests = new System.Windows.Forms.ComboBox();
             this.dlgFileOpen = new System.Windows.Forms.OpenFileDialog();
             this.btnFileOpen = new System.Windows.Forms.Button();
             this.imgList = new System.Windows.Forms.ImageList(this.components);
+            this.mnuContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeTest
@@ -41,12 +50,72 @@
             this.treeTest.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeTest.ContextMenuStrip = this.mnuContextMenuStrip;
             this.treeTest.Location = new System.Drawing.Point(4, 29);
             this.treeTest.Name = "treeTest";
             this.treeTest.Size = new System.Drawing.Size(178, 366);
             this.treeTest.TabIndex = 0;
             this.treeTest.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeTest_AfterSelect);
             this.treeTest.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeTest_BeforeSelect);
+            // 
+            // mnuContextMenuStrip
+            // 
+            this.mnuContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addAssertToolStripMenuItem,
+            this.addCommandToolStripMenuItem,
+            this.addTestToolStripMenuItem,
+            this.addConnectionRefToolStripMenuItem,
+            this.addPackageRefToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.deleteItemToolStripMenuItem});
+            this.mnuContextMenuStrip.Name = "mnuContextMenuStrip";
+            this.mnuContextMenuStrip.Size = new System.Drawing.Size(182, 164);
+            // 
+            // addAssertToolStripMenuItem
+            // 
+            this.addAssertToolStripMenuItem.Name = "addAssertToolStripMenuItem";
+            this.addAssertToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addAssertToolStripMenuItem.Text = "Add Assert";
+            this.addAssertToolStripMenuItem.Click += new System.EventHandler(this.addAssertToolStripMenuItem_Click);
+            // 
+            // addCommandToolStripMenuItem
+            // 
+            this.addCommandToolStripMenuItem.Name = "addCommandToolStripMenuItem";
+            this.addCommandToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addCommandToolStripMenuItem.Text = "Add Command";
+            // 
+            // addTestToolStripMenuItem
+            // 
+            this.addTestToolStripMenuItem.Name = "addTestToolStripMenuItem";
+            this.addTestToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addTestToolStripMenuItem.Text = "Add Test";
+            this.addTestToolStripMenuItem.Click += new System.EventHandler(this.addTestToolStripMenuItem_Click);
+            // 
+            // addConnectionRefToolStripMenuItem
+            // 
+            this.addConnectionRefToolStripMenuItem.Name = "addConnectionRefToolStripMenuItem";
+            this.addConnectionRefToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addConnectionRefToolStripMenuItem.Text = "Add Connection Ref";
+            this.addConnectionRefToolStripMenuItem.Click += new System.EventHandler(this.addConnectionRefToolStripMenuItem_Click);
+            // 
+            // addPackageRefToolStripMenuItem
+            // 
+            this.addPackageRefToolStripMenuItem.Name = "addPackageRefToolStripMenuItem";
+            this.addPackageRefToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addPackageRefToolStripMenuItem.Text = "Add Package Ref";
+            this.addPackageRefToolStripMenuItem.Click += new System.EventHandler(this.addPackageRefToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(178, 6);
+            // 
+            // deleteItemToolStripMenuItem
+            // 
+            this.deleteItemToolStripMenuItem.Name = "deleteItemToolStripMenuItem";
+            this.deleteItemToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.deleteItemToolStripMenuItem.Text = "Delete Item";
+            this.deleteItemToolStripMenuItem.Click += new System.EventHandler(this.deleteItemToolStripMenuItem_Click);
             // 
             // cboTests
             // 
@@ -90,6 +159,7 @@
             this.MinimumSize = new System.Drawing.Size(50, 50);
             this.Name = "TestBrowser";
             this.Size = new System.Drawing.Size(185, 398);
+            this.mnuContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -101,5 +171,13 @@
         private System.Windows.Forms.OpenFileDialog dlgFileOpen;
         private System.Windows.Forms.Button btnFileOpen;
         private System.Windows.Forms.ImageList imgList;
+        private System.Windows.Forms.ContextMenuStrip mnuContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem addAssertToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addCommandToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addConnectionRefToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addPackageRefToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem deleteItemToolStripMenuItem;
     }
 }

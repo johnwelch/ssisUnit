@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
+using System.ComponentModel;
 
 namespace SsisUnit
 {
@@ -15,7 +16,7 @@ namespace SsisUnit
         public VariableCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            //TODO: Got a problem here with Values - can be a number of types - or not provided
+            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, VariableOperation.Get.ToString()));
             Properties.Add(PROP_NAME, new CommandProperty(PROP_NAME, string.Empty));
             Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, string.Empty));
         }
@@ -30,9 +31,10 @@ namespace SsisUnit
         {
         }
 
-        public VariableCommand(SsisTestSuite testSuite, string name, string value)
+        public VariableCommand(SsisTestSuite testSuite, VariableOperation operation, string name, string value)
             : base(testSuite)
         {
+            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, operation.ToString()));
             Properties.Add(PROP_NAME, new CommandProperty(PROP_NAME, name));
             Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, value));
         }
@@ -43,9 +45,9 @@ namespace SsisUnit
             Variables vars = null;
             VariableDispenser dispenser = container.VariableDispenser;
 
-            string varName = this.Name;
+            string varName = this.VariableName;
 
-            if (this.Operation=="Get")
+            if (this.Operation== VariableOperation.Get)
             {
                 dispenser.LockOneForRead(varName, ref vars);
                 returnValue = vars[varName].Value;
@@ -63,22 +65,42 @@ namespace SsisUnit
             return returnValue;
         }
 
-        public string Name
+        //TODO: Add a TypeConverter that lists the variables in the package?
+        [Description("The name of the variable to operate on.")]
+        public string VariableName
         {
             get { return Properties[PROP_NAME].Value; }
             set { Properties[PROP_NAME].Value = value; }
         }
 
+        [Description("The value to set the variable to.")]
         public string Value
         {
             get { return Properties[PROP_VALUE].Value; }
             set { Properties[PROP_VALUE].Value = value; }
         }
 
-        public string Operation
+        [Description("Determines whether to get or set the variable.")]
+        public VariableOperation Operation
         {
-            get { return Properties[PROP_OPERATION].Value; }
-            set { Properties[PROP_OPERATION].Value = value; }
+            get { return GetVariableOperationFromString(Properties[PROP_OPERATION].Value); }
+            set { Properties[PROP_OPERATION].Value = value.ToString(); }
+        }
+
+        private VariableOperation GetVariableOperationFromString(string operation)
+        {
+            if (operation == "Get") return VariableOperation.Get;
+            else if (operation == "Set") return VariableOperation.Set;
+            else
+            {
+                throw new ArgumentException("The operation provided was not valid.");
+            }
+        }
+
+        public enum VariableOperation
+        {
+            Get = 0,
+            Set = 1
         }
     }
 }

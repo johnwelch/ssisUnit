@@ -14,11 +14,18 @@ namespace SsisUnit.Design
         private DataTable _providerList = DbProviderFactories.GetFactoryClasses();
 
         private DbConnectionStringBuilder _connBuilder = new DbConnectionStringBuilder();
-
+        
         public string ConnectionString
         {
             get { return _connBuilder.ConnectionString; }
-            set { _connBuilder.ConnectionString = value; }
+            set
+            {
+                _connBuilder.ConnectionString = value;
+                if (value.ToUpper().Contains("PROVIDER"))
+                {
+                    cboProvider.SelectedIndex = _providerList.Rows.IndexOf(_providerList.Rows.Find("System.Data.OleDb"));
+                }
+            }
         }
 
         public ConnectionStringBuilder()
@@ -42,8 +49,10 @@ namespace SsisUnit.Design
 
         private void cboProvider_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string connectionString = _connBuilder.ConnectionString;
             DbProviderFactory factory = DbProviderFactories.GetFactory(_providerList.Rows[cboProvider.SelectedIndex]);
             _connBuilder = factory.CreateConnectionStringBuilder();
+            _connBuilder.ConnectionString = connectionString;
             propConnection.SelectedObject = _connBuilder;
         }
     }

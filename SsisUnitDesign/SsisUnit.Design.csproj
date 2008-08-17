@@ -37,6 +37,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -52,6 +53,15 @@
     <Compile Include="ConnectionStringBuilder.Designer.cs">
       <DependentUpon>ConnectionStringBuilder.cs</DependentUpon>
     </Compile>
+    <Compile Include="TaskConverter.cs" />
+    <Compile Include="PackageBrowserEditor.cs" />
+    <Compile Include="PackageBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PackageBrowser.Designer.cs">
+      <DependentUpon>PackageBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PackageRefConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryBuilder.cs">
       <SubType>Form</SubType>
@@ -64,6 +74,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ConnectionStringBuilder.resx">
       <DependentUpon>ConnectionStringBuilder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PackageBrowser.resx">
+      <DependentUpon>PackageBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="QueryBuilder.resx">
       <DependentUpon>QueryBuilder.cs</DependentUpon>
