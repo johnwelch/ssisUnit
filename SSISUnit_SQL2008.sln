@@ -3,25 +3,35 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSISUnit_SQL2008", "SSISUnit\SSISUnit_SQL2008.csproj", "{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTssisUnit_SQL2008", "UTssisUnit\UTssisUnit_SQL2008.csproj", "{ADC78700-333C-4BDC-9F64-DA20F500C273}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit.Design_SQL2008", "SsisUnitDesign\SsisUnit.Design_SQL2008.csproj", "{3B38F252-0DE8-4639-9AF9-AB8B216B685C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunner_SQL2008", "TestRunner\ssisUnitTestRunner_SQL2008.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunnerUI_SQL2008", "ssisUnitTestRunnerUI\ssisUnitTestRunnerUI_SQL2008.csproj", "{A943E51D-D0CC-4EF1-875B-937D0B179241}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTssisUnit - SQL2008", "UTssisUnit\UTssisUnit - SQL2008.csproj", "{ADC78700-333C-4BDC-9F64-DA20F500C273}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunner - SQL2008", "TestRunner\ssisUnitTestRunner - SQL2008.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs04.codeplex.com/
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = SSISUnit\\SSISUnit_SQL2008.csproj
 		SccProjectName1 = SSISUnit
 		SccLocalPath1 = SSISUnit
-		SccProjectUniqueName2 = UTssisUnit\\UTssisUnit_SQL2008.csproj
-		SccProjectName2 = UTssisUnit
-		SccLocalPath2 = UTssisUnit
-		SccProjectUniqueName3 = TestRunner\\ssisUnitTestRunner_SQL2008.csproj
-		SccProjectName3 = TestRunner
-		SccLocalPath3 = TestRunner
+		SccProjectUniqueName2 = SsisUnitDesign\\SsisUnit.Design_SQL2008.csproj
+		SccProjectName2 = SsisUnitDesign
+		SccLocalPath2 = SsisUnitDesign
+		SccProjectUniqueName3 = ssisUnitTestRunnerUI\\ssisUnitTestRunnerUI_SQL2008.csproj
+		SccProjectName3 = ssisUnitTestRunnerUI
+		SccLocalPath3 = ssisUnitTestRunnerUI
+		SccProjectUniqueName4 = UTssisUnit\\UTssisUnit\u0020-\u0020SQL2008.csproj
+		SccProjectName4 = UTssisUnit
+		SccLocalPath4 = UTssisUnit
+		SccProjectUniqueName5 = TestRunner\\ssisUnitTestRunner\u0020-\u0020SQL2008.csproj
+		SccProjectName5 = TestRunner
+		SccLocalPath5 = TestRunner
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +42,14 @@ Global
 		{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B38F252-0DE8-4639-9AF9-AB8B216B685C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B38F252-0DE8-4639-9AF9-AB8B216B685C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B38F252-0DE8-4639-9AF9-AB8B216B685C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B38F252-0DE8-4639-9AF9-AB8B216B685C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A943E51D-D0CC-4EF1-875B-937D0B179241}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A943E51D-D0CC-4EF1-875B-937D0B179241}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A943E51D-D0CC-4EF1-875B-937D0B179241}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A943E51D-D0CC-4EF1-875B-937D0B179241}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADC78700-333C-4BDC-9F64-DA20F500C273}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADC78700-333C-4BDC-9F64-DA20F500C273}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADC78700-333C-4BDC-9F64-DA20F500C273}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ssisUnitTestRunner")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Mariner")]
+[assembly: AssemblyCompany("AgileBI.com")]
 [assembly: AssemblyProduct("ssisUnitTestRunner")]
-[assembly: AssemblyCopyright("Copyright © Mariner 2008")]
+[assembly: AssemblyCopyright("Copyright © AgileBI.com 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,8 +32,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5.0.0")]
-[assembly: AssemblyFileVersion("0.5.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("UTssisUnit")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("UTssisUnit_SQL2008")]
