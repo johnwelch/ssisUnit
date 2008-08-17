@@ -11,7 +11,12 @@ using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
 using System.ComponentModel;
 
+#if SQL2005
 [assembly: InternalsVisibleTo("SsisUnit.Design, PublicKey=002400000480000094000000060200000024000052534131000400000100010045b2c89ef896e065cf3aed9ec4b44f0f3c00c09f7313d4b535925fb59708ab52e9907ebbd1435d4cd19b1533aa2ba99118d8ba8ab1dd6aeb97051d7979a69400b042a32bb7ab699f594ed818a68034da5502d11d454da442d8deba50c804dc0f6634d8b01e9ef52059cc6860469fa24c722a27d25bc5f5a7e48be1fa25a08bcb")]
+#endif
+#if SQL2008
+[assembly: InternalsVisibleTo("SsisUnit2008.Design, PublicKey=002400000480000094000000060200000024000052534131000400000100010045b2c89ef896e065cf3aed9ec4b44f0f3c00c09f7313d4b535925fb59708ab52e9907ebbd1435d4cd19b1533aa2ba99118d8ba8ab1dd6aeb97051d7979a69400b042a32bb7ab699f594ed818a68034da5502d11d454da442d8deba50c804dc0f6634d8b01e9ef52059cc6860469fa24c722a27d25bc5f5a7e48be1fa25a08bcb")]
+#endif
 namespace SsisUnit
 {
     public class SsisTestSuite : IssisTestSuite, IValidate
@@ -38,7 +43,7 @@ namespace SsisUnit
 
         public SsisTestSuite()
         {
-            Stream baseTest = GetStreamFromAssembly("BaseTest.xml");
+            Stream baseTest = GetStreamFromExecutingAssembly("BaseTest.xml");
             InitializeTestCase(baseTest);
         }
 
@@ -272,9 +277,9 @@ namespace SsisUnit
         {
             try
             {
-                Assembly asm = Assembly.GetExecutingAssembly();
-                Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
-
+                //Assembly asm = Assembly.GetExecutingAssembly();
+                //Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
+                Stream strm = GetStreamFromExecutingAssembly("SsisUnit.xsd");
 
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
@@ -340,10 +345,15 @@ namespace SsisUnit
             //LoadCommands();
         }
 
-        private static Stream GetStreamFromAssembly(string resourceName)
+        private static Stream GetStreamFromExecutingAssembly(string resourceName)
         {
             Assembly asm = Assembly.GetExecutingAssembly();
+#if SQL2005
             Stream resource = asm.GetManifestResourceStream(asm.GetName().Name + "." + resourceName);
+#endif
+#if SQL2008
+            Stream resource = asm.GetManifestResourceStream("SsisUnit." + resourceName);
+#endif
             return resource;
         }
 
@@ -438,9 +448,9 @@ namespace SsisUnit
             }
             try
             {
-
-                Assembly asm = Assembly.GetExecutingAssembly();
-                Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
+                Stream strm = GetStreamFromExecutingAssembly("SsisUnit.xsd");
+                //Assembly asm = Assembly.GetExecutingAssembly();
+                //Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
 
 
                 XmlReaderSettings settings = new XmlReaderSettings();
@@ -947,8 +957,14 @@ namespace SsisUnit
         }
 
         //TODO: Add TypeConverter?
+#if SQL2005
         [DescriptionAttribute("Connection String used by SQL Commands or the name of a ConnectionManager in the package"),
          Editor("SsisUnit.Design.ConnectionStringEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#endif
+#if SQL2008
+        [DescriptionAttribute("Connection String used by SQL Commands or the name of a ConnectionManager in the package"),
+         Editor("SsisUnit.Design.ConnectionStringEditor, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#endif
         public string ConnectionString
         {
             get { return _connectionString; }

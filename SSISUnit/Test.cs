@@ -62,18 +62,30 @@ namespace SsisUnit
         //    set { _name = value; }
         //}
 
-        //TODO: Add converter for tasks?
+#if SQL2005
         [Description("The task that this test will run against."),
          TypeConverter("SsisUnit.Design.TaskConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482"),
          Editor("SsisUnit.Design.PackageBrowserEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#endif
+#if SQL2008
+        [Description("The task that this test will run against."),
+         TypeConverter("SsisUnit.Design.TaskConverter, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482"),
+         Editor("SsisUnit.Design.PackageBrowserEditor, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#endif
         public string Task
         {
             get { return _task; }
             set { _task = value; }
         }
 
+#if SQL2005
         [Description("The package that this test will run against."),
          TypeConverter("SsisUnit.Design.PackageRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482")]
+#endif
+#if SQL2008
+        [Description("The package that this test will run against."),
+         TypeConverter("SsisUnit.Design.PackageRefConverter, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482")]
+#endif
         public string PackageLocation
         {
             //TODO: Add a custom type editor to pick file or package ref

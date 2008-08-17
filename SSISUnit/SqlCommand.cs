@@ -53,7 +53,7 @@ namespace SsisUnit
 
             DbCommand dbCommand = null;
 
-            if (this.ConnectionReference==null)
+            if (this.ConnectionReference == null)
             {
                 throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", this.Properties[PROP_CONNECTION].Value));
             }
@@ -165,9 +165,14 @@ namespace SsisUnit
             return DbProviderFactories.GetFactory(factoryInvariantName);
 
         }
-
+#if SQL2005
         [Description("The Connection that the SQLCommand will use"),
          TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482")]
+#endif
+#if SQL2008
+        [Description("The Connection that the SQLCommand will use"),
+         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482")]
+#endif
         public ConnectionRef ConnectionReference
         {
             get
@@ -202,8 +207,14 @@ namespace SsisUnit
             set { Properties[PROP_RETURNS_VALUE].Value = value.ToString().ToLower(); }
         }
 
+#if SQL2005
         [Description("The SQL statement to be executed by the SQLCommand"),
          Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#endif
+#if SQL2008
+        [Description("The SQL statement to be executed by the SQLCommand"),
+         Editor("SsisUnit.Design.QueryEditor, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#endif
         public string SQLStatement
         {
             get { return Body; }
