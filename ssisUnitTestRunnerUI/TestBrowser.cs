@@ -167,11 +167,12 @@ namespace ssisUnitTestRunnerUI
 
         public void DeleteItem()
         {
-            if (treeTest.SelectedNode.Nodes.Count > 0) return;
+//            if (treeTest.SelectedNode.Nodes.Count > 0) return;
             if (treeTest.SelectedNode.Name == "Connection List" ||
                 treeTest.SelectedNode.Name == "Package List" ||
                 treeTest.SelectedNode.Name == "Test Suite Setup" ||
                 treeTest.SelectedNode.Name == "Setup" ||
+                treeTest.SelectedNode.Name == "Test" ||
                 treeTest.SelectedNode.Name == "Teardown" ||
                 treeTest.SelectedNode.Name == "Test Suite Teardown")
             {
@@ -183,22 +184,28 @@ namespace ssisUnitTestRunnerUI
                 cs.Commands.Remove((CommandBase)treeTest.SelectedNode.Tag);
                 treeTest.SelectedNode.Remove();
             }
-            if (treeTest.SelectedNode.Parent.Tag is Dictionary<string, ConnectionRef>)
+            if (treeTest.SelectedNode.Tag is ConnectionRef)
             {
-                Dictionary<string, ConnectionRef> crefs = (Dictionary<string, ConnectionRef>)treeTest.SelectedNode.Parent.Tag;
-                crefs.Remove(((ConnectionRef)treeTest.SelectedNode.Tag).ReferenceName);
+                ConnectionRef cref = (ConnectionRef) treeTest.SelectedNode.Tag;
+                _testSuite.ConnectionRefs.Remove(cref.ReferenceName);
+                //Dictionary<string, ConnectionRef> crefs = (Dictionary<string, ConnectionRef>)treeTest.SelectedNode.Parent.Tag;
+                //crefs.Remove(((ConnectionRef)treeTest.SelectedNode.Tag).ReferenceName);
                 treeTest.SelectedNode.Remove();
             }
-            if (treeTest.SelectedNode.Parent.Tag is Dictionary<string, PackageRef>)
+            if (treeTest.SelectedNode.Tag is PackageRef)
             {
-                Dictionary<string, PackageRef> prefs = (Dictionary<string, PackageRef>)treeTest.SelectedNode.Parent.Tag;
-                prefs.Remove(((PackageRef)treeTest.SelectedNode.Tag).Name);
+                PackageRef cref = (PackageRef)treeTest.SelectedNode.Tag;
+                _testSuite.PackageRefs.Remove(cref.Name);
+                //Dictionary<string, PackageRef> prefs = (Dictionary<string, PackageRef>)treeTest.SelectedNode.Parent.Tag;
+                //prefs.Remove(((PackageRef)treeTest.SelectedNode.Tag).Name);
                 treeTest.SelectedNode.Remove();
             }
-            if (treeTest.SelectedNode.Parent.Tag is Dictionary<string, Test>)
+            if (treeTest.SelectedNode.Tag is Test)
             {
-                Dictionary<string, Test> tests = (Dictionary<string, Test>)treeTest.SelectedNode.Parent.Tag;
-                tests.Remove(((Test)treeTest.SelectedNode.Tag).Name);
+                Test test = (Test)treeTest.SelectedNode.Tag;
+                _testSuite.Tests.Remove(test.Name);
+                //Dictionary<string, Test> tests = (Dictionary<string, Test>)treeTest.SelectedNode.Parent.Tag;
+                //tests.Remove(((Test)treeTest.SelectedNode.Tag).Name);
                 treeTest.SelectedNode.Remove();
             }
             if (treeTest.SelectedNode.Parent.Tag is Test)
