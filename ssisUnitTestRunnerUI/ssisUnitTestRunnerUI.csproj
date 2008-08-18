@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatabaseSetup.cs" />
     <Compile Include="TestBuilder.cs">
       <SubType>Form</SubType>
     </Compile>
