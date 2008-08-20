@@ -103,7 +103,10 @@ namespace SsisUnit
             xml.Append("name=\"" + Name + "\" ");
             xml.Append("expectedResult=\"" + _expectedResult + "\" ");
             xml.Append("testBefore=\"" + _testBefore.ToString().ToLower() + "\">");
-            xml.Append(_command.PersistToXml());
+            if (_command != null)
+            {
+                xml.Append(_command.PersistToXml());
+            }
             xml.Append("</Assert>");
             return xml.ToString();
         }
