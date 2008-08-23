@@ -79,6 +79,11 @@ namespace SsisUnit
             
             object validationResult = _command.Execute(package, task);
 
+            if (validationResult==null)
+            {
+                throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The return value from the {0} was null. " +
+                    "This may be because the specified Command does not return a value, or is set to not return a value.", _command.CommandName));
+            }
             returnValue = (_expectedResult.ToString() == validationResult.ToString());
 
             if (returnValue)
