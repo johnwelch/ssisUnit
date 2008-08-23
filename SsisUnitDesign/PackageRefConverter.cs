@@ -25,19 +25,23 @@ namespace SsisUnit.Design
         public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo info, object value)
         {
 
+            //if (value is string)
+            //{
+            //    if (((string)value) == string.Empty) return null;
+            //    try
+            //    {
+            //        Test test = (Test)context.Instance;
+            //        PackageRef pRef = test.TestSuite.PackageRefs[(string)value];
+            //        return pRef;
+            //    }
+            //    catch
+            //    {
+            //        throw new ArgumentException("Can not convert '" + (string)value + "' to type PackageRef");
+            //    }
+            //}
             if (value is string)
             {
-                if (((string)value) == string.Empty) return null;
-                try
-                {
-                    Test test = (Test)context.Instance;
-                    PackageRef pRef = test.TestSuite.PackageRefs[(string)value];
-                    return pRef;
-                }
-                catch
-                {
-                    throw new ArgumentException("Can not convert '" + (string)value + "' to type PackageRef");
-                }
+                return (string)value;
             }
             return base.ConvertFrom(context, info, value);
         }
@@ -49,6 +53,13 @@ namespace SsisUnit.Design
                 PackageRef pRef = (PackageRef)value;
 
                 return pRef.Name;
+            }
+            if (destType == typeof(string) && value is string)
+            {
+                //Test test = (Test)context.Instance;
+                //PackageRef pRef = test.TestSuite.PackageRefs[(string)value];
+
+                return value;
             }
             return base.ConvertTo(context, culture, value, destType);
         }
