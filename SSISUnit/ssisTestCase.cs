@@ -313,6 +313,7 @@ namespace SsisUnit
             {
                 throw new ApplicationException("The test suite is not in a valid format. It cannot be executed until the errors have been corrected.");
             }
+            _stats.Reset();
 
             _testSuiteSetup.Execute();
 
@@ -1125,6 +1126,14 @@ namespace SsisUnit
 
         #region Methods
 
+        internal void Reset()
+        {
+            foreach (TestSuiteStatistic tss in _statistics.Values)
+            {
+                tss.Reset();
+            }
+        }
+
         internal void IncrementStatistic(StatisticEnum statistic)
         {
             _statistics[statistic].IncrementValue();
@@ -1164,6 +1173,13 @@ namespace SsisUnit
             {
                 _value++;
             }
+
+            public void Reset()
+            {
+                _value = 0;
+            }
+           
+           
         }
     }
 
