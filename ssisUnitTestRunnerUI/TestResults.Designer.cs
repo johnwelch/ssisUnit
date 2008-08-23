@@ -37,13 +37,6 @@
             this.runTestSuiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.keepResultsToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.ResultType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ExecutionTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PackageName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TestName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AssertResult = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TestPassed = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblTestCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblTestPassed = new System.Windows.Forms.ToolStripStatusLabel();
@@ -52,6 +45,13 @@
             this.lblAssertPassed = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblAssertsFailed = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.ResultType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExecutionTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PackageName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TestName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AssertResult = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TestPassed = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -148,57 +148,6 @@
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
-            // ResultType
-            // 
-            this.ResultType.HeaderText = "Type";
-            this.ResultType.Name = "ResultType";
-            this.ResultType.ReadOnly = true;
-            this.ResultType.Width = 60;
-            // 
-            // ExecutionTime
-            // 
-            this.ExecutionTime.HeaderText = "Executed";
-            this.ExecutionTime.Name = "ExecutionTime";
-            this.ExecutionTime.ReadOnly = true;
-            this.ExecutionTime.Width = 120;
-            // 
-            // PackageName
-            // 
-            this.PackageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PackageName.FillWeight = 75F;
-            this.PackageName.HeaderText = "Package Name";
-            this.PackageName.Name = "PackageName";
-            this.PackageName.ReadOnly = true;
-            // 
-            // TaskName
-            // 
-            this.TaskName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.TaskName.HeaderText = "Task Name";
-            this.TaskName.Name = "TaskName";
-            this.TaskName.ReadOnly = true;
-            // 
-            // TestName
-            // 
-            this.TestName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.TestName.HeaderText = "Test Name";
-            this.TestName.Name = "TestName";
-            this.TestName.ReadOnly = true;
-            // 
-            // AssertResult
-            // 
-            this.AssertResult.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.AssertResult.FillWeight = 150F;
-            this.AssertResult.HeaderText = "Result";
-            this.AssertResult.Name = "AssertResult";
-            this.AssertResult.ReadOnly = true;
-            // 
-            // TestPassed
-            // 
-            this.TestPassed.HeaderText = "Passed";
-            this.TestPassed.Name = "TestPassed";
-            this.TestPassed.ReadOnly = true;
-            this.TestPassed.Width = 50;
-            // 
             // statusStrip1
             // 
             this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
@@ -276,6 +225,58 @@
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
             // 
+            // ResultType
+            // 
+            this.ResultType.HeaderText = "Type";
+            this.ResultType.Name = "ResultType";
+            this.ResultType.ReadOnly = true;
+            this.ResultType.Width = 60;
+            // 
+            // ExecutionTime
+            // 
+            this.ExecutionTime.HeaderText = "Executed";
+            this.ExecutionTime.Name = "ExecutionTime";
+            this.ExecutionTime.ReadOnly = true;
+            this.ExecutionTime.Width = 120;
+            // 
+            // PackageName
+            // 
+            this.PackageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PackageName.FillWeight = 75F;
+            this.PackageName.HeaderText = "Package Name";
+            this.PackageName.Name = "PackageName";
+            this.PackageName.ReadOnly = true;
+            // 
+            // TaskName
+            // 
+            this.TaskName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.TaskName.HeaderText = "Task Name";
+            this.TaskName.Name = "TaskName";
+            this.TaskName.ReadOnly = true;
+            // 
+            // TestName
+            // 
+            this.TestName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.TestName.HeaderText = "Test Name";
+            this.TestName.Name = "TestName";
+            this.TestName.ReadOnly = true;
+            // 
+            // AssertResult
+            // 
+            this.AssertResult.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.AssertResult.FillWeight = 150F;
+            this.AssertResult.HeaderText = "Result";
+            this.AssertResult.Name = "AssertResult";
+            this.AssertResult.ReadOnly = true;
+            this.AssertResult.Width = 194;
+            // 
+            // TestPassed
+            // 
+            this.TestPassed.HeaderText = "Passed";
+            this.TestPassed.Name = "TestPassed";
+            this.TestPassed.ReadOnly = true;
+            this.TestPassed.Width = 50;
+            // 
             // TestResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -320,6 +321,7 @@
         private System.Windows.Forms.ToolStripMenuItem testSuiteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runTestSuiteToolStripMenuItem;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
+        private System.Windows.Forms.ToolStripMenuItem keepResultsToolStripItem;
         private System.Windows.Forms.DataGridViewTextBoxColumn ResultType;
         private System.Windows.Forms.DataGridViewTextBoxColumn ExecutionTime;
         private System.Windows.Forms.DataGridViewTextBoxColumn PackageName;
@@ -327,6 +329,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn TestName;
         private System.Windows.Forms.DataGridViewTextBoxColumn AssertResult;
         private System.Windows.Forms.DataGridViewCheckBoxColumn TestPassed;
-        private System.Windows.Forms.ToolStripMenuItem keepResultsToolStripItem;
     }
 }
