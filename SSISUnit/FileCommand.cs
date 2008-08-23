@@ -126,7 +126,7 @@ namespace SsisUnit
         public string TargetPath
         {
             get { return Properties[PROP_TARGET_PATH].Value; }
-            set { TargetPath = Properties[PROP_TARGET_PATH].Value; }
+            set { Properties[PROP_TARGET_PATH].Value = value; }
         }
 
         private static FileOperation ConvertFileOperationString(string type)
