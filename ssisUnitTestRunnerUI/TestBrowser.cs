@@ -465,8 +465,8 @@ namespace ssisUnitTestRunnerUI
             }
             Test test = new Test(_testSuite, "Test" + counter.ToString(), string.Empty, string.Empty);
             _testSuite.Tests.Add(test.Name, test);
-            TreeNode tn = new TreeNode(test.Name);
-            tn.Tag = test;
+            TreeNode tn = CreateTestNode(test);
+            //tn.Tag = test;
             prNode.Nodes.Add(tn);
             tn.EnsureVisible();
             treeTest.SelectedNode = tn;
