@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.testBrowser1 = new ssisUnitTestRunnerUI.TestBrowser();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabProperties = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
@@ -61,6 +60,7 @@
             this.runSelectedTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testBrowser1 = new ssisUnitTestRunnerUI.TestBrowser();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -86,17 +86,6 @@
             this.splitContainer1.Size = new System.Drawing.Size(615, 464);
             this.splitContainer1.SplitterDistance = 205;
             this.splitContainer1.TabIndex = 0;
-            // 
-            // testBrowser1
-            // 
-            this.testBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.testBrowser1.Location = new System.Drawing.Point(0, 0);
-            this.testBrowser1.MinimumSize = new System.Drawing.Size(50, 50);
-            this.testBrowser1.Name = "testBrowser1";
-            this.testBrowser1.Size = new System.Drawing.Size(205, 464);
-            this.testBrowser1.TabIndex = 0;
-            this.testBrowser1.TestSuiteSelected += new System.EventHandler<ssisUnitTestRunnerUI.TestSuiteSelectedEventArgs>(this.testBrowser1_TestSuiteSelected);
-            this.testBrowser1.NodeSelected += new System.EventHandler<ssisUnitTestRunnerUI.NodeSelectedEventArgs>(this.testBrowser1_NodeSelected);
             // 
             // tabControl1
             // 
@@ -205,6 +194,7 @@
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.newToolStripMenuItem.Text = "&New...";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
@@ -219,6 +209,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
@@ -226,6 +217,7 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
@@ -316,6 +308,7 @@
             // deleteSelectedItemToolStripMenuItem
             // 
             this.deleteSelectedItemToolStripMenuItem.Name = "deleteSelectedItemToolStripMenuItem";
+            this.deleteSelectedItemToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
             this.deleteSelectedItemToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.deleteSelectedItemToolStripMenuItem.Text = "&Delete Selected Item";
             this.deleteSelectedItemToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedItemToolStripMenuItem_Click);
@@ -332,6 +325,7 @@
             // runSuiteToolStripMenuItem
             // 
             this.runSuiteToolStripMenuItem.Name = "runSuiteToolStripMenuItem";
+            this.runSuiteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
             this.runSuiteToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.runSuiteToolStripMenuItem.Text = "Run Suite";
             this.runSuiteToolStripMenuItem.Click += new System.EventHandler(this.runSuiteToolStripMenuItem_Click);
@@ -357,6 +351,17 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // testBrowser1
+            // 
+            this.testBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.testBrowser1.Location = new System.Drawing.Point(0, 0);
+            this.testBrowser1.MinimumSize = new System.Drawing.Size(50, 50);
+            this.testBrowser1.Name = "testBrowser1";
+            this.testBrowser1.Size = new System.Drawing.Size(205, 464);
+            this.testBrowser1.TabIndex = 0;
+            this.testBrowser1.TestSuiteSelected += new System.EventHandler<ssisUnitTestRunnerUI.TestSuiteSelectedEventArgs>(this.testBrowser1_TestSuiteSelected);
+            this.testBrowser1.NodeSelected += new System.EventHandler<ssisUnitTestRunnerUI.NodeSelectedEventArgs>(this.testBrowser1_NodeSelected);
             // 
             // testSuiteUI
             // 
