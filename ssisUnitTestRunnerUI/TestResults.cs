@@ -12,15 +12,25 @@ namespace ssisUnitTestRunnerUI
     public partial class TestResults : Form
     {
         SsisTestSuite _testSuite;
+        EventHandler<AssertCompletedEventArgs> ehAssertCompleted;
+        EventHandler<SetupCompletedEventArgs> ehSetupCompleted;
+        EventHandler<TeardownCompletedEventArgs> ehTeardownCompleted;
+        EventHandler<TestCompletedEventArgs> ehTestCompleted;
 
         public TestResults(SsisTestSuite testSuite)
         {
             InitializeComponent();
             _testSuite = testSuite;
-            _testSuite.AssertCompleted += new EventHandler<AssertCompletedEventArgs>(_testSuite_AssertCompleted);
-            _testSuite.SetupCompleted += new EventHandler<SetupCompletedEventArgs>(_testSuite_SetupCompleted);
-            _testSuite.TeardownCompleted += new EventHandler<TeardownCompletedEventArgs>(_testSuite_TeardownCompleted);
-            _testSuite.TestCompleted += new EventHandler<TestCompletedEventArgs>(_testSuite_TestCompleted);
+
+            ehAssertCompleted = new EventHandler<AssertCompletedEventArgs>(_testSuite_AssertCompleted);
+            ehSetupCompleted= new EventHandler<SetupCompletedEventArgs>(_testSuite_SetupCompleted);
+            ehTeardownCompleted= new EventHandler<TeardownCompletedEventArgs>(_testSuite_TeardownCompleted);
+            ehTestCompleted = new EventHandler<TestCompletedEventArgs>(_testSuite_TestCompleted);
+
+            _testSuite.AssertCompleted += ehAssertCompleted;
+            _testSuite.SetupCompleted += ehSetupCompleted;
+            _testSuite.TeardownCompleted += ehTeardownCompleted;
+            _testSuite.TestCompleted += ehTestCompleted;
         }
 
         public void RunSuite()
@@ -40,7 +50,7 @@ namespace ssisUnitTestRunnerUI
             {
                 MessageBox.Show("The following error occurred when executing the test: " + ex.Message);
             }
-            
+
         }
 
         public void RunTest(string testName)
@@ -57,7 +67,7 @@ namespace ssisUnitTestRunnerUI
 
         void _testSuite_TeardownCompleted(object sender, TeardownCompletedEventArgs e)
         {
-            dataGridView1.Rows.Add("Teardown", e.TeardownExecutionTime, e.Package, e.TaskGuid, 
+            dataGridView1.Rows.Add("Teardown", e.TeardownExecutionTime, e.Package, e.TaskGuid,
                  e.TestName, e.Results, true);
         }
 
@@ -86,7 +96,7 @@ namespace ssisUnitTestRunnerUI
             {
                 for (int colIndex = 0; colIndex < dataGridView1.Columns.Count; colIndex++)
                 {
-                    if (colIndex==(dataGridView1.Columns.Count - 1))
+                    if (colIndex == (dataGridView1.Columns.Count - 1))
                     {
                         sb.Append(dataGridView1[colIndex, rowIndex].Value.ToString() + Environment.NewLine);
                     }
@@ -98,7 +108,7 @@ namespace ssisUnitTestRunnerUI
             }
 
             string fileName = string.Empty;
-            if (UIHelper.ShowSaveAs(ref fileName, UIHelper.FileFilter.CSV, false)== DialogResult.OK)
+            if (UIHelper.ShowSaveAs(ref fileName, UIHelper.FileFilter.CSV, false) == DialogResult.OK)
             {
                 System.IO.File.WriteAllText(fileName, sb.ToString());
             }
@@ -116,6 +126,15 @@ namespace ssisUnitTestRunnerUI
                 dataGridView1.Rows.Clear();
             }
             this.RunSuite();
+        }
+
+        private void TestResults_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _testSuite.AssertCompleted -= ehAssertCompleted;
+            _testSuite.SetupCompleted -= ehSetupCompleted;
+            _testSuite.TeardownCompleted -= ehTeardownCompleted;
+            _testSuite.TestCompleted -= ehTestCompleted;
+
         }
     }
 }

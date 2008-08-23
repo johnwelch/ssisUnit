@@ -29,21 +29,14 @@
         private void InitializeComponent()
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.lblTestCount = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblTestPassed = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblTestsFailed = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblAssertCount = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblAssertPassed = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblAssertsFailed = new System.Windows.Forms.ToolStripStatusLabel();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testSuiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runTestSuiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.keepResultsToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.ResultType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ExecutionTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PackageName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,7 +44,14 @@
             this.TestName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AssertResult = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TestPassed = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.keepResultsToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.lblTestCount = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblTestPassed = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblTestsFailed = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblAssertCount = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblAssertPassed = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblAssertsFailed = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -73,6 +73,60 @@
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.exitToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "&File";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.saveToolStripMenuItem.Text = "&Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(95, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // testSuiteToolStripMenuItem
+            // 
+            this.testSuiteToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.runTestSuiteToolStripMenuItem,
+            this.keepResultsToolStripItem});
+            this.testSuiteToolStripMenuItem.Name = "testSuiteToolStripMenuItem";
+            this.testSuiteToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+            this.testSuiteToolStripMenuItem.Text = "Test Suite";
+            // 
+            // runTestSuiteToolStripMenuItem
+            // 
+            this.runTestSuiteToolStripMenuItem.Name = "runTestSuiteToolStripMenuItem";
+            this.runTestSuiteToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.runTestSuiteToolStripMenuItem.Text = "Run Test Suite";
+            this.runTestSuiteToolStripMenuItem.Click += new System.EventHandler(this.runTestSuiteToolStripMenuItem_Click);
+            // 
+            // keepResultsToolStripItem
+            // 
+            this.keepResultsToolStripItem.Checked = true;
+            this.keepResultsToolStripItem.CheckOnClick = true;
+            this.keepResultsToolStripItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.keepResultsToolStripItem.Name = "keepResultsToolStripItem";
+            this.keepResultsToolStripItem.Size = new System.Drawing.Size(188, 22);
+            this.keepResultsToolStripItem.Text = "Keep Previous Results";
+            // 
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
@@ -93,6 +147,57 @@
             this.dataGridView1.Size = new System.Drawing.Size(823, 262);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // ResultType
+            // 
+            this.ResultType.HeaderText = "Type";
+            this.ResultType.Name = "ResultType";
+            this.ResultType.ReadOnly = true;
+            this.ResultType.Width = 60;
+            // 
+            // ExecutionTime
+            // 
+            this.ExecutionTime.HeaderText = "Executed";
+            this.ExecutionTime.Name = "ExecutionTime";
+            this.ExecutionTime.ReadOnly = true;
+            this.ExecutionTime.Width = 120;
+            // 
+            // PackageName
+            // 
+            this.PackageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PackageName.FillWeight = 75F;
+            this.PackageName.HeaderText = "Package Name";
+            this.PackageName.Name = "PackageName";
+            this.PackageName.ReadOnly = true;
+            // 
+            // TaskName
+            // 
+            this.TaskName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.TaskName.HeaderText = "Task Name";
+            this.TaskName.Name = "TaskName";
+            this.TaskName.ReadOnly = true;
+            // 
+            // TestName
+            // 
+            this.TestName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.TestName.HeaderText = "Test Name";
+            this.TestName.Name = "TestName";
+            this.TestName.ReadOnly = true;
+            // 
+            // AssertResult
+            // 
+            this.AssertResult.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.AssertResult.FillWeight = 150F;
+            this.AssertResult.HeaderText = "Result";
+            this.AssertResult.Name = "AssertResult";
+            this.AssertResult.ReadOnly = true;
+            // 
+            // TestPassed
+            // 
+            this.TestPassed.HeaderText = "Passed";
+            this.TestPassed.Name = "TestPassed";
+            this.TestPassed.ReadOnly = true;
+            this.TestPassed.Width = 50;
             // 
             // statusStrip1
             // 
@@ -146,51 +251,6 @@
             this.lblAssertsFailed.Size = new System.Drawing.Size(90, 17);
             this.lblAssertsFailed.Text = "Asserts Failed: 0";
             // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveToolStripMenuItem.Text = "&Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // testSuiteToolStripMenuItem
-            // 
-            this.testSuiteToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.runTestSuiteToolStripMenuItem,
-            this.keepResultsToolStripItem});
-            this.testSuiteToolStripMenuItem.Name = "testSuiteToolStripMenuItem";
-            this.testSuiteToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
-            this.testSuiteToolStripMenuItem.Text = "Test Suite";
-            // 
-            // runTestSuiteToolStripMenuItem
-            // 
-            this.runTestSuiteToolStripMenuItem.Name = "runTestSuiteToolStripMenuItem";
-            this.runTestSuiteToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.runTestSuiteToolStripMenuItem.Text = "Run Test Suite";
-            this.runTestSuiteToolStripMenuItem.Click += new System.EventHandler(this.runTestSuiteToolStripMenuItem_Click);
-            // 
             // toolStripContainer1
             // 
             // 
@@ -216,66 +276,6 @@
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
             // 
-            // ResultType
-            // 
-            this.ResultType.HeaderText = "Type";
-            this.ResultType.Name = "ResultType";
-            this.ResultType.ReadOnly = true;
-            this.ResultType.Width = 60;
-            // 
-            // ExecutionTime
-            // 
-            this.ExecutionTime.HeaderText = "Executed";
-            this.ExecutionTime.Name = "ExecutionTime";
-            this.ExecutionTime.ReadOnly = true;
-            this.ExecutionTime.Width = 120;
-            // 
-            // PackageName
-            // 
-            this.PackageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PackageName.FillWeight = 75F;
-            this.PackageName.HeaderText = "Package Name";
-            this.PackageName.Name = "PackageName";
-            this.PackageName.ReadOnly = true;
-            // 
-            // TaskName
-            // 
-            this.TaskName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.TaskName.HeaderText = "Task Name";
-            this.TaskName.Name = "TaskName";
-            this.TaskName.ReadOnly = true;
-            // 
-            // TestName
-            // 
-            this.TestName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.TestName.HeaderText = "Test Name";
-            this.TestName.Name = "TestName";
-            this.TestName.ReadOnly = true;
-            // 
-            // AssertResult
-            // 
-            this.AssertResult.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.AssertResult.FillWeight = 150F;
-            this.AssertResult.HeaderText = "Result";
-            this.AssertResult.Name = "AssertResult";
-            this.AssertResult.ReadOnly = true;
-            // 
-            // TestPassed
-            // 
-            this.TestPassed.HeaderText = "Passed";
-            this.TestPassed.Name = "TestPassed";
-            this.TestPassed.ReadOnly = true;
-            this.TestPassed.Width = 50;
-            // 
-            // keepResultsToolStripItem
-            // 
-            this.keepResultsToolStripItem.Checked = true;
-            this.keepResultsToolStripItem.CheckOnClick = true;
-            this.keepResultsToolStripItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.keepResultsToolStripItem.Name = "keepResultsToolStripItem";
-            this.keepResultsToolStripItem.Size = new System.Drawing.Size(188, 22);
-            this.keepResultsToolStripItem.Text = "Keep Previous Results";
-            // 
             // TestResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -285,6 +285,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "TestResults";
             this.Text = "TestResults";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TestResults_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
