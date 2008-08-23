@@ -183,6 +183,7 @@ namespace ssisUnitTestRunnerUI
                 CommandSet cs = (CommandSet)treeTest.SelectedNode.Parent.Tag;
                 cs.Commands.Remove((CommandBase)treeTest.SelectedNode.Tag);
                 treeTest.SelectedNode.Remove();
+                return;
             }
             if (treeTest.SelectedNode.Tag is ConnectionRef)
             {
@@ -191,6 +192,7 @@ namespace ssisUnitTestRunnerUI
                 //Dictionary<string, ConnectionRef> crefs = (Dictionary<string, ConnectionRef>)treeTest.SelectedNode.Parent.Tag;
                 //crefs.Remove(((ConnectionRef)treeTest.SelectedNode.Tag).ReferenceName);
                 treeTest.SelectedNode.Remove();
+                return;
             }
             if (treeTest.SelectedNode.Tag is PackageRef)
             {
@@ -199,6 +201,7 @@ namespace ssisUnitTestRunnerUI
                 //Dictionary<string, PackageRef> prefs = (Dictionary<string, PackageRef>)treeTest.SelectedNode.Parent.Tag;
                 //prefs.Remove(((PackageRef)treeTest.SelectedNode.Tag).Name);
                 treeTest.SelectedNode.Remove();
+                return;
             }
             if (treeTest.SelectedNode.Tag is Test)
             {
@@ -207,18 +210,21 @@ namespace ssisUnitTestRunnerUI
                 //Dictionary<string, Test> tests = (Dictionary<string, Test>)treeTest.SelectedNode.Parent.Tag;
                 //tests.Remove(((Test)treeTest.SelectedNode.Tag).Name);
                 treeTest.SelectedNode.Remove();
+                return;
             }
-            if (treeTest.SelectedNode.Parent.Tag is Test)
+            if (treeTest.SelectedNode.Tag is SsisAssert)
             {
                 Test cs = (Test)treeTest.SelectedNode.Parent.Tag;
                 cs.Asserts.Remove(((SsisAssert)treeTest.SelectedNode.Tag).Name);
                 treeTest.SelectedNode.Remove();
+                return;
             }
             if (treeTest.SelectedNode.Parent.Tag is SsisAssert)
             {
                 SsisAssert cs = (SsisAssert)treeTest.SelectedNode.Parent.Tag;
                 cs.Command = null;
                 treeTest.SelectedNode.Remove();
+                return;
             }
         }
 
