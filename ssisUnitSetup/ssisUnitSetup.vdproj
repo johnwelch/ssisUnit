@@ -428,6 +428,19 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5.SP1"
+                    {
+                    "Name" = "8:.NET Framework 3.5 SP1"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5.SP1"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
             }
         }
         "Release"
@@ -452,6 +465,19 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5.SP1"
+                    {
+                    "Name" = "8:.NET Framework 3.5 SP1"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5.SP1"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
             }
         }
     }
@@ -571,7 +597,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -633,7 +659,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -818,7 +844,7 @@
             "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_7BC87F42A4AF4ED39A275EA86405AC82"
             {
             "Name" = "8:ssisUnit Test Suite"
-            "Description" = "8:"
+            "Description" = "8:ssisUnit Test Suite"
             "Extensions" = "8:ssisUnit"
             "MIME" = "8:"
             "Icon" = "8:"
@@ -865,7 +891,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_72114901B9FC4DBFB9ED570CFD9B03DA"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFilesFolder][ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -901,21 +927,21 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:ssisUnitSetup"
+        "ProductName" = "8:ssisUnit"
         "ProductCode" = "8:{8BFE04FB-8CFA-4C12-8B24-A300C05C9C60}"
-        "PackageCode" = "8:{DB47AC72-5445-4C81-916F-21143EF7BE0F}"
+        "PackageCode" = "8:{C3F2E147-FCFD-491E-AC4B-D8D9B8944CC5}"
         "UpgradeCode" = "8:{4176836B-5FAD-45F9-97A9-3564524679C2}"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Microsoft"
+        "Manufacturer" = "8:AgileBI"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
         "Title" = "8:ssisUnitSetup"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Microsoft"
+        "ARPCONTACT" = "8:AgileBI"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
@@ -1451,7 +1477,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_063B32D5B1284310B9A5AE74B06EA5D0"
             {
-            "SourcePath" = "8:..\\ssisUnitTestRunnerUI\\obj\\Debug\\ssisUnitTestRunnerUI.exe"
+            "SourcePath" = "8:..\\ssisUnitTestRunnerUI\\obj\\Release\\ssisUnitTestRunnerUI.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_72114901B9FC4DBFB9ED570CFD9B03DA"
@@ -1479,7 +1505,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_78A78EFEB704460493C6710B1126AA3D"
             {
-            "SourcePath" = "8:..\\SSISUnit\\obj\\Debug\\SsisUnit.dll"
+            "SourcePath" = "8:..\\SSISUnit\\obj\\Release\\SsisUnit.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_72114901B9FC4DBFB9ED570CFD9B03DA"
@@ -1507,7 +1533,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9FCD7F861C4B4DF2BB63606E1450251F"
             {
-            "SourcePath" = "8:..\\TestRunner\\obj\\Debug\\ssisUnitTestRunner.exe"
+            "SourcePath" = "8:..\\TestRunner\\obj\\Release\\ssisUnitTestRunner.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_72114901B9FC4DBFB9ED570CFD9B03DA"
@@ -1535,7 +1561,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CE65B1F47C5943C0B160999CBCFA8A60"
             {
-            "SourcePath" = "8:..\\SsisUnitDesign\\obj\\Debug\\SsisUnit.Design.dll"
+            "SourcePath" = "8:..\\SsisUnitDesign\\obj\\Release\\SsisUnit.Design.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_72114901B9FC4DBFB9ED570CFD9B03DA"
