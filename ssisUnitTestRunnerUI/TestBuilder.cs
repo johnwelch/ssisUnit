@@ -9,6 +9,8 @@ using SsisUnit;
 using System.Globalization;
 using Microsoft.SqlServer.Dts.Runtime;
 using SsisUnit.Design;
+using System.IO;
+using System.Xml;
 
 namespace ssisUnitTestRunnerUI
 {
@@ -18,11 +20,16 @@ namespace ssisUnitTestRunnerUI
         private string _currentFileName = string.Empty;
         private Microsoft.SqlServer.Dts.Runtime.Application _ssisApp = new Microsoft.SqlServer.Dts.Runtime.Application();
 
-        public testSuiteUI()
+        public testSuiteUI(string testCaseFile)
         {
             InitializeComponent();
 
             LoadCommands();
+            if (testCaseFile!=string.Empty && System.IO.File.Exists(testCaseFile))
+            {
+                _currentFileName = testCaseFile;
+                testBrowser1.AddTestSuite(testCaseFile);
+            }
         }
 
         private void LoadCommands()
@@ -55,9 +62,31 @@ namespace ssisUnitTestRunnerUI
 
             if (e.NewItem is ISsisUnitPersist)
             {
-                txtXML.Text = ((ISsisUnitPersist)e.NewItem).PersistToXml();
+                txtXML.Text = FormatXml(((ISsisUnitPersist)e.NewItem).PersistToXml());
             }
         }
+
+        public static string FormatXml(string xml)
+        {
+            StringReader xmlSR = new StringReader(xml);
+            XmlReader xmlReader = XmlReader.Create(xmlSR);
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(xmlReader);
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.NewLineOnAttributes = true;
+
+            MemoryStream memoryStream = new MemoryStream();
+            TextWriter writer = new StreamWriter(memoryStream, new System.Text.UTF8Encoding());
+
+            doc.Save(writer);
+
+            memoryStream.Position = 0;
+            StreamReader streamReader = new StreamReader(memoryStream);
+            return streamReader.ReadToEnd();
+        }
+
 
         private void EnableMenuItems(object p)
         {
