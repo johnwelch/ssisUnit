@@ -47,6 +47,7 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -59,6 +60,7 @@
     <Compile Include="ProcessCommandTest.cs" />
     <Compile Include="ProgramTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyCommandTest.cs" />
     <Compile Include="SqlCommandTest.cs" />
     <Compile Include="SsisAssertTest.cs" />
     <Compile Include="SSISTestCaseTest.cs" />
@@ -69,6 +71,7 @@
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
     <None Include="SsisUnit.pfx" />
+    <Shadow Include="Test References\ssisUnit.accessor" />
     <None Include="UTSsisUnit_Directory.xml" />
     <None Include="UTSsisUnit_PackageList.xml" />
     <None Include="UTSsisUnit_TestSetup_Teardown.xml" />
@@ -90,9 +93,6 @@
       <Project>{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}</Project>
       <Name>ssisUnitTestRunner</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Test References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
