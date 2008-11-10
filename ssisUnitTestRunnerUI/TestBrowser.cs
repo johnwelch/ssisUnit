@@ -72,7 +72,7 @@ namespace ssisUnitTestRunnerUI
         public void CreateTest()
         {
             SsisTestSuite newTs = new SsisTestSuite();
-            
+
             LoadTest(newTs, GetUnusedName());
         }
 
@@ -96,7 +96,7 @@ namespace ssisUnitTestRunnerUI
         public void SaveTestSuite(string fileName)
         {
             _testSuite.Save(fileName);
-            if (fileName!=cboTests.SelectedItem.ToString())
+            if (fileName != cboTests.SelectedItem.ToString())
             {
                 cboTests.Items.Remove(cboTests.SelectedItem);
                 UpdateTestSelection(fileName);
@@ -167,7 +167,7 @@ namespace ssisUnitTestRunnerUI
 
         public void DeleteItem()
         {
-//            if (treeTest.SelectedNode.Nodes.Count > 0) return;
+            //            if (treeTest.SelectedNode.Nodes.Count > 0) return;
             if (treeTest.SelectedNode.Name == "Connection List" ||
                 treeTest.SelectedNode.Name == "Package List" ||
                 treeTest.SelectedNode.Name == "Test Suite Setup" ||
@@ -187,7 +187,7 @@ namespace ssisUnitTestRunnerUI
             }
             if (treeTest.SelectedNode.Tag is ConnectionRef)
             {
-                ConnectionRef cref = (ConnectionRef) treeTest.SelectedNode.Tag;
+                ConnectionRef cref = (ConnectionRef)treeTest.SelectedNode.Tag;
                 _testSuite.ConnectionRefs.Remove(cref.ReferenceName);
                 //Dictionary<string, ConnectionRef> crefs = (Dictionary<string, ConnectionRef>)treeTest.SelectedNode.Parent.Tag;
                 //crefs.Remove(((ConnectionRef)treeTest.SelectedNode.Tag).ReferenceName);
@@ -272,7 +272,7 @@ namespace ssisUnitTestRunnerUI
             }
             _testSuite = testSuite;
 
-            
+
             if (_testSuites.ContainsKey(name))
             {
                 _testSuites.Remove(name);
@@ -298,7 +298,7 @@ namespace ssisUnitTestRunnerUI
             testNode.Tag = test;
             testNode.Nodes.Add(CreateCommandSetNode("Test Setup", test.TestSetup));
 
-            if (! test.Validate())
+            if (!test.Validate())
             {
                 testNode.ForeColor = Color.Red;
                 testNode.ToolTipText = test.ValidationMessages;
@@ -440,7 +440,7 @@ namespace ssisUnitTestRunnerUI
 
         private void cboTests_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            LoadTest(_testSuites[cboTests.SelectedItem.ToString()],cboTests.SelectedItem.ToString());
+            LoadTest(_testSuites[cboTests.SelectedItem.ToString()], cboTests.SelectedItem.ToString());
         }
 
         public void AddAssert()
@@ -480,6 +480,10 @@ namespace ssisUnitTestRunnerUI
 
         public void RunSuite()
         {
+            if (_testSuite == null)
+            {
+                throw new ApplicationException("No Test Suite is selected.");
+            }
             TestResults ts = new TestResults(_testSuite);
             ts.RunSuite();
         }
@@ -520,7 +524,7 @@ namespace ssisUnitTestRunnerUI
         {
             this.DeleteItem();
         }
-        
+
         private void addGenericCommandToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem tsItem = (ToolStripMenuItem)sender;
@@ -561,7 +565,7 @@ namespace ssisUnitTestRunnerUI
         //    {
         //        if (_testSuite.PackageRefs.ContainsKey()
         //        {
-                    
+
         //        }
         //        AddConnectionRefs(ts, package);
         //        AddPackageRefs(ts, package, fileName);

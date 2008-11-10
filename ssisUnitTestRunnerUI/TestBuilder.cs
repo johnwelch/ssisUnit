@@ -64,23 +64,30 @@ namespace ssisUnitTestRunnerUI
             {
                 txtXML.Text = FormatXml(((ISsisUnitPersist)e.NewItem).PersistToXml());
             }
+            else
+            {
+                txtXML.Text = string.Empty;
+            }
         }
 
         public static string FormatXml(string xml)
         {
-            StringReader xmlSR = new StringReader(xml);
-            XmlReader xmlReader = XmlReader.Create(xmlSR);
-
             XmlDocument doc = new XmlDocument();
-            doc.Load(xmlReader);
+            XmlDocumentFragment frag = doc.CreateDocumentFragment();
+            frag.InnerXml = xml;
+
             XmlWriterSettings settings = new XmlWriterSettings();
+            settings.OmitXmlDeclaration = true;
+            settings.ConformanceLevel = ConformanceLevel.Fragment;
             settings.Indent = true;
-            settings.NewLineOnAttributes = true;
+            //settings.NewLineOnAttributes = true;
 
             MemoryStream memoryStream = new MemoryStream();
-            TextWriter writer = new StreamWriter(memoryStream, new System.Text.UTF8Encoding());
 
-            doc.Save(writer);
+            XmlWriter xw = XmlWriter.Create(memoryStream, settings);
+            frag.WriteTo(xw);
+            xw.Flush();
+            xw.Close();
 
             memoryStream.Position = 0;
             StreamReader streamReader = new StreamReader(memoryStream);
@@ -110,6 +117,11 @@ namespace ssisUnitTestRunnerUI
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            OpenTestSuite();
+        }
+
+        private void OpenTestSuite()
+        {
             string fileName = string.Empty;
 
             if (UIHelper.ShowOpen(ref fileName, UIHelper.FileFilter.SsisUnit, true) == DialogResult.OK)
@@ -120,6 +132,11 @@ namespace ssisUnitTestRunnerUI
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveTestSuite();
+        }
+
+        private void SaveTestSuite()
         {
             if (System.IO.File.Exists(_currentFileName))
             {
@@ -132,7 +149,6 @@ namespace ssisUnitTestRunnerUI
                     testBrowser1.SaveTestSuite(_currentFileName);
                 }
             }
-
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -142,13 +158,13 @@ namespace ssisUnitTestRunnerUI
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //dlgSaveFile.FileName = _currentFileName;
-            //if (dlgSaveFile.ShowDialog() == DialogResult.OK)
-            //{
+            CreateTestSuite();
+        }
+
+        private void CreateTestSuite()
+        {
             _currentFileName = string.Empty;
             testBrowser1.CreateTest();
-            //}
-
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -162,6 +178,7 @@ namespace ssisUnitTestRunnerUI
         private void testBrowser1_TestSuiteSelected(object sender, TestSuiteSelectedEventArgs e)
         {
             _currentFileName = e.CurrentFile;
+            this.Text = "Test Suite Builder - " + _currentFileName;
         }
 
         private void addTestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -273,7 +290,7 @@ namespace ssisUnitTestRunnerUI
 
         private void ShowHelp()
         {
-            throw new NotImplementedException();
+            System.Diagnostics.Process.Start("http://www.codeplex.com/ssisUnit");
         }
 
         private void runSuiteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -318,6 +335,33 @@ namespace ssisUnitTestRunnerUI
             }
 
             testBrowser1.RefreshTestSuite();
+        }
+
+        private void newToolStripButton_Click(object sender, EventArgs e)
+        {
+            CreateTestSuite();
+        }
+
+        private void openToolStripButton_Click(object sender, EventArgs e)
+        {
+            OpenTestSuite();
+        }
+
+        private void saveToolStripButton_Click(object sender, EventArgs e)
+        {
+            SaveTestSuite();
+        }
+
+        private void runTestSuiteTtoolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                testBrowser1.RunSuite();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("An error occurred when performing this operation. " + ex.Message);
+            }
         }
 
     }

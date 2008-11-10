@@ -70,6 +70,10 @@
     <EmbeddedResource Include="TestResults.resx">
       <DependentUpon>TestResults.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UIResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UIResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -97,6 +101,11 @@
       <DependentUpon>TestResults.cs</DependentUpon>
     </Compile>
     <Compile Include="UIHelper.cs" />
+    <Compile Include="UIResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UIResources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SsisUnitDesign\SsisUnit.Design.csproj">
@@ -107,6 +116,15 @@
       <Project>{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}</Project>
       <Name>SsisUnit</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RunTestSuite.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RunTestSuite.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RunTestSuite.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
