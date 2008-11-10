@@ -208,7 +208,7 @@ namespace SsisUnit
 
         internal string PersistToXml()
         {
-            StringBuilder xml = new StringBuilder(2416);
+            StringBuilder xml = new StringBuilder();
             xml.AppendFormat(@"<?xml version=""1.0"" encoding=""utf-8"" ?>{0}", Environment.NewLine);
             xml.AppendFormat(@"<TestSuite xmlns=""http://tempuri.org/SsisUnit.xsd"">{0}", Environment.NewLine);
             xml.AppendFormat(@"  <ConnectionList>{0}", Environment.NewLine);

@@ -61,6 +61,7 @@
     <Compile Include="IValidate.cs" />
     <Compile Include="PackageRef.cs" />
     <Compile Include="ProcessCommand.cs" />
+    <Compile Include="PropertyCommand.cs" />
     <Compile Include="SqlCommand.cs" />
     <Compile Include="SsisBaseObject.cs" />
     <Compile Include="ssisTestCase.cs" />
