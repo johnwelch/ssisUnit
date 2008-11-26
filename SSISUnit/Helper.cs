@@ -104,6 +104,12 @@ namespace SsisUnit
             return package;
         }
 
+        public static object GetPropertyValue(Package pkg, string propertyPath)
+        {
+            return null;
+        }
+        //\package.variables[myvariable].Value
+        //\Package\Sequence Container\Script Task.Properties[Description]
 
     }
 }

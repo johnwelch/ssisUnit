@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
   <ConnectionList>
-    <Connection name="AdventureWorks" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks" connectionType="ConnectionString"/>
+    <Connection name="AdventureWorks" connection="Provider=SQLNCLI;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks" connectionType="ConnectionString"/>
   </ConnectionList>
   <PackageList>
     <Package name="filePkg" packagePath="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" storageType="FileSystem"/>

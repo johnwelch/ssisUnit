@@ -112,6 +112,22 @@
     </xs:complexType>
   </xs:element>
 
+  <!--Define Common Property Command-->
+  <xs:element name="PropertyCommand">
+    <xs:complexType>
+      <xs:attribute name="operation" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Get" />
+            <xs:enumeration value="Set" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="propertyPath" type ="xs:string" use="required"/>
+      <xs:attribute name="value" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
   <!--Define Test-->
   <xs:element name="Test">
     <xs:complexType>
@@ -125,6 +141,7 @@
               <xs:element ref="VariableCommand"/>
               <xs:element ref="FileCommand"/>
               <xs:element ref="DirectoryCommand"/>
+              <xs:element ref="PropertyCommand"/>
             </xs:choice>
             <xs:attribute name="name" type="xs:string" use="required"/>
             <xs:attribute name="expectedResult" type="xs:string" use="required"/>
@@ -192,6 +209,7 @@
       <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="PropertyCommand" minOccurs="0" maxOccurs="unbounded"/>
     </xs:choice>
   </xs:complexType>
 

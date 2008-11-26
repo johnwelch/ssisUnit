@@ -142,6 +142,7 @@ namespace UTssisUnit
         {
             SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
 
+
             //XmlDocument doc = new XmlDocument();
             //doc.Load(TEST_XML_FILE_PATH);
             //XmlNode test = doc.DocumentElement["Tests"].ChildNodes[0];
@@ -300,12 +301,12 @@ namespace UTssisUnit
 
             //Add connection ref
             target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
-                "Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks",
+                "Provider=SQLNCLI;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
 
             Assert.AreEqual<int>(1, target.ConnectionRefs.Count);
             Assert.AreEqual<string>("AdventureWorks", target.ConnectionRefs["AdventureWorks"].ReferenceName);
-            Assert.AreEqual<string>("Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks", target.ConnectionRefs["AdventureWorks"].ConnectionString);
+            Assert.AreEqual<string>("Provider=SQLNCLI;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks", target.ConnectionRefs["AdventureWorks"].ConnectionString);
             Assert.AreEqual<ConnectionRef.ConnectionTypeEnum>(ConnectionRef.ConnectionTypeEnum.ConnectionString, target.ConnectionRefs["AdventureWorks"].ConnectionType);
 
             //Add package ref

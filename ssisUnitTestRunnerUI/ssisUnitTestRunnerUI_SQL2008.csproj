@@ -87,6 +87,7 @@
     <EmbeddedResource Include="TestResults.resx">
       <DependentUpon>TestResults.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UIResources.resx" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -114,6 +115,7 @@
       <DependentUpon>TestResults.cs</DependentUpon>
     </Compile>
     <Compile Include="UIHelper.cs" />
+    <Compile Include="UIResources.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

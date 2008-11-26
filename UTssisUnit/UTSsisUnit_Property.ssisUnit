@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
+  <ConnectionList>
+  </ConnectionList>
+  <PackageList>
+    <Package name="PropertyTest" storageType="FileSystem" packagePath="C:\Projects\SSISUnit\UTssis2008packages\PropertyTest.dtsx"/>
+  </PackageList>
+  <Setup>
+  </Setup>
+  <Tests>
+    <Test name="TestProperty" package="PropertyTest" task="{5A32107F-F3A6-4345-BEB5-0B8434DDB102}">
+      <Assert expectedResult="TestValue" name="TestPackageVariable" testBefore="false">
+        <PropertyCommand operation="Get" propertyPath="\package.variables[TestVar].Value"/>
+      </Assert>
+    </Test>
+  </Tests>
+  <Teardown>
+  </Teardown>
+</TestSuite>
