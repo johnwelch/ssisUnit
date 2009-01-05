@@ -85,16 +85,34 @@ namespace SsisUnit
 
         public string PersistToXml()
         {
+            //StringBuilder xml = new StringBuilder();
+            //xml.Append("<Package ");
+            //xml.Append("name=\"" + _name + "\" ");
+            //xml.Append("packagePath=\"" + _packagePath + "\" ");
+            //if (_server != string.Empty)
+            //{
+            //    xml.Append("server=\"" + _server + "\" ");
+            //}
+            //xml.Append("storageType=\"" + this.StorageType.ToString() + "\"");
+            //xml.Append("/>");
+            //return xml.ToString();
+
             StringBuilder xml = new StringBuilder();
-            xml.Append("<Package ");
-            xml.Append("name=\"" + _name + "\" ");
-            xml.Append("packagePath=\"" + _packagePath + "\" ");
+            XmlWriterSettings writerSettings = new XmlWriterSettings();
+            writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+            writerSettings.OmitXmlDeclaration = true;
+
+            XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings);
+            xmlWriter.WriteStartElement("Package");
+            xmlWriter.WriteAttributeString("name", this.Name);
+            xmlWriter.WriteAttributeString("packagePath", this.PackagePath);
             if (_server != string.Empty)
             {
-                xml.Append("server=\"" + _server + "\" ");
+                xmlWriter.WriteAttributeString("server", this.Server);
             }
-            xml.Append("storageType=\"" + this.StorageType.ToString() + "\"");
-            xml.Append("/>");
+            xmlWriter.WriteAttributeString("storageType", this.StorageType.ToString());
+            xmlWriter.WriteEndElement();
+            xmlWriter.Close();
             return xml.ToString();
         }
 

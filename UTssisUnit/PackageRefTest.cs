@@ -13,7 +13,7 @@ namespace UTssisUnit
     [TestClass()]
     public class PackageRefTest
     {
-        string xml = "<Package name=\"ssPkg\" packagePath=\"\\File System\\UT Basic Scenario\" server=\"localhost\" storageType=\"PackageStore\"/>";
+        string xml = "<Package name=\"ssPkg\" packagePath=\"\\File System\\UT Basic Scenario\" server=\"localhost\" storageType=\"PackageStore\" />";
 
         private TestContext testContextInstance;
 

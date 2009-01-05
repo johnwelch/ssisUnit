@@ -168,20 +168,30 @@ namespace SsisUnit
                     }
 
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
-                    foreach (DtsError err in packageToTest.Errors)
+                    //TODO: Need a better way to handle task errors - perhaps a new event type
+                    if (packageToTest.Errors.Count > 0)
                     {
-                        _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
+                        foreach (DtsError err in packageToTest.Errors)
+                        {
+                            _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
+                            _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
+                        }
+                        resultMessage = "The task " + _taskName + " did not execute successfully.";
+                        returnValue = false;
+                        _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
                     }
-
-                    foreach (SsisAssert assert in _asserts.Values)
+                    else
                     {
-                        if (assert.TestBefore) continue;
+                        foreach (SsisAssert assert in _asserts.Values)
+                        {
+                            if (assert.TestBefore) continue;
 
-                        validationResult = assert.Execute(packageToTest, taskHost);
+                            validationResult = assert.Execute(packageToTest, taskHost);
+                        }
+                        resultMessage = "All asserts were completed.";
+                        returnValue = true;
+                        _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestPassedCount);
                     }
-                    resultMessage = "All asserts were completed.";
-                    returnValue = true;
-                    _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestPassedCount);
 
                 }
                 catch (Exception ex)
@@ -230,29 +240,6 @@ namespace SsisUnit
 
             try
             {
-                //if (packagePath.Contains("\\"))
-                //{
-                //    //Assume that it is a file path.
-                //    package = _testSuite.SsisApplication.LoadPackage(packagePath, null);
-                //}
-                //else
-                //{
-                //    //PackageList Reference
-                //    PackageRef packageRef = _testSuite.PackageRefs[packagePath];
-
-                //    if (packageRef.StorageType == PackageRef.PackageStorageType.FileSystem)
-                //    {
-                //        package = _testSuite.SsisApplication.LoadPackage(packageRef.PackagePath, null);
-                //    }
-                //    else if (packageRef.StorageType == PackageRef.PackageStorageType.MSDB)
-                //    {
-                //        package = _testSuite.SsisApplication.LoadFromSqlServer(packageRef.PackagePath, packageRef.Server, null, null, null);
-                //    }
-                //    else if (packageRef.StorageType == PackageRef.PackageStorageType.PackageStore)
-                //    {
-                //        package = _testSuite.SsisApplication.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
-                //    }
-                //}
                 package = Helper.LoadPackage(_testSuite, packagePath);
 
                 taskHost = Helper.FindExecutable(package, taskID);
@@ -274,25 +261,36 @@ namespace SsisUnit
         public override string PersistToXml()
         {
             StringBuilder xml = new StringBuilder();
-            xml.Append("<Test ");
-            xml.Append("name=\"" + this.Name + "\" ");
-            xml.Append("package=\"" + this.PackageLocation + "\" ");
-            xml.Append("task=\"" + this.Task + "\">");
+            XmlWriterSettings writerSettings = new XmlWriterSettings();
+            writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+            writerSettings.OmitXmlDeclaration = true;
+
+            XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings);
+            xmlWriter.WriteStartElement("Test");
+            xmlWriter.WriteAttributeString("name", this.Name);
+            xmlWriter.WriteAttributeString("package", this.PackageLocation);
+            xmlWriter.WriteAttributeString("task", this.Task);
             if (_setup.Commands.Count > 0)
             {
-                xml.Append("<TestSetup>" + _setup.PersistToXml() + "</TestSetup>");
+                xmlWriter.WriteStartElement("TestSetup");
+                xmlWriter.WriteRaw(_setup.PersistToXml());
+                xmlWriter.WriteEndElement();
             }
 
             foreach (SsisAssert assert in Asserts.Values)
             {
-                xml.Append(assert.PersistToXml());
+                xmlWriter.WriteRaw(assert.PersistToXml());
             }
 
             if (_teardown.Commands.Count > 0)
             {
-                xml.Append("<TestTeardown>" + _teardown.PersistToXml() + "</TestTeardown>");
+                xmlWriter.WriteStartElement("TestTeardown");
+                xmlWriter.WriteRaw(_teardown.PersistToXml());
+                xmlWriter.WriteEndElement();
             }
-            xml.Append("</Test>");
+
+            xmlWriter.WriteEndElement();
+            xmlWriter.Close();
             return xml.ToString();
         }
 

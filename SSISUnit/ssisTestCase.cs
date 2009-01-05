@@ -1122,6 +1122,7 @@ namespace SsisUnit
             _statistics.Add(StatisticEnum.AssertFailedCount, new TestSuiteStatistic(StatisticEnum.AssertFailedCount.ToString()));
             _statistics.Add(StatisticEnum.TestPassedCount, new TestSuiteStatistic(StatisticEnum.TestPassedCount.ToString()));
             _statistics.Add(StatisticEnum.TestFailedCount, new TestSuiteStatistic(StatisticEnum.TestFailedCount.ToString()));
+            //_statistics.Add(StatisticEnum.TaskFailedCount, new TestSuiteStatistic(StatisticEnum.TaskFailedCount.ToString()));
         }
 
         #region Methods
@@ -1153,7 +1154,8 @@ namespace SsisUnit
             TestPassedCount = 2,
             TestFailedCount = 3,
             AssertPassedCount = 4,
-            AssertFailedCount = 5
+            AssertFailedCount = 5 //,
+            //TaskFailedCount = 6
         }
 
         private class TestSuiteStatistic

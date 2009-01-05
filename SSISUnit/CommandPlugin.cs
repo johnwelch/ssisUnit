@@ -69,7 +69,7 @@ namespace SsisUnit
                 if (typeof(CommandBase).IsAssignableFrom(t)
                     && (!object.ReferenceEquals(t, typeof(CommandBase)))
                     && (!t.IsAbstract)
-                    && (t.Name==commandXml.Name))
+                    && (t.Name == commandXml.Name))
                 {
                     System.Type[] @params = { typeof(SsisTestSuite), typeof(XmlNode) };
                     System.Reflection.ConstructorInfo con;
@@ -131,7 +131,7 @@ namespace SsisUnit
         }
 
         public abstract object Execute(Package package, DtsContainer container);
-        
+
         public virtual object Execute(Package package)
         {
             return Execute(package, null);
@@ -145,20 +145,23 @@ namespace SsisUnit
         public override string PersistToXml()
         {
             StringBuilder xml = new StringBuilder();
-            xml.Append("<" + this.CommandName);
+            XmlWriterSettings writerSettings = new XmlWriterSettings();
+            writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+            writerSettings.OmitXmlDeclaration = true;
+
+            XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings);
+            xmlWriter.WriteStartElement(this.CommandName);
             foreach (CommandProperty prop in _properties.Values)
             {
-                xml.Append(" " + prop.Name + "=\"" + prop.Value + "\"");
+                xmlWriter.WriteAttributeString(prop.Name, prop.Value);
             }
 
-            if (_body == string.Empty)
+            if (_body != string.Empty)
             {
-                xml.Append("/>");
+                xmlWriter.WriteString(_body);
             }
-            else
-            {
-                xml.Append(">" + _body + "</" + this.CommandName + ">");
-            }
+            xmlWriter.WriteEndElement();
+            xmlWriter.Close();
             return xml.ToString();
         }
 

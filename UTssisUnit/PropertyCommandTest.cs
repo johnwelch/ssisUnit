@@ -4,8 +4,8 @@ using Microsoft.SqlServer.Dts.Runtime;
 
 namespace UTssisUnit
 {
-    
-    
+
+
     /// <summary>
     ///This is a test class for PropertyCommandTest and is intended
     ///to contain all PropertyCommandTest Unit Tests
@@ -16,7 +16,6 @@ namespace UTssisUnit
 
 
         private const string TEST_XML_FILENAME = "UTSsisUnit_Property.ssisUnit";
-        
 
         private TestContext testContextInstance;
 
@@ -80,28 +79,70 @@ namespace UTssisUnit
         [TestMethod()]
         public void RunPropertyCommandSetTest()
         {
-            //SsisTestSuite ts = new SsisTestSuite(TEST_XML_FILE_PATH);
-            //VariableCommand target = (VariableCommand)ts.TeardownCommands.Commands[1];
-            //Application ssisApp = new Application();
-            //Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-            //DtsContainer container = package;
-            //string actual;
-            //actual = target.Execute(package, container).ToString();
-            //Assert.AreEqual("10", actual);
+            SsisTestSuite ts = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
+            PropertyCommand target = (PropertyCommand)ts.SetupCommands.Commands[1];
+
+            Application ssisApp = new Application();
+            Package package = ssisApp.LoadPackage(ts.PackageRefs["PropertyTest"].PackagePath, null);
+            DtsContainer container = package;
+            object actual;
+            actual = target.Execute(package, container);
+            Assert.AreEqual(1, actual);
+            Assert.AreEqual(1, package.Variables["TestInt"].Value);
+
+            ts.Execute();
+            Assert.AreEqual(2, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
         }
 
         [TestMethod()]
         public void RunPropertyCommandGetTest()
         {
-            //SsisTestSuite ts = new SsisTestSuite(TEST_XML_FILE_PATH);
-            //VariableCommand target = (VariableCommand)ts.SetupCommands.Commands[3];
+            SsisTestSuite ts = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
+            PropertyCommand target = (PropertyCommand)ts.SetupCommands.Commands[0];
 
-            //Application ssisApp = new Application();
-            //Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-            //DtsContainer container = package;
-            //object actual;
-            //actual = target.Execute(package, container);
-            //Assert.AreEqual(100, actual);
+            Application ssisApp = new Application();
+            Package package = ssisApp.LoadPackage(ts.PackageRefs["PropertyTest"].PackagePath, null);
+            DtsContainer container = package;
+            object actual;
+            actual = target.Execute(package, container);
+            Assert.AreEqual("TestValue", actual);
+        }
+
+        [TestMethod()]
+        public void CheckVariousPathsTest()
+        {
+            SsisTestSuite ts = new SsisTestSuite();
+            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", "C:\\Projects\\SSISUnit\\UTssis2008packages\\PropertyTest.dtsx", PackageRef.PackageStorageType.FileSystem));
+
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\Sequence Container\\Script Task.Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\Sequence Container.Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\Execute SQL Task.Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.Properties[CreationDate]", "2000-01-01"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]", false));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError].Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]", "Test Descr"));
+
+            ts.Tests.Add("Test", new Test(ts, "Test", "PackageA", "{5A32107F-F3A6-4345-BEB5-0B8434DDB102}"));
+            ts.Tests["Test"].Asserts.Add("TestA", AddNewAssert(ts, "TestA", "Test Descr", "\\Package\\Sequence Container\\Script Task.Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestB", AddNewAssert(ts, "TestB", "Test Descr", "\\Package\\Sequence Container.Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestC", AddNewAssert(ts, "TestC", "Test Descr", "\\Package\\Execute SQL Task.Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestD", AddNewAssert(ts, "TestD", "1/1/2000 12:00:00 AM", "\\Package.Properties[CreationDate]"));
+            ts.Tests["Test"].Asserts.Add("TestE", AddNewAssert(ts, "TestE", "Test Descr", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestF", AddNewAssert(ts, "TestF", false, "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]"));
+            ts.Tests["Test"].Asserts.Add("TestG", AddNewAssert(ts, "TestG", "Test Descr", "\\Package.EventHandlers[OnError].Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestH", AddNewAssert(ts, "TestH", "Test Descr", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]"));
+
+            ts.Execute();
+            Assert.AreEqual(8, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+        }
+
+        private SsisAssert AddNewAssert(SsisTestSuite ts, string assertName, object result, string propertyPath)
+        {
+            SsisAssert a = new SsisAssert(ts, assertName, result, false);
+            a.Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty);
+            return a;
         }
     }
 }
