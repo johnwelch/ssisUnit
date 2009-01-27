@@ -74,6 +74,7 @@
     <Shadow Include="Test References\ssisUnit.accessor" />
     <None Include="UTSsisUnit_Directory.xml" />
     <None Include="UTSsisUnit_PackageList.xml" />
+    <EmbeddedResource Include="UTSsisUnit_Property.ssisUnit" />
     <None Include="UTSsisUnit_TestSetup_Teardown.xml" />
     <Content Include="UTSsisUnit_File.xml" />
     <Content Include="UTSsisUnit_Process.xml" />
