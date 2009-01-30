@@ -313,7 +313,11 @@ namespace SsisUnit
             {
                 throw new ApplicationException("The test suite is not in a valid format. It cannot be executed until the errors have been corrected.");
             }
-            _stats.Reset();
+            if (_parentSuite==null)
+            {
+                _stats.Reset();    
+            }
+            
 
             _testSuiteSetup.Execute();
 
@@ -335,6 +339,7 @@ namespace SsisUnit
         public void Execute(SsisTestSuite ssisTestCase)
         {
             _parentSuite = ssisTestCase;
+            _stats = ssisTestCase._stats;
             this.Execute();
         }
 
@@ -369,11 +374,8 @@ namespace SsisUnit
         {
             try
             {
-                //LoadCommands();
                 _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
                 _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-                //_connections = _testCaseDoc.DocumentElement["ConnectionList"];
-                //_packageList = _testCaseDoc.DocumentElement["PackageList"];
                 _connectionRefs = LoadConnectionRefs(_testCaseDoc.DocumentElement["ConnectionList"]);
                 _testSuiteSetup = new CommandSet(this, _testCaseDoc.DocumentElement["TestSuiteSetup"]);
                 _testSuiteTeardown = new CommandSet(this, _testCaseDoc.DocumentElement["TestSuiteTeardown"]);
@@ -392,7 +394,7 @@ namespace SsisUnit
 
                 foreach (XmlNode testRef in _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:TestRef", _namespaceMgr))
                 {
-                    _testRefs.Add(testRef.Attributes["path"].Value, new TestRef(testRef));
+                    _testRefs.Add(testRef.Attributes["path"].Value, new TestRef(this, testRef));
                 }
 
             }
@@ -450,21 +452,14 @@ namespace SsisUnit
             try
             {
                 Stream strm = GetStreamFromExecutingAssembly("SsisUnit.xsd");
-                //Assembly asm = Assembly.GetExecutingAssembly();
-                //Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
-
+                
 
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
-                //settings.ValidationType = ValidationType.Schema;
-
+                
                 XmlDocument test = new XmlDocument();
                 test.Load(XmlReader.Create(file, settings));
-                //if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
-                //{
-                //    throw new ArgumentException(String.Format("The SsisUnit schema ({0}) was not specified in this XML document.", "http://tempuri.org/SsisUnit.xsd"));
-                //}
-
+                
                 return test;
             }
             catch (System.Xml.Schema.XmlSchemaValidationException)
@@ -483,20 +478,6 @@ namespace SsisUnit
 
         internal int Setup(XmlNode setup, Package pkg, DtsContainer task)
         {
-            //if (setup == null)
-            //{
-            //    return 0;
-            //}
-            //int commandCount = 0;
-            //foreach (XmlNode command in setup)
-            //{
-            //    RunCommand(command, pkg, task);
-
-            //    commandCount += 1;
-            //}
-
-            //return commandCount;
-
             return this.SetupCommands.Execute(pkg, task);
         }
 
@@ -505,46 +486,24 @@ namespace SsisUnit
             return this.SetupCommands.Execute(pkg, task);
         }
 
-        //private void LoadCommands()
+        //internal void RunTestSuite(XmlNode test)
         //{
-        //    foreach (Type t in System.Reflection.Assembly.GetExecutingAssembly().GetTypes())
-        //    {
-        //        if (typeof(CommandBase).IsAssignableFrom(t)
-        //            && (!object.ReferenceEquals(t, typeof(CommandBase)))
-        //            && (!t.IsAbstract))
-        //        {
-        //            CommandBase command;
-        //            System.Type[] @params = { typeof(SsisTestSuite) };
-        //            System.Reflection.ConstructorInfo con;
-
-        //            con = t.GetConstructor(@params);
-        //            if (con == null)
-        //            {
-        //                throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The Command type {0} could not be loaded because it has no constructor.", t.Name));
-        //            }
-        //            command = (CommandBase)con.Invoke(new object[] { this });
-        //            _commands.Add(command.CommandName, command);
-        //        }
-        //    }
+        //    SsisTestSuite testCase = new SsisTestSuite(test.Attributes["path"].Value);
+        //    testCase.SetupCompleted += new EventHandler<SetupCompletedEventArgs>(testCase_SetupCompleted);
+        //    testCase.TestCompleted += new EventHandler<TestCompletedEventArgs>(testCase_TestCompleted);
+        //    testCase.TeardownCompleted += new EventHandler<TeardownCompletedEventArgs>(testCase_TeardownCompleted);
+        //    testCase.Execute(this);
         //}
 
-        //private object RunCommand(XmlNode command, Package pkg, DtsContainer task)
-        //{
-        //    object returnValue = null;
-
-        //    returnValue = _commands[command.Name].Execute(command, pkg, task);
-
-        //    return returnValue;
-        //}
-
-        internal void RunTestSuite(XmlNode test)
+        internal void RunTestSuite(SsisTestSuite ts)
         {
-            SsisTestSuite testCase = new SsisTestSuite(test.Attributes["path"].Value);
-            testCase.SetupCompleted += new EventHandler<SetupCompletedEventArgs>(testCase_SetupCompleted);
-            testCase.TestCompleted += new EventHandler<TestCompletedEventArgs>(testCase_TestCompleted);
-            testCase.TeardownCompleted += new EventHandler<TeardownCompletedEventArgs>(testCase_TeardownCompleted);
-            testCase.Execute(this);
+            ts.SetupCompleted += new EventHandler<SetupCompletedEventArgs>(testCase_SetupCompleted);
+            ts.TestCompleted += new EventHandler<TestCompletedEventArgs>(testCase_TestCompleted);
+            ts.TeardownCompleted += new EventHandler<TeardownCompletedEventArgs>(testCase_TeardownCompleted);
+            ts.AssertCompleted += new EventHandler<AssertCompletedEventArgs>(testCase_AssertCompleted);
+            ts.Execute(this);
         }
+
 
         #region Event Handlers
 
@@ -563,195 +522,15 @@ namespace SsisUnit
             OnRaiseSetupCompleted(e);
         }
 
+        void testCase_AssertCompleted(object sender, AssertCompletedEventArgs e)
+        {
+            OnRaiseAssertCompleted(e);
+        }
+
         #endregion
-
-        //private void LoadPackageAndTask(string packagePath, string taskID, ref Package package, ref DtsContainer taskHost)
-        //{
-        //    string pathToPackage = string.Empty;
-
-        //    try
-        //    {
-        //        if (packagePath.Contains("\\"))
-        //        {
-        //            //Assume that it is a file path.
-        //            package = _ssisApp.LoadPackage(packagePath, null);
-        //        }
-        //        else
-        //        {
-        //            //PackageList Reference
-        //            XmlNode packageRef = this._packageList.SelectSingleNode("SsisUnit:Package[@name='" + packagePath + "']", this._namespaceMgr);
-        //            if (packageRef == null)
-        //            {
-        //                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
-        //            }
-
-        //            if (packageRef.Attributes["storageType"].Value == "FileSystem")
-        //            {
-        //                package = _ssisApp.LoadPackage(packageRef.Attributes["packagePath"].Value, null);
-        //            }
-        //            else if (packageRef.Attributes["storageType"].Value == "MSDB")
-        //            {
-        //                package = _ssisApp.LoadFromSqlServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null, null, null);
-        //            }
-        //            else if (packageRef.Attributes["storageType"].Value == "PackageStore")
-        //            {
-        //                package = _ssisApp.LoadFromDtsServer(packageRef.Attributes["packagePath"].Value, packageRef.Attributes["server"].Value, null);
-        //            }
-
-        //        }
-
-        //        taskHost = Helper.FindExecutable(package, taskID);
-        //        if (taskHost == null)
-        //        {
-        //            throw new Exception("The task host was not found.");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new ArgumentException(string.Format("The package path ({0}) or the task host ({1}) is not valid." + ex.Message, packagePath, taskID));
-        //    }
-        //}
-
-        //internal bool Test(XmlNode test)
-        //{
-        //    bool returnValue = false;
-
-        //    if (test.Name != "Test")
-        //    {
-        //        throw new ArgumentException("The node passed to the test argument is not a Test element.");
-        //    }
-
-        //    Package packageToTest = null;
-        //    DtsContainer taskHost = null;
-
-        //    LoadPackageAndTask(test.Attributes["package"].Value, test.Attributes["task"].Value, ref packageToTest, ref taskHost);
-
-        //    string setupResults = string.Empty;
-        //    bool setupSucceeded = false;
-
-        //    try
-        //    {
-        //        //TODO: Decide if this behavior is correct - not sure if we really need to run the parent setups
-        //        if (_parentSuite != null)
-        //        {
-        //            _parentSuite.Setup(packageToTest, taskHost);
-        //        }
-        //        Setup(test.OwnerDocument.DocumentElement["Setup"], packageToTest, taskHost);
-        //        Setup(test["TestSetup"], packageToTest, taskHost);
-        //        setupResults = "Setup succeeded.";
-        //        setupSucceeded = true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        setupResults = "Setup failed: " + ex.Message + " : " + ex.InnerException;
-        //        setupSucceeded = false;
-        //    }
-        //    finally
-        //    {
-        //        OnRaiseSetupCompleted(new SetupCompletedEventArgs(DateTime.Now, test.Attributes["name"].Value, test.Attributes["package"].Value, test.Attributes["task"].Value, setupResults));
-        //    }
-
-        //    if (setupSucceeded)
-        //    {
-        //        object validationResult = null;
-        //        string resultMessage = string.Empty;
-
-        //        try
-        //        {
-        //            //Run Pre Asserts
-        //            foreach (XmlNode assert in test.SelectNodes("SsisUnit:Assert[@testBefore='true']", _namespaceMgr))
-        //            {
-        //                validationResult = RunCommand(assert.ChildNodes[0], packageToTest, taskHost);
-        //                returnValue = (assert.Attributes["expectedResult"].Value == validationResult.ToString());
-
-        //                if (returnValue)
-        //                {
-        //                    resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), assert.Attributes["expectedResult"].Value);
-        //                }
-        //                else
-        //                {
-        //                    resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), assert.Attributes["expectedResult"].Value);
-        //                }
-        //                OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.Attributes["package"].Value,
-        //                test.Attributes["task"].Value, test.Attributes["name"].Value, resultMessage, returnValue));
-        //            }
-
-        //            taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
-
-        //            foreach (XmlNode assert in test.SelectNodes("SsisUnit:Assert[@testBefore='false']", _namespaceMgr))
-        //            {
-        //                validationResult = RunCommand(assert.ChildNodes[0], packageToTest, taskHost);
-        //                returnValue = (assert.Attributes["expectedResult"].Value == validationResult.ToString());
-
-        //                if (returnValue)
-        //                {
-        //                    resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), assert.Attributes["expectedResult"].Value);
-        //                }
-        //                else
-        //                {
-        //                    resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), assert.Attributes["expectedResult"].Value);
-        //                }
-        //                OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.Attributes["package"].Value,
-        //                test.Attributes["task"].Value, test.Attributes["name"].Value, resultMessage, returnValue));
-        //            }
-        //            resultMessage = "All asserts were completed.";
-
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            returnValue = false;
-        //            resultMessage = "Exception occurred: " + ex.Message;
-        //        }
-        //        finally
-        //        {
-        //            OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.Attributes["package"].Value,
-        //                test.Attributes["task"].Value, test.Attributes["name"].Value, resultMessage, returnValue));
-        //        }
-
-        //    }
-        //    if (setupSucceeded)
-        //    {
-        //        string teardownResults = string.Empty;
-
-        //        try
-        //        {
-        //            Teardown(test["TestTeardown"], packageToTest, taskHost);
-        //            Teardown(test.OwnerDocument.DocumentElement["Teardown"], packageToTest, taskHost);
-        //            if (_parentSuite != null)
-        //            {
-        //                _parentSuite.Teardown(packageToTest, taskHost);
-        //            }
-        //            teardownResults = "Teardown succeeded.";
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            teardownResults = "Teardown failed: " + ex.Message + " : " + ex.InnerException;
-        //        }
-        //        finally
-        //        {
-        //            OnRaiseTeardownCompleted(new TeardownCompletedEventArgs(DateTime.Now, test.Attributes["name"].Value, test.Attributes["package"].Value, test.Attributes["task"].Value, teardownResults));
-        //        }
-        //    }
-
-
-        //    return returnValue;
-        //}
 
         internal int Teardown(XmlNode teardown, Package pkg, DtsContainer task)
         {
-            //if (teardown == null)
-            //{
-            //    return 0;
-            //}
-            //int commandCount = 0;
-            //foreach (XmlNode command in teardown)
-            //{
-            //    RunCommand(command, pkg, task);
-
-            //    commandCount += 1;
-            //}
-
-            //return commandCount;
             return this.TeardownCommands.Execute(pkg, task);
         }
 
@@ -760,10 +539,7 @@ namespace SsisUnit
             return this.TeardownCommands.Execute(pkg, task);
         }
 
-
-
         #endregion
-
     }
 
 
@@ -1048,16 +824,26 @@ namespace SsisUnit
 
     public class TestRef
     {
+
+        private SsisTestSuite _testSuite;
+
+        public SsisTestSuite TestSuite
+        {
+            get { return _testSuite; }
+        }
+
         private string _path;
 
-        public TestRef(string path)
+        public TestRef(SsisTestSuite testSuite, string path)
         {
+            _testSuite = testSuite;
             _path = path;
             return;
         }
 
-        public TestRef(XmlNode testRef)
+        public TestRef(SsisTestSuite testSuite, XmlNode testRef)
         {
+            _testSuite = testSuite;
             LoadFromXml(testRef);
             return;
         }
@@ -1105,7 +891,7 @@ namespace SsisUnit
         public void Execute()
         {
             SsisTestSuite ts = new SsisTestSuite(this._path);
-            ts.Execute();
+            _testSuite.RunTestSuite(ts);
         }
     }
 
@@ -1180,8 +966,8 @@ namespace SsisUnit
             {
                 _value = 0;
             }
-           
-           
+
+
         }
     }
 

@@ -131,10 +131,10 @@ namespace SsisUnit
             try
             {
                 //TODO: Decide if this behavior is correct - not sure if we really need to run the parent setups
-                if (_testSuite.ParentTestSuite != null)
-                {
-                    _testSuite.ParentTestSuite.SetupCommands.Execute(packageToTest, taskHost);
-                }
+                //if (_testSuite.ParentTestSuite != null)
+                //{
+                //    _testSuite.ParentTestSuite.SetupCommands.Execute(packageToTest, taskHost);
+                //}
 
                 _testSuite.SetupCommands.Execute(packageToTest, taskHost);
 
@@ -215,10 +215,10 @@ namespace SsisUnit
                     _teardown.Execute(packageToTest, taskHost);
                     _testSuite.TeardownCommands.Execute(packageToTest, taskHost);
 
-                    if (_testSuite.ParentTestSuite != null)
-                    {
-                        _testSuite.ParentTestSuite.TeardownCommands.Execute(packageToTest, taskHost);
-                    }
+                    //if (_testSuite.ParentTestSuite != null)
+                    //{
+                    //    _testSuite.ParentTestSuite.TeardownCommands.Execute(packageToTest, taskHost);
+                    //}
                     teardownResults = "Teardown succeeded.";
                 }
                 catch (Exception ex)

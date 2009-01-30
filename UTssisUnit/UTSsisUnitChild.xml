@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
   <ConnectionList>
-    <Connection name="AdventureWorks" connectionType="ConnectionString" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks"/>
+    <Connection name="AdventureWorks" connectionType="ConnectionString" connection="Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLNCLI10;Integrated Security=SSPI;"/>
   </ConnectionList>
+  
   <Setup>
     <SqlCommand connectionRef="AdventureWorks" returnsValue="false">
       INSERT INTO TestTable VALUES('Test')
@@ -19,4 +20,5 @@
   </Tests>
   <Teardown>
   </Teardown>
+ 
 </TestSuite>
