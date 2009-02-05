@@ -27,7 +27,7 @@ namespace SsisUnit.Design
         {
             //Get the TestSuite reference
             Test test = (Test)context.Instance;
-            
+
             Package pkg = Helper.LoadPackage(test.TestSuite, test.PackageLocation);
             
             PackageBrowser csBuilder = new PackageBrowser();
