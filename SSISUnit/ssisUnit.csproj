@@ -17,7 +17,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>SsisUnit.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>SsisUnit.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -82,6 +82,7 @@
       <LastGenOutput>app.Designer.cs</LastGenOutput>
     </None>
     <None Include="SsisUnit.pfx" />
+    <None Include="SsisUnit.snk" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BaseTest.xml" />
