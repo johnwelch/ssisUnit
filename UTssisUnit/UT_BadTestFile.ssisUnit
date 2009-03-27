@@ -7,7 +7,6 @@
     <SqlCommand connectionRef="Invalid" returnsValue="false">
       SELECT ProductID FROM Production.Product
     </SqlCommand>
-    <BadCommand></BadCommand>
     <ProcessCommand process="CMD.EXE" arguments="/c BADCOMMAND"/>
   </Setup>
   <Tests>

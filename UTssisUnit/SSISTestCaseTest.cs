@@ -19,8 +19,9 @@ namespace UTssisUnit
     {
         private const string TEST_XML_FILENAME = "UTSsisUnit.ssisUnit";
 
-        private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.ssisUnit";
-        private const string TEST_XML_FILE_BAD_DATA_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_BadData.xml";
+        //private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.ssisUnit";
+        //private const string TEST_XML_FILE_BAD_DATA_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_BadData.xml";
+        //TODO: Abstract references to packages
         private const string TEST_DTSX_FILE_PATH = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
 
         private TestContext testContextInstance;
@@ -69,7 +70,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void SSISTestCaseConstructorTest()
         {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
+            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
             Assert.IsNotNull(target);
         }
 
@@ -86,15 +87,13 @@ namespace UTssisUnit
         {
             try
             {
-                SsisTestSuite ts = new SsisTestSuite("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT_Simple.dtsx");
+                SsisTestSuite ts = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UT_BadTestFile.ssisUnit"));
                 Assert.Fail("Test Case was not reported as invalid.");
             }
             catch (ApplicationException ex)
             {
                 Assert.AreEqual<string>("The unit test file is malformed or corrupt. Please verify that the file format conforms to the ssisUnit schema, provided in the SsisUnit.xsd file.", ex.Message);
             }
-
-           
         }
 
 
@@ -156,7 +155,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void RunPackageListTest()
         {
-            SsisTestSuite target = new SsisTestSuite("C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_PackageList.xml");
+            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UTSsisUnit_PackageList.xml"));
 
             try
             {
@@ -172,7 +171,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void RunTestRef()
         {
-            SsisTestSuite target = new SsisTestSuite("C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnitParent.xml");
+            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UTSsisUnitParent.xml"));
 
             try
             {
@@ -189,7 +188,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void TestExecuteWithParent()
         {
-            SsisTestSuite target = new SsisTestSuite(TEST_XML_FILE_PATH);
+            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
 
             //XmlNode test = doc.DocumentElement["Tests"]["TestRef"];
 
@@ -208,7 +207,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void TestSuiteSetupTest()
         {
-            SsisTestSuite target = new SsisTestSuite("C:\\Projects\\SSISUnit\\UTssisUnit\\UTssisUnit_TestSuite.xml");
+            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UTssisUnit_TestSuite.xml"));
 
             try
             {
@@ -279,7 +278,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void TestSetupAndTeardownTest()
         {
-            SsisTestSuite target = new SsisTestSuite("C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_TestSetup_Teardown.xml");
+            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UTSsisUnit_TestSetup_Teardown.xml"));
 
             try
             {

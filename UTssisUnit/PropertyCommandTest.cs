@@ -122,6 +122,8 @@ namespace UTssisUnit
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]", false));
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError].Properties[Description]", "Test Descr"));
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]", "Test Descr"));
+            //Added to verify work item #7188 - multiple periods in object names
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.Connections[test.multple.periods.in.path].Properties[Description]", "Test Descr"));
 
             ts.Tests.Add("Test", new Test(ts, "Test", "PackageA", "{5A32107F-F3A6-4345-BEB5-0B8434DDB102}"));
             ts.Tests["Test"].Asserts.Add("TestA", AddNewAssert(ts, "TestA", "Test Descr", "\\Package\\Sequence Container\\Script Task.Properties[Description]"));
@@ -132,9 +134,10 @@ namespace UTssisUnit
             ts.Tests["Test"].Asserts.Add("TestF", AddNewAssert(ts, "TestF", false, "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]"));
             ts.Tests["Test"].Asserts.Add("TestG", AddNewAssert(ts, "TestG", "Test Descr", "\\Package.EventHandlers[OnError].Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestH", AddNewAssert(ts, "TestH", "Test Descr", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestI", AddNewAssert(ts, "TestI", "Test Descr", "\\Package.Connections[test.multple.periods.in.path].Properties[Description]"));
 
             ts.Execute();
-            Assert.AreEqual(8, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(9, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual(0, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
         }
 

@@ -194,11 +194,17 @@ namespace SsisUnit
                 //Can have periods in object names (like connection manager names)
                 //Need to verify that period is not between an index marker
                 int delimiterIndex = propertyPath.IndexOf(".");
+                //while (delimiterIndex > propertyPath.IndexOf("[") &&
+                //    delimiterIndex < propertyPath.IndexOf("]"))
+                //{
+                //    delimiterIndex = propertyPath.IndexOf(".", delimiterIndex + 1 );
+                //}
                 if (delimiterIndex > propertyPath.IndexOf("[") &&
                     delimiterIndex < propertyPath.IndexOf("]"))
                 {
-                    delimiterIndex = propertyPath.IndexOf(".", delimiterIndex + 1 );
+                    delimiterIndex = propertyPath.IndexOf(".", propertyPath.IndexOf("]"));
                 }
+
                 if (delimiterIndex > -1)
                 {
                     firstPart = propertyPath.Substring(0, delimiterIndex);

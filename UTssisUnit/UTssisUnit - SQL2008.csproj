@@ -71,17 +71,18 @@
     <Content Include="AuthoringTests.txt" />
     <None Include="SsisUnit.pfx" />
     <None Include="UTSsisUnit_Directory.xml" />
-    <None Include="UTSsisUnit_PackageList.xml" />
-    <None Include="UTSsisUnit_TestSetup_Teardown.xml" />
+    <EmbeddedResource Include="UTSsisUnit_PackageList.xml" />
+    <EmbeddedResource Include="UTSsisUnit_TestSetup_Teardown.xml" />
     <EmbeddedResource Include="UTSsisUnit_Property.ssisUnit" />
+    <None Include="UT_BadTestFile.ssisUnit" />
     <Content Include="UTSsisUnit_File.xml" />
     <Content Include="UTSsisUnit_Process.xml" />
     <Content Include="UTSsisUnitChild.xml" />
-    <Content Include="UTSsisUnitParent.xml" />
-    <Content Include="UTSsisUnit_BadData.xml" />
+    <EmbeddedResource Include="UTSsisUnitParent.xml" />
+    <EmbeddedResource Include="UTSsisUnit_BadData.xml" />
     <EmbeddedResource Include="UTSsisUnit.ssisUnit" />
     <Content Include="UTssisUnit_Package.xml" />
-    <Content Include="UTssisUnit_TestSuite.xml" />
+    <EmbeddedResource Include="UTssisUnit_TestSuite.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SSISUnit\SSISUnit_SQL2008.csproj">
