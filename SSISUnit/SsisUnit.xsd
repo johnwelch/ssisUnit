@@ -38,7 +38,7 @@
         <xs:element name ="Teardown" type="CommandSet" minOccurs="0" maxOccurs="1"/>
         <xs:element name="TestSuiteTeardown" type="CommandSet" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
-      
+
     </xs:complexType>
   </xs:element>
 
@@ -146,6 +146,7 @@
             <xs:attribute name="name" type="xs:string" use="required"/>
             <xs:attribute name="expectedResult" type="xs:string" use="required"/>
             <xs:attribute name="testBefore" type="xs:boolean" use="required"/>
+            <xs:attribute name="expression" type="xs:boolean" use="optional" default="false"/>
           </xs:complexType>
         </xs:element>
         <xs:element name="TestTeardown" type="CommandSet" minOccurs="0" maxOccurs="1"/>

@@ -277,19 +277,17 @@ namespace SsisUnit
         {
             try
             {
-                //Assembly asm = Assembly.GetExecutingAssembly();
-                //Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
                 Stream strm = GetStreamFromExecutingAssembly("SsisUnit.xsd");
 
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
                 settings.ValidationType = ValidationType.Schema;
-
+                
                 Byte[] bytes = System.Text.Encoding.ASCII.GetBytes(this.PersistToXml());
 
                 XmlDocument test = new XmlDocument();
                 test.Load(XmlReader.Create(new MemoryStream(bytes), settings));
-
+                
                 if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
                 {
                     return false;
@@ -297,7 +295,7 @@ namespace SsisUnit
 
                 return true;
             }
-            catch (System.Xml.Schema.XmlSchemaValidationException)
+            catch (System.Xml.Schema.XmlSchemaValidationException ex)
             {
                 return false;
             }

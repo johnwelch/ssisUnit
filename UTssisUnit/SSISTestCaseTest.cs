@@ -212,7 +212,9 @@ namespace UTssisUnit
             try
             {
                 target.Execute();
-                Assert.IsTrue(true);
+                Assert.AreEqual(3, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount));
+                Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
             }
             catch (Exception ex)
             {

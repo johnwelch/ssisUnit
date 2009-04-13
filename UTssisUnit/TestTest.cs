@@ -56,7 +56,7 @@ namespace UTssisUnit
         public void MyTestInitialize()
         {
             _xmlTest = "<Test name=\"Test\" package=\"C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx\" task=\"SELECT COUNT\">";
-            _xmlTest += "<Assert name=\"Test\" expectedResult=\"100\" testBefore=\"false\">";
+            _xmlTest += "<Assert name=\"Test\" expectedResult=\"100\" testBefore=\"false\" expression=\"false\">";
             _xmlTest += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             _xmlTest += "SELECT COUNT(*) FROM Production.Product";
             _xmlTest += "</SqlCommand>";
@@ -69,7 +69,7 @@ namespace UTssisUnit
             _xmlTestFull += "INSERT INTO UTTable VALUES('Test')";
             _xmlTestFull += "</SqlCommand>";
             _xmlTestFull += "</TestSetup>";
-            _xmlTestFull += "<Assert name=\"Test\" expectedResult=\"100\" testBefore=\"false\">";
+            _xmlTestFull += "<Assert name=\"Test\" expectedResult=\"100\" testBefore=\"false\" expression=\"false\">";
             _xmlTestFull += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             _xmlTestFull += "SELECT COUNT(*) FROM Production.Product";
             _xmlTestFull += "</SqlCommand>";

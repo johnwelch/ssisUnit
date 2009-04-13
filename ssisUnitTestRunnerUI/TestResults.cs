@@ -108,10 +108,25 @@ namespace ssisUnitTestRunnerUI
             }
 
             string fileName = string.Empty;
-            if (UIHelper.ShowSaveAs(ref fileName, UIHelper.FileFilter.CSV, false) == DialogResult.OK)
+
+            bool retry = true;
+            while (retry)
             {
-                System.IO.File.WriteAllText(fileName, sb.ToString());
+                try
+                {
+                    if (UIHelper.ShowSaveAs(ref fileName, UIHelper.FileFilter.CSV, false) == DialogResult.OK)
+                    {
+                        System.IO.File.WriteAllText(fileName, sb.ToString());
+                    }
+                    retry = false;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("The selected file is in use.");
+                    retry = true;
+                }
             }
+            
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

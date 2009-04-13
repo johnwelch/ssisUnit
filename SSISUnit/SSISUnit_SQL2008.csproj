@@ -67,6 +67,7 @@
     <Compile Include="ProcessCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyCommand.cs" />
+    <Compile Include="ReflectorEval.cs" />
     <Compile Include="SqlCommand.cs" />
     <Compile Include="SsisBaseObject.cs" />
     <Compile Include="ssisTestCase.cs" />

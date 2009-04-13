@@ -5,6 +5,7 @@ using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Globalization;
 using System.ComponentModel;
+using System.IO;
 
 namespace SsisUnit
 {
@@ -15,6 +16,7 @@ namespace SsisUnit
         private bool _testBefore;
         private CommandBase _command;
         private SsisTestSuite _testSuite;
+        private bool _expression;
         //private string _validationMessages = string.Empty;
 
         public SsisAssert(SsisTestSuite testSuite, string name, object expectedResult, bool testBefore)
@@ -23,6 +25,17 @@ namespace SsisUnit
             Name = name;
             _expectedResult = expectedResult;
             _testBefore = testBefore;
+
+            return;
+        }
+
+        public SsisAssert(SsisTestSuite testSuite, string name, object expectedResult, bool testBefore, bool expression)
+        {
+            _testSuite = testSuite;
+            Name = name;
+            _expectedResult = expectedResult;
+            _testBefore = testBefore;
+            _expression = expression;
             return;
         }
 
@@ -69,50 +82,99 @@ namespace SsisUnit
             set { _command = value; }
         }
 
+        [DefaultValue(false)]
+        public bool Expression
+        {
+            get { return _expression; }
+            set { _expression = value; }
+        }
+
         #endregion
 
         public bool Execute(Package package, DtsContainer task)
         {
             _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertCount);
             bool returnValue;
-            string resultMessage;
-            
+            string resultMessage = string.Empty;
+
             object validationResult = _command.Execute(package, task);
 
-            if (validationResult==null)
+            if (validationResult == null)
             {
                 throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The return value from the {0} was null. " +
                     "This may be because the specified Command does not return a value, or is set to not return a value.", _command.CommandName));
             }
-            returnValue = (_expectedResult.ToString() == validationResult.ToString());
+            if (_expression)
+            {
+                try
+                {
+                    returnValue = (bool)CSharpEval.EvalWithParam(_expectedResult.ToString(), validationResult);
+                }
+                catch (ArgumentException ex)
+                {
+                    returnValue = false;
+                    resultMessage = String.Format(CultureInfo.CurrentCulture, "The expression failed to evaluate: {0}", ex.Message);
+                }
+            }
+            else
+            {
+                returnValue = (_expectedResult.ToString() == validationResult.ToString());
+            }
 
             if (returnValue)
             {
-                resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
+                resultMessage += String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
                 _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
             }
             else
             {
-                resultMessage = String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
+                resultMessage += String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
                 _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
             }
             _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage, returnValue));
-            
+
             return returnValue;
         }
 
         public override string PersistToXml()
         {
             StringBuilder xml = new StringBuilder();
-            xml.Append("<Assert ");
-            xml.Append("name=\"" + Name + "\" ");
-            xml.Append("expectedResult=\"" + _expectedResult + "\" ");
-            xml.Append("testBefore=\"" + _testBefore.ToString().ToLower() + "\">");
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.OmitXmlDeclaration = true;
+            settings.ConformanceLevel = ConformanceLevel.Fragment;
+            settings.NewLineHandling = NewLineHandling.None;
+            settings.Indent = false;
+
+            XmlWriter xw = XmlWriter.Create(xml, settings);
+
+            xw.WriteStartElement("Assert");
+
+            xw.WriteStartAttribute("name");
+            xw.WriteValue(Name);
+            xw.WriteEndAttribute();
+
+            xw.WriteStartAttribute("expectedResult");
+            xw.WriteValue(_expectedResult.ToString());
+            xw.WriteEndAttribute();
+
+            xw.WriteStartAttribute("testBefore");
+            xw.WriteValue(_testBefore);
+            xw.WriteEndAttribute();
+
+            xw.WriteStartAttribute("expression");
+            xw.WriteValue(_expression);
+            xw.WriteEndAttribute();
+
             if (_command != null)
             {
-                xml.Append(_command.PersistToXml());
+                xw.WriteRaw(_command.PersistToXml());
             }
-            xml.Append("</Assert>");
+
+            xw.WriteEndElement();
+            xw.Flush();
+            xw.Close();
+
             return xml.ToString();
         }
 
@@ -131,13 +193,22 @@ namespace SsisUnit
             Name = assertXml.Attributes["name"].Value;
             _expectedResult = assertXml.Attributes["expectedResult"].Value;
             _testBefore = (assertXml.Attributes["testBefore"].Value == true.ToString().ToLower());
+            XmlNode xmlNode = assertXml.Attributes.GetNamedItem("expression");
+            if (xmlNode == null)
+            {
+                _expression = false;
+            }
+            else
+            {
+                _expression = (xmlNode.Value == true.ToString().ToLower());
+            }
             _command = CommandBase.CreateCommand(_testSuite, assertXml.ChildNodes[0]);
         }
 
         public override bool Validate()
         {
             _validationMessages = string.Empty;
-            if (this.Command==null)
+            if (this.Command == null)
             {
                 _validationMessages += "There must be one command for each assert." + Environment.NewLine;
             }
@@ -149,37 +220,6 @@ namespace SsisUnit
             {
                 return false;
             }
-            //try
-            //{
-            //    Assembly asm = Assembly.GetExecutingAssembly();
-            //    Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + ".SsisUnit.xsd");
-
-
-            //    XmlReaderSettings settings = new XmlReaderSettings();
-            //    settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
-            //    settings.ValidationType = ValidationType.Schema;
-
-            //    Byte[] bytes = System.Text.Encoding.ASCII.GetBytes(this.PersistToXml());
-
-            //    XmlDocument test = new XmlDocument();
-            //    test.Load(XmlReader.Create(new MemoryStream(bytes), settings));
-
-            //    //Don't test for existence of the schema node at this level
-            //    //if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
-            //    //{
-            //    //    return false;
-            //    //}
-
-            //    return true;
-            //}
-            //catch (System.Xml.Schema.XmlSchemaValidationException)
-            //{
-            //    return false;
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new ArgumentException("The test case could not be loaded: " + ex.Message);
-            //}
         }
 
         //[Browsable(false)]
