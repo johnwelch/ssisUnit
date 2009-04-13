@@ -278,5 +278,21 @@ namespace UTssisUnit
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
 
         }
+
+        [TestMethod()]
+        public void TestAssertCreation()
+        {
+
+            string assertXml = "<Assert name=\"Test\" expectedResult=\"\" testBefore=\"false\" expression=\"false\" ";
+            assertXml += "/>";
+
+            SsisTestSuite testSuite = new SsisTestSuite();
+            SsisAssert ssisAssert = new SsisAssert(testSuite, "Test", null, false, false);
+
+            string expected = assertXml;
+            string actual;
+            actual = ssisAssert.PersistToXml();
+            Assert.AreEqual(assertXml, actual);
+        }
     }
 }

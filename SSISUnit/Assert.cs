@@ -155,7 +155,14 @@ namespace SsisUnit
             xw.WriteEndAttribute();
 
             xw.WriteStartAttribute("expectedResult");
-            xw.WriteValue(_expectedResult.ToString());
+            if (_expectedResult == null)
+            {
+                xw.WriteValue(string.Empty);
+            }
+            else
+            {
+                xw.WriteValue(_expectedResult.ToString());
+            }
             xw.WriteEndAttribute();
 
             xw.WriteStartAttribute("testBefore");
