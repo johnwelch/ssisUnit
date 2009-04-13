@@ -167,11 +167,11 @@ namespace SsisUnit
         }
 #if SQL2005
         [Description("The Connection that the SQLCommand will use"),
-         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482")]
+         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
 #if SQL2008
         [Description("The Connection that the SQLCommand will use"),
-         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482")]
+         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
         public ConnectionRef ConnectionReference
         {
@@ -209,11 +209,11 @@ namespace SsisUnit
 
 #if SQL2005
         [Description("The SQL statement to be executed by the SQLCommand"),
-         Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+         Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
 #endif
 #if SQL2008
         [Description("The SQL statement to be executed by the SQLCommand"),
-         Editor("SsisUnit.Design.QueryEditor, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5afc101ee8f7d482", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+         Editor("SsisUnit.Design.QueryEditor, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
 #endif
         public string SQLStatement
         {
