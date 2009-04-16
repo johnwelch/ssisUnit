@@ -28,7 +28,7 @@
       </Assert>
     </Test>
     <Test name="FailedTestSQL" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT" >
-      <Assert name="Test Failed SQL" expectedResult="1" testBefore="false">
+      <Assert name="Test Failed SQL" expectedResult="1" testBefore="false" expression="false">
         <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
           SELECT COUNT(*) FROM Production.Product
         </SqlCommand>

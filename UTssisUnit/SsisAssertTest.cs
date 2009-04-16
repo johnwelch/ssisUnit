@@ -215,6 +215,12 @@ namespace UTssisUnit
 
             ssisTest.Asserts.Add("Test Count 3", ssisAssert);
 
+            ssisAssert = new SsisAssert(target, "Test Count 4", "DateTime.Now.Date==((DateTime)result).Date", false, true);
+            ssisAssert.Command = new VariableCommand(target, VariableCommand.VariableOperation.Get, "System::StartTime", string.Empty);
+
+            ssisTest.Asserts.Add("Test Count 4", ssisAssert);
+
+
             target.TestSuiteTeardown.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "DROP TABLE dbo.Test"));
 
             int testCount = 0;
@@ -230,7 +236,7 @@ namespace UTssisUnit
 
             Assert.AreEqual<int>(1, testCount);
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual<int>(3, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual<int>(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
 
         }
