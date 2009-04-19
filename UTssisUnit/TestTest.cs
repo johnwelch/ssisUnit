@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using System.Collections.Generic;
+using Microsoft.SqlServer.Dts.Runtime;
 
 namespace UTssisUnit
 {
@@ -55,7 +56,7 @@ namespace UTssisUnit
         [TestInitialize()]
         public void MyTestInitialize()
         {
-            _xmlTest = "<Test name=\"Test\" package=\"C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx\" task=\"SELECT COUNT\">";
+            _xmlTest = "<Test name=\"Test\" package=\"C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx\" task=\"SELECT COUNT\" taskResult=\"Success\">";
             _xmlTest += "<Assert name=\"Test\" expectedResult=\"100\" testBefore=\"false\" expression=\"false\">";
             _xmlTest += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             _xmlTest += "SELECT COUNT(*) FROM Production.Product";
@@ -63,7 +64,7 @@ namespace UTssisUnit
             _xmlTest += "</Assert>";
             _xmlTest += "</Test>";
 
-            _xmlTestFull = "<Test name=\"Test\" package=\"C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx\" task=\"SELECT COUNT\">";
+            _xmlTestFull = "<Test name=\"Test\" package=\"C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx\" task=\"SELECT COUNT\" taskResult=\"Success\">";
             _xmlTestFull += "<TestSetup>";
             _xmlTestFull += "<SqlCommand connectionRef=\"Sandbox\" returnsValue=\"false\">";
             _xmlTestFull += "INSERT INTO UTTable VALUES('Test')";
@@ -170,6 +171,22 @@ namespace UTssisUnit
             Assert.AreEqual<string>("Test", target.Name);
             Assert.AreEqual<string>("C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", target.PackageLocation);
             Assert.AreEqual<string>("SELECT COUNT", target.Task);
+        }
+
+        [TestMethod()]
+        public void TaskThatFailsTest()
+        {
+            SsisTestSuite ts = new SsisTestSuite();
+            Test target = new Test(ts, "Test Task That Fails", "C:\\Projects\\SSISUnit\\UTssis2008packages\\UT Basic Scenario.dtsx", "SELECT COUNT", DTSExecResult.Failure);
+            target.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\SELECT COUNT.Properties[SqlStatementSource]", "SELECT ''"));
+            ts.Tests.Add("Test Task That Fails", target);
+            SsisAssert assert = new SsisAssert(ts, "Test Row Count", 504, false, false);
+            target.Asserts.Add("Test Row Count", assert);
+            assert.Command = new VariableCommand(ts, VariableCommand.VariableOperation.Get, "User::ProductRowCount", null);
+            ts.Execute();
+            Assert.AreEqual<int>(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual<int>(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+
         }
     }
 }

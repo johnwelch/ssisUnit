@@ -80,22 +80,23 @@ namespace SsisUnit
             set { Properties[PROP_VALUE].Value = value; }
         }
 
-        [Description("Determines whether to get or set the variable.")]
+        [Description("Determines whether to get or set the variable."),
+        TypeConverter(typeof(System.ComponentModel.EnumConverter))]
         public VariableOperation Operation
         {
-            get { return GetVariableOperationFromString(Properties[PROP_OPERATION].Value); }
+            get { return (VariableOperation)Enum.Parse(typeof(VariableOperation), Properties[PROP_OPERATION].Value, true);}
             set { Properties[PROP_OPERATION].Value = value.ToString(); }
         }
 
-        private VariableOperation GetVariableOperationFromString(string operation)
-        {
-            if (operation == "Get") return VariableOperation.Get;
-            else if (operation == "Set") return VariableOperation.Set;
-            else
-            {
-                throw new ArgumentException("The operation provided was not valid.");
-            }
-        }
+        //private VariableOperation GetVariableOperationFromString(string operation)
+        //{
+        //    if (operation == "Get") return VariableOperation.Get;
+        //    else if (operation == "Set") return VariableOperation.Set;
+        //    else
+        //    {
+        //        throw new ArgumentException("The operation provided was not valid.");
+        //    }
+        //}
 
         public enum VariableOperation
         {

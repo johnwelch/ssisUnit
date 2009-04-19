@@ -176,8 +176,8 @@ namespace UTssisUnit
             try
             {
                 target.Execute();
-                Assert.AreEqual<int>(2, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertCount));
-                Assert.AreEqual<int>(2, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual<int>(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertCount));
+                Assert.AreEqual<int>(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             }
             catch (Exception ex)
             {
@@ -213,7 +213,7 @@ namespace UTssisUnit
             {
                 target.Execute();
                 Assert.AreEqual(3, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount));
-                Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual(2, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
                 Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
             }
             catch (Exception ex)
@@ -290,7 +290,7 @@ namespace UTssisUnit
             {
                 Assert.Fail(ex.Message);
             }
-            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual<int>(2, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount));
 
         }
@@ -370,7 +370,7 @@ namespace UTssisUnit
                 testCount = target.Execute();
                 Assert.AreEqual<int>(1, testCount);
                 Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-                Assert.AreEqual<int>(3, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual<int>(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
                 Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
                 Assert.IsFalse(File.Exists("C:\\Temp\\LineCount2.txt"));
             }
@@ -385,7 +385,7 @@ namespace UTssisUnit
                 testCount = target.Execute();
                 Assert.AreEqual<int>(1, testCount);
                 Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-                Assert.AreEqual<int>(3, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+                Assert.AreEqual<int>(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
                 Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
                 Assert.IsFalse(File.Exists("C:\\Temp\\LineCount2.txt"));
             }

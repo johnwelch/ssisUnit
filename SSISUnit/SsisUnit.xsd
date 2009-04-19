@@ -154,6 +154,16 @@
       <xs:attribute name="name" type="xs:string" use="required"/>
       <xs:attribute name="package" type="xs:string" use="required"/>
       <xs:attribute name="task" type="xs:string" use="required"/>
+      <xs:attribute name="taskResult" use="optional" default="Success" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Success" />
+            <xs:enumeration value="Failure" />
+            <xs:enumeration value="Completion" />
+            <xs:enumeration value="Canceled"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 

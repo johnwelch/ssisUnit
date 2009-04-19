@@ -91,7 +91,7 @@ namespace UTssisUnit
             Assert.AreEqual(1, package.Variables["TestInt"].Value);
 
             ts.Execute();
-            Assert.AreEqual(2, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(3, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
         }
 
         [TestMethod()]
@@ -137,7 +137,7 @@ namespace UTssisUnit
             ts.Tests["Test"].Asserts.Add("TestI", AddNewAssert(ts, "TestI", "Test Descr", "\\Package.Connections[test.multple.periods.in.path].Properties[Description]"));
 
             ts.Execute();
-            Assert.AreEqual(9, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(10, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual(0, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
         }
 

@@ -236,7 +236,7 @@ namespace UTssisUnit
 
             Assert.AreEqual<int>(1, testCount);
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual<int>(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual<int>(5, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
 
         }
@@ -280,7 +280,7 @@ namespace UTssisUnit
 
             Assert.AreEqual<int>(1, testCount);
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
 
         }

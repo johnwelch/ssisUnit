@@ -20,9 +20,15 @@ namespace SsisUnit
         private Dictionary<string, SsisAssert> _asserts = new Dictionary<string, SsisAssert>();
         private CommandSet _setup;
         private CommandSet _teardown;
+        private DTSExecResult _taskResult = DTSExecResult.Success;
         //private string _validationMessages = string.Empty;
 
         public Test(SsisTestSuite testSuite, string name, string package, string task)
+            : this(testSuite, name, package, task, DTSExecResult.Success)
+        {
+        }
+
+        public Test(SsisTestSuite testSuite, string name, string package, string task, DTSExecResult taskResult)
         {
             _testSuite = testSuite;
             Name = name;
@@ -30,6 +36,7 @@ namespace SsisUnit
             _package = package;
             _setup = new CommandSet(_testSuite);
             _teardown = new CommandSet(_testSuite);
+            _taskResult = taskResult;
             return;
         }
 
@@ -54,13 +61,6 @@ namespace SsisUnit
         {
             get { return _testSuite; }
         }
-
-        //[Description("The name of this test.")]
-        //public string Name
-        //{
-        //    get { return _name; }
-        //    set { _name = value; }
-        //}
 
 #if SQL2005
         [Description("The task that this test will run against."),
@@ -109,6 +109,14 @@ namespace SsisUnit
         public CommandSet TestTeardown
         {
             get { return _teardown; }
+        }
+
+        [Description("Determines the expected result of the task."),
+        TypeConverter(typeof(System.ComponentModel.EnumConverter))]
+        public DTSExecResult TaskResult
+        {
+            get { return _taskResult; }
+            set { _taskResult = value; }
         }
 
         #endregion
@@ -168,20 +176,14 @@ namespace SsisUnit
                     }
 
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
-                    //TODO: Need a better way to handle task errors - perhaps a new event type
-                    if (packageToTest.Errors.Count > 0)
+                    DTSExecResult result = taskHost.ExecutionResult;
+                    _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertCount);
+
+                    if (result == _taskResult)
                     {
-                        foreach (DtsError err in packageToTest.Errors)
-                        {
-                            _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
-                            _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
-                        }
-                        resultMessage = "The task " + _taskName + " did not execute successfully.";
-                        returnValue = false;
-                        _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
-                    }
-                    else
-                    {
+                        _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, String.Format("Task Completed: Actual result ({0}) was equal to the expected result ({1}).", result.ToString(), _taskResult.ToString()), true)));
+                        _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
+
                         foreach (SsisAssert assert in _asserts.Values)
                         {
                             if (assert.TestBefore) continue;
@@ -191,6 +193,20 @@ namespace SsisUnit
                         resultMessage = "All asserts were completed.";
                         returnValue = true;
                         _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestPassedCount);
+                    }
+                    else
+                    {
+                        _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, String.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), _taskResult.ToString()), false)));
+                        _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
+                        foreach (DtsError err in packageToTest.Errors)
+                        {
+                            _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
+                            _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
+                        }
+
+                        resultMessage = "The task " + _taskName + " did not execute successfully.";
+                        returnValue = false;
+                        _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
                     }
 
                 }
@@ -270,6 +286,7 @@ namespace SsisUnit
             xmlWriter.WriteAttributeString("name", this.Name);
             xmlWriter.WriteAttributeString("package", this.PackageLocation);
             xmlWriter.WriteAttributeString("task", this.Task);
+            xmlWriter.WriteAttributeString("taskResult", this.TaskResult.ToString());
             if (_setup.Commands.Count > 0)
             {
                 xmlWriter.WriteStartElement("TestSetup");
@@ -312,6 +329,15 @@ namespace SsisUnit
             _asserts = LoadAsserts(testXml);
             _setup = new CommandSet(_testSuite, testXml["TestSetup"]);
             _teardown = new CommandSet(_testSuite, testXml["TestTeardown"]);
+            XmlNode xmlNode = testXml.Attributes.GetNamedItem("taskResult");
+            if (xmlNode == null)
+            {
+                _taskResult = DTSExecResult.Success;
+            }
+            else
+            {
+                _taskResult = (DTSExecResult)Enum.Parse(typeof(DTSExecResult), xmlNode.Value, true);
+            }
         }
 
         public override bool Validate()
