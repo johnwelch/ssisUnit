@@ -175,6 +175,11 @@ namespace SsisUnit
                         validationResult = assert.Execute(packageToTest, taskHost);
                     }
 
+                    //DTSExecResult vResult = taskHost.Validate(packageToTest.Connections, taskHost.Variables, null, null);
+                    //if (vResult==DTSExecResult.Success)
+                    //{
+                        
+                    //}
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
                     DTSExecResult result = taskHost.ExecutionResult;
                     _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertCount);
