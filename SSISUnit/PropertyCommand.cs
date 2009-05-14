@@ -41,7 +41,14 @@ namespace SsisUnit
 
             Properties[PROP_OPERATION].Value = operation;
             Properties[PROP_PATH].Value = propertyPath;
-            Properties[PROP_VALUE].Value = value.ToString();
+            if (value == null)
+            {
+                Properties[PROP_VALUE].Value = string.Empty;
+            }
+            else
+            {
+                Properties[PROP_VALUE].Value = value.ToString();
+            }
         }
 
         /// <summary>

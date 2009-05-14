@@ -188,5 +188,20 @@ namespace UTssisUnit
             Assert.AreEqual<int>(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
 
         }
+        [TestMethod()]
+        public void DataFlowTaskWithExpressionTest()
+        {
+            SsisTestSuite ts = new SsisTestSuite();
+            Test target = new Test(ts, "DataFlowExpression", "C:\\Projects\\SSISUnit\\UTssis2008packages\\TestDataFlowExpression.dtsx", "Data Flow Task");
+            ts.Tests.Add("Test Task That Fails", target);
+            SsisAssert assert = new SsisAssert(ts, "Test Anything", "true==true", false, true);
+            target.Asserts.Add("Test Row Count", assert);
+            assert.Command = new PropertyCommand(ts, "Get", "\\Package.Properties[Description]", null);
+            ts.Save("c:\\temp\\ut_file.ssisUnit");
+            ts.Execute();
+            Assert.AreEqual<int>(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual<int>(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+
+        }
     }
 }
