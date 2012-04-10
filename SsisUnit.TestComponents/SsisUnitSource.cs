@@ -206,7 +206,14 @@ namespace SsisUnit.TestComponents
                 foreach (var columnMapping in _bufferColumnMapping)
                 {
                     // TODO: Update to use the correct data type methods
-                    buffer[columnMapping.Value] = dataRow[columnMapping.Key];
+                    if (dataRow[columnMapping.Key] == DBNull.Value)
+                    {
+                        buffer.SetNull(columnMapping.Value);
+                    }
+                    else
+                    {
+                        buffer[columnMapping.Value] = dataRow[columnMapping.Key];    
+                    }                    
                 }
             }
 
