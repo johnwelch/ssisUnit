@@ -1,40 +1,19 @@
-﻿using SsisUnit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml;
-using System.Collections.Generic;
+﻿using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SsisUnit;
 
 namespace UTssisUnit
 {
-
-
     /// <summary>
-    ///This is a test class for TestTest and is intended
-    ///to contain all TestTest Unit Tests
-    ///</summary>
-    [TestClass()]
+    /// This is a test class for TestTest and is intended
+    /// to contain all TestTest Unit Tests
+    /// </summary>
+    [TestClass]
     public class TestTest
     {
         string _xmlTest;
         string _xmlTestFull;
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
 
         #region Additional test attributes
         // 
@@ -91,8 +70,7 @@ namespace UTssisUnit
         //
         #endregion
 
-
-        [TestMethod()]
+        [TestMethod]
         public void NewTestTest()
         {
             SsisTestSuite target = new SsisTestSuite();
@@ -108,7 +86,7 @@ namespace UTssisUnit
         /// <summary>
         ///A test for PersistToXml
         ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void PersistToXmlTest()
         {
             SsisTestSuite testSuite = new SsisTestSuite();
@@ -124,7 +102,7 @@ namespace UTssisUnit
         /// <summary>
         ///A test for LoadFromXml
         ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void LoadFromXmlTest1()
         {
             SsisTestSuite testSuite = new SsisTestSuite();
@@ -137,22 +115,22 @@ namespace UTssisUnit
         /// <summary>
         ///A test for LoadFromXml
         ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void LoadFromXmlTest()
         {
             SsisTestSuite testSuite = new SsisTestSuite();
             Test target = new Test(testSuite, "", "", "");
-            XmlNode node = ssisUnit_UTHelper.GetXmlNodeFromString(_xmlTest);
+            XmlNode node = Helper.GetXmlNodeFromString(_xmlTest);
             target.LoadFromXml(node);
             Assert.AreEqual<string>(_xmlTest, target.PersistToXml());
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void LoadFromXmlTestFull()
         {
             SsisTestSuite testSuite = new SsisTestSuite();
             Test target = new Test(testSuite, "", "", "");
-            XmlNode node = ssisUnit_UTHelper.GetXmlNodeFromString(_xmlTestFull);
+            XmlNode node = Helper.GetXmlNodeFromString(_xmlTestFull);
             target.LoadFromXml(node);
             Assert.AreEqual<string>(_xmlTestFull, target.PersistToXml());
         }
@@ -160,10 +138,10 @@ namespace UTssisUnit
         /// <summary>
         ///A test for Test Constructor
         ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void TestConstructorTest()
         {
-            string name = "Test";
+            const string name = "Test";
             string package = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
             string task = "SELECT COUNT";
             Test target = new Test(new SsisTestSuite(), name, package, task);
@@ -173,7 +151,7 @@ namespace UTssisUnit
             Assert.AreEqual<string>("SELECT COUNT", target.Task);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void TaskThatFailsTest()
         {
             SsisTestSuite ts = new SsisTestSuite();
@@ -188,7 +166,8 @@ namespace UTssisUnit
             Assert.AreEqual<int>(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
 
         }
-        [TestMethod()]
+
+        [TestMethod]
         public void DataFlowTaskWithExpressionTest()
         {
             SsisTestSuite ts = new SsisTestSuite();
@@ -201,7 +180,6 @@ namespace UTssisUnit
             ts.Execute();
             Assert.AreEqual<int>(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual<int>(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
-
         }
     }
 }

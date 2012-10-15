@@ -4,89 +4,30 @@ using Microsoft.SqlServer.Dts.Runtime;
 
 namespace UTssisUnit
 {
-
-
-    /// <summary>
-    ///This is a test class for PropertyCommandTest and is intended
-    ///to contain all PropertyCommandTest Unit Tests
-    ///</summary>
-    [TestClass()]
-    public class PropertyCommandTest
+    [TestClass]
+    public class PropertyCommandTest : ExternalFileResourceTestBase
     {
+        private const string TestXmlFilename = "UTSsisUnit_Property.ssisUnit";
 
-
-        private const string TEST_XML_FILENAME = "UTSsisUnit_Property.ssisUnit";
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        /// <summary>
-        ///A test for VariableCommand Constructor
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void PropertyCommandConstructorTest()
         {
-            PropertyCommand target = new PropertyCommand(new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME)));
+            var target = new PropertyCommand(new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename)));
             Assert.IsNotNull(target);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void RunPropertyCommandSetTest()
         {
-            SsisTestSuite ts = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
-            PropertyCommand target = (PropertyCommand)ts.SetupCommands.Commands[1];
+            var ts = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
+            var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+            ts.PackageRefs["PropertyTest"].PackagePath = packageFile;
+            var target = (PropertyCommand)ts.SetupCommands.Commands[1];
 
-            Application ssisApp = new Application();
-            Package package = ssisApp.LoadPackage(ts.PackageRefs["PropertyTest"].PackagePath, null);
-            DtsContainer container = package;
-            object actual;
-            actual = target.Execute(package, container);
+            var ssisApp = new Application();
+            var package = ssisApp.LoadPackage(ts.PackageRefs["PropertyTest"].PackagePath, null);
+            var container = package;
+            object actual = target.Execute(package, container);
             Assert.AreEqual(1, actual);
             Assert.AreEqual(1, package.Variables["TestInt"].Value);
 
@@ -94,25 +35,27 @@ namespace UTssisUnit
             Assert.AreEqual(3, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void RunPropertyCommandGetTest()
         {
-            SsisTestSuite ts = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
-            PropertyCommand target = (PropertyCommand)ts.SetupCommands.Commands[0];
+            var ts = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
+            var target = (PropertyCommand)ts.SetupCommands.Commands[0];
 
-            Application ssisApp = new Application();
+            var ssisApp = new Application();
+            var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+            ts.PackageRefs["PropertyTest"].PackagePath = packageFile;
             Package package = ssisApp.LoadPackage(ts.PackageRefs["PropertyTest"].PackagePath, null);
             DtsContainer container = package;
-            object actual;
-            actual = target.Execute(package, container);
+            object actual = target.Execute(package, container);
             Assert.AreEqual("TestValue", actual);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void CheckVariousPathsTest()
         {
-            SsisTestSuite ts = new SsisTestSuite();
-            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", "C:\\Projects\\SSISUnit\\UTssis2008packages\\PropertyTest.dtsx", PackageRef.PackageStorageType.FileSystem));
+            var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+            var ts = new SsisTestSuite();
+            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFile, PackageRef.PackageStorageType.FileSystem));
 
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\Sequence Container\\Script Task.Properties[Description]", "Test Descr"));
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\Sequence Container.Properties[Description]", "Test Descr"));
@@ -122,7 +65,8 @@ namespace UTssisUnit
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]", false));
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError].Properties[Description]", "Test Descr"));
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]", "Test Descr"));
-            //Added to verify work item #7188 - multiple periods in object names
+
+            // Added to verify work item #7188 - multiple periods in object names
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.Connections[test.multple.periods.in.path].Properties[Description]", "Test Descr"));
 
             ts.Tests.Add("Test", new Test(ts, "Test", "PackageA", "{5A32107F-F3A6-4345-BEB5-0B8434DDB102}"));
@@ -143,9 +87,9 @@ namespace UTssisUnit
 
         private SsisAssert AddNewAssert(SsisTestSuite ts, string assertName, object result, string propertyPath)
         {
-            SsisAssert a = new SsisAssert(ts, assertName, result, false);
-            a.Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty);
-            return a;
+            var assert = new SsisAssert(ts, assertName, result, false)
+                { Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty) };
+            return assert;
         }
     }
 }

@@ -15,39 +15,27 @@ namespace UTssisUnit
     ///to contain all SSISTestCaseTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SSISTestCaseTest
+    public class SsisTestCaseTest
     {
-        private const string TEST_XML_FILENAME = "UTSsisUnit.ssisUnit";
+        private const string TestXmlFilename = "UTSsisUnit.ssisUnit";
 
         //private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.ssisUnit";
         //private const string TEST_XML_FILE_BAD_DATA_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_BadData.xml";
         //TODO: Abstract references to packages
-        private const string TEST_DTSX_FILE_PATH = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
-
-        private TestContext testContextInstance;
+        private const string TestDtsxFilePath = @"C:\Projects\ssisUnit\UTssis2008packages\UT Basic Scenario.dtsx";
 
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
 
         [ClassCleanup()]
         public static void Cleanup()
         {
-            ssisUnit_UTHelper.Cleanup();
+            Helper.Cleanup();
         }
 
         //Use TestInitialize to run code before running each test
@@ -70,29 +58,29 @@ namespace UTssisUnit
         [TestMethod()]
         public void SSISTestCaseConstructorTest()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
+            var target = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
             Assert.IsNotNull(target);
         }
 
         [TestMethod()]
-        public void LoadXMLFileTest()
+        public void LoadXmlFileTest()
         {
-            string filename = ssisUnit_UTHelper.CreateUnitTestFile("UTSsisUnit");
-            SsisTestSuite ts = new SsisTestSuite(filename);
+            string filename = Helper.CreateUnitTestFile("UTSsisUnit");
+            var ts = new SsisTestSuite(filename);
             Assert.IsNotNull(ts);
         }
 
         [TestMethod()]
-        public void LoadInvalidXMLFileTest()
+        public void LoadInvalidXmlFileTest()
         {
             try
             {
-                SsisTestSuite ts = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UT_BadTestFile.ssisUnit"));
+                new SsisTestSuite(Helper.CreateUnitTestStream("UT_BadTestFile.ssisUnit"));
                 Assert.Fail("Test Case was not reported as invalid.");
             }
             catch (ApplicationException ex)
             {
-                Assert.AreEqual<string>("The unit test file is malformed or corrupt. Please verify that the file format conforms to the ssisUnit schema, provided in the SsisUnit.xsd file.", ex.Message);
+                Assert.AreEqual("The unit test file is malformed or corrupt. Please verify that the file format conforms to the ssisUnit schema, provided in the SsisUnit.xsd file.", ex.Message);
             }
         }
 
@@ -100,7 +88,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void ExecuteTest()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
             try
             {
                 target.Execute();
@@ -115,10 +103,10 @@ namespace UTssisUnit
         [TestMethod()]
         public void SetupTest()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
             Application ssisApp = new Application();
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-            DtsContainer task = ssisUnit_UTHelper.FindExecutable(packageToTest, "SELECT COUNT");
+            Package packageToTest = ssisApp.LoadPackage(TestDtsxFilePath, null);
+            DtsContainer task = Helper.FindExecutable(packageToTest, "SELECT COUNT");
 
             int result = target.SetupCommands.Execute(packageToTest, task);
             Assert.AreEqual(4, result);
@@ -127,10 +115,10 @@ namespace UTssisUnit
         [TestMethod()]
         public void TeardownTest()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
             Application ssisApp = new Application();
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
-            DtsContainer task = ssisUnit_UTHelper.FindExecutable(packageToTest, "SELECT COUNT");
+            Package packageToTest = ssisApp.LoadPackage(TestDtsxFilePath, null);
+            DtsContainer task = Helper.FindExecutable(packageToTest, "SELECT COUNT");
 
             int result = target.TeardownCommands.Execute(packageToTest, task);
             Assert.AreEqual(2, result);
@@ -139,7 +127,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void RunTestTest()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
 
 
             //XmlDocument doc = new XmlDocument();
@@ -155,7 +143,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void RunPackageListTest()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UTSsisUnit_PackageList.xml"));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream("UTSsisUnit_PackageList.xml"));
 
             try
             {
@@ -171,7 +159,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void RunTestRef()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UTSsisUnitParent.xml"));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream("UTSsisUnitParent.xml"));
 
             try
             {
@@ -188,7 +176,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void TestExecuteWithParent()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream(TEST_XML_FILENAME));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
 
             //XmlNode test = doc.DocumentElement["Tests"]["TestRef"];
 
@@ -207,7 +195,7 @@ namespace UTssisUnit
         [TestMethod()]
         public void TestSuiteSetupTest()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UTssisUnit_TestSuite.xml"));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream("UTssisUnit_TestSuite.xml"));
 
             try
             {
@@ -227,9 +215,9 @@ namespace UTssisUnit
         {
             Application ssisApp = new Application();
 
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
+            Package packageToTest = ssisApp.LoadPackage(TestDtsxFilePath, null);
 
-            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "SELECT COUNT");
             Assert.IsNotNull(result);
         }
 
@@ -238,9 +226,9 @@ namespace UTssisUnit
         {
             Application ssisApp = new Application();
 
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
+            Package packageToTest = ssisApp.LoadPackage(TestDtsxFilePath, null);
 
-            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
             Assert.IsNotNull(result);
         }
 
@@ -249,9 +237,9 @@ namespace UTssisUnit
         {
             Application ssisApp = new Application();
 
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
+            Package packageToTest = ssisApp.LoadPackage(TestDtsxFilePath, null);
 
-            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
             Assert.IsNotNull(result);
         }
 
@@ -260,9 +248,9 @@ namespace UTssisUnit
         {
             Application ssisApp = new Application();
 
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
+            Package packageToTest = ssisApp.LoadPackage(TestDtsxFilePath, null);
 
-            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "{D2D9295A-45D0-4681-B021-F5077CB2EC22}");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "{D2D9295A-45D0-4681-B021-F5077CB2EC22}");
             Assert.IsNotNull(result);
         }
 
@@ -271,16 +259,16 @@ namespace UTssisUnit
         {
             Application ssisApp = new Application();
 
-            Package packageToTest = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
+            Package packageToTest = ssisApp.LoadPackage(TestDtsxFilePath, null);
 
-            DtsContainer result = ssisUnit_UTHelper.FindExecutable(packageToTest, "Does Not Exist");
+            DtsContainer result = Helper.FindExecutable(packageToTest, "Does Not Exist");
             Assert.IsNull(result);
         }
 
         [TestMethod()]
         public void TestSetupAndTeardownTest()
         {
-            SsisTestSuite target = new SsisTestSuite(ssisUnit_UTHelper.CreateUnitTestStream("UTSsisUnit_TestSetup_Teardown.xml"));
+            SsisTestSuite target = new SsisTestSuite(Helper.CreateUnitTestStream("UTSsisUnit_TestSetup_Teardown.xml"));
 
             try
             {
@@ -294,6 +282,7 @@ namespace UTssisUnit
             Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount));
 
         }
+
         [TestMethod()]
         public void CreateNewTestSuiteTest()
         {

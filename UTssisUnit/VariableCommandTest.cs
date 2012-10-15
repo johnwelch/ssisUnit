@@ -87,8 +87,7 @@ namespace UTssisUnit
             Application ssisApp = new Application();
             Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
             DtsContainer container = package;
-            string actual;
-            actual = target.Execute(package, container).ToString();
+            string actual = target.Execute(package, container).ToString();
             Assert.AreEqual("10", actual);
         }
 

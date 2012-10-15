@@ -9,31 +9,31 @@ using Microsoft.SqlServer.Dts.Runtime;
 
 namespace UTssisUnit
 {
-    public class ssisUnit_UTHelper : IDisposable
+    public class Helper : IDisposable
     {
-        static List<string> _tempFiles = new List<string>();
+        static readonly List<string> TempFiles = new List<string>();
 
         public static string CreateUnitTestFile(string unitTestName)
         {
             string tempPath = Environment.GetEnvironmentVariable("TEMP");
             string filename = unitTestName + ".ssisUnit";
             string fullPath = tempPath + "\\" + filename;
-            
+
             Assembly asm = Assembly.GetExecutingAssembly();
             Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + "." + filename);
             XmlDocument dom = new XmlDocument();
             dom.Load(strm);
             dom.Save(fullPath);
-            _tempFiles.Add(fullPath);
+            TempFiles.Add(fullPath);
             return fullPath;
         }
 
         public static Stream CreateUnitTestStream(string unitTestName)
         {
             string filename = unitTestName;
-            
+
             Assembly asm = Assembly.GetExecutingAssembly();
-            return asm.GetManifestResourceStream(asm.GetName().Name + "." + filename);
+            return asm.GetManifestResourceStream(asm.GetName().Name + ".SampleSsisUnitTests." + filename);
         }
 
         public static XmlNode GetXmlNodeFromString(string xmlFragment)
@@ -48,14 +48,14 @@ namespace UTssisUnit
 
         public static void Cleanup()
         {
-            foreach (string file in _tempFiles)
+            foreach (string file in TempFiles)
             {
                 File.Delete(file);
             }
-            _tempFiles.Clear();
+            TempFiles.Clear();
         }
 
-                public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
+        public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
         {
 
             //TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
@@ -95,13 +95,25 @@ namespace UTssisUnit
 
         public void Dispose()
         {
-            foreach (string file in _tempFiles)
+            foreach (string file in TempFiles)
             {
                 File.Delete(file);
             }
-            _tempFiles.Clear();
+            TempFiles.Clear();
         }
 
         #endregion
+
+        public static void DeletePath(string path)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            else if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+        }
     }
 }

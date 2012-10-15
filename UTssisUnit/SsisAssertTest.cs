@@ -77,7 +77,7 @@ namespace UTssisUnit
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
-            XmlNode assertXml1 = ssisUnit_UTHelper.GetXmlNodeFromString(assertXml);
+            XmlNode assertXml1 = Helper.GetXmlNodeFromString(assertXml);
             SsisAssert target = new SsisAssert(testSuite, "", null, true);
             target.LoadFromXml(assertXml1);
             Assert.AreEqual<string>(assertXml, target.PersistToXml());
@@ -108,7 +108,7 @@ namespace UTssisUnit
         public void SsisAssertConstructorTest()
         {
             SsisTestSuite testSuite = new SsisTestSuite();
-            string name = "Test";
+            const string name = "Test";
             object expectedResult = 100;
             bool testBefore = false;
             Test ssisTest = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
@@ -137,8 +137,7 @@ namespace UTssisUnit
             SsisAssert target = new SsisAssert(testSuite, assertXml);
 
             string expected = assertXml;
-            string actual;
-            actual = target.PersistToXml();
+            string actual = target.PersistToXml();
             Assert.AreEqual(assertXml, actual);
         }
 
@@ -154,7 +153,7 @@ namespace UTssisUnit
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
-            XmlNode assertXml1 = ssisUnit_UTHelper.GetXmlNodeFromString(assertXml);
+            XmlNode assertXml1 = Helper.GetXmlNodeFromString(assertXml);
             SsisAssert target = new SsisAssert(testSuite, assertXml1);
             Assert.AreEqual<string>("Test", target.Name);
             Assert.AreEqual<string>("1", target.ExpectedResult.ToString());
@@ -296,8 +295,7 @@ namespace UTssisUnit
             SsisAssert ssisAssert = new SsisAssert(testSuite, "Test", null, false, false);
 
             string expected = assertXml;
-            string actual;
-            actual = ssisAssert.PersistToXml();
+            string actual = ssisAssert.PersistToXml();
             Assert.AreEqual(assertXml, actual);
         }
     }

@@ -3,7 +3,7 @@
   <ConnectionList>
   </ConnectionList>
   <PackageList>
-    <Package name="PropertyTest" storageType="FileSystem" packagePath="C:\Projects\SSISUnit\UTssis2008packages\PropertyTest.dtsx"/>
+    <Package name="PropertyTest" storageType="FileSystem" packagePath="Placeholder-replaced at runtime by unit test"/>
   </PackageList>
   <Setup>
     <PropertyCommand operation="Get" propertyPath="\Package.Variables[TestVar].Properties[Value]"/>

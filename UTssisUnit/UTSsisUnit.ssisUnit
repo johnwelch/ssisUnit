@@ -14,7 +14,7 @@
     <VariableCommand operation="Get" name="ProductRowCount"/>
   </Setup>
   <Tests>
-    <Test name="PassedTestSQL" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT">
+    <Test name="PassedTestSQL" package="C:\Projects\ssisUnit\UTssis2008packages\UT Basic Scenario.dtsx" task="SELECT COUNT">
       <Assert name="Test Row Count Variable" expectedResult="504" testBefore="false">
         <VariableCommand operation="Get" name="ProductRowCount"/>
       </Assert>
