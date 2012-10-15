@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -18,6 +18,27 @@
     <SccProvider>SAK</SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>SsisUnit.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,6 +48,7 @@
     <DefineConstants>TRACE;DEBUG;SQL2008</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,9 +57,9 @@
     <DefineConstants>TRACE;SQL2008</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -50,12 +72,18 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDts, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="app.Designer.cs" />
+    <Compile Include="app.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>app.settings</DependentUpon>
+    </Compile>
     <Compile Include="Assert.cs" />
     <Compile Include="CommandPlugin.cs" />
     <Compile Include="CommandSet.cs" />
+    <Compile Include="ComponentSourceCommand.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="FileCommand.cs" />
@@ -74,20 +102,50 @@
     <Compile Include="SsisUnit.cs">
       <DependentUpon>SsisUnit.xsd</DependentUpon>
     </Compile>
+    <Compile Include="ssisUnit.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ssisUnit.settings</DependentUpon>
+    </Compile>
     <Compile Include="ssisUnit1.Designer.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="VariableCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="app.settings" />
+    <None Include="app.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>app1.Designer.cs</LastGenOutput>
+    </None>
     <None Include="SsisUnit.pfx" />
-    <None Include="ssisUnit.settings" />
+    <None Include="ssisUnit.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>ssisUnit.Designer.cs</LastGenOutput>
+    </None>
     <None Include="SsisUnit.snk" />
     <EmbeddedResource Include="SsisUnit.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="BaseTest.xml" />
+    <EmbeddedResource Include="BaseTest.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

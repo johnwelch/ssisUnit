@@ -128,27 +128,61 @@
     </xs:complexType>
   </xs:element>
 
+  <!--Define Component Input Command-->
+  <xs:element name="ComponentInputCommand">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="inputvalue" type="xs:string" minOccurs="1" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="component" type="xs:string" use="required"/>
+      <xs:attribute name="input" type ="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!--Define Component Output Command-->
+  <xs:element name="ComponentOutputCommand">
+    <xs:complexType>
+      <xs:attribute name="component" type="xs:string" use="required"/>
+      <xs:attribute name="output" type ="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
   <!--Define Test-->
   <xs:element name="Test">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="TestSetup" type="CommandSet" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="Assert" minOccurs="1" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:choice minOccurs="1" maxOccurs="1">
-              <xs:element ref="ProcessCommand"/>
-              <xs:element ref="SqlCommand"/>
-              <xs:element ref="VariableCommand"/>
-              <xs:element ref="FileCommand"/>
-              <xs:element ref="DirectoryCommand"/>
-              <xs:element ref="PropertyCommand"/>
-            </xs:choice>
-            <xs:attribute name="name" type="xs:string" use="required"/>
-            <xs:attribute name="expectedResult" type="xs:string" use="required"/>
-            <xs:attribute name="testBefore" type="xs:boolean" use="required"/>
-            <xs:attribute name="expression" type="xs:boolean" use="optional" default="false"/>
-          </xs:complexType>
-        </xs:element>
+        <xs:choice minOccurs="1" maxOccurs="unbounded">
+          <xs:element name="Assert" minOccurs="1" maxOccurs="unbounded">
+            <xs:complexType>
+              <xs:choice minOccurs="1" maxOccurs="1">
+                <xs:element ref="ProcessCommand"/>
+                <xs:element ref="SqlCommand"/>
+                <xs:element ref="VariableCommand"/>
+                <xs:element ref="FileCommand"/>
+                <xs:element ref="DirectoryCommand"/>
+                <xs:element ref="PropertyCommand"/>
+
+              </xs:choice>
+              <xs:attribute name="name" type="xs:string" use="required"/>
+              <xs:attribute name="expectedResult" type="xs:string" use="required"/>
+              <xs:attribute name="testBefore" type="xs:boolean" use="required"/>
+              <xs:attribute name="expression" type="xs:boolean" use="optional" default="false"/>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="DataFlowAssert" minOccurs="1" maxOccurs="unbounded">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element ref="ComponentInputCommand" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="ComponentOutputCommand" minOccurs="0" maxOccurs="1"/>
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required"/>
+              <xs:attribute name="expectedResult" type="xs:string" use="required"/>
+              <xs:attribute name="testBefore" type="xs:boolean" use="required"/>
+              <xs:attribute name="expression" type="xs:boolean" use="optional" default="false"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
         <xs:element name="TestTeardown" type="CommandSet" minOccurs="0" maxOccurs="1"/>
       </xs:sequence>
       <xs:attribute name="name" type="xs:string" use="required"/>

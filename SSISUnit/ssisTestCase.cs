@@ -124,7 +124,7 @@ namespace SsisUnit
 
         #endregion
 
-        //TODO: Add parameters - replaceable values that can be defined one and used anywhere.
+        // TODO: Add parameters - replaceable values that can be defined one and used anywhere.
 
         #region Events
 
@@ -279,13 +279,13 @@ namespace SsisUnit
             {
                 Stream strm = GetStreamFromExecutingAssembly("SsisUnit.xsd");
 
-                XmlReaderSettings settings = new XmlReaderSettings();
+                var settings = new XmlReaderSettings();
                 settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
                 settings.ValidationType = ValidationType.Schema;
                 
-                Byte[] bytes = System.Text.Encoding.ASCII.GetBytes(this.PersistToXml());
+                var bytes = Encoding.ASCII.GetBytes(this.PersistToXml());
 
-                XmlDocument test = new XmlDocument();
+                var test = new XmlDocument();
                 test.Load(XmlReader.Create(new MemoryStream(bytes), settings));
                 
                 if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
@@ -295,7 +295,7 @@ namespace SsisUnit
 
                 return true;
             }
-            catch (System.Xml.Schema.XmlSchemaValidationException ex)
+            catch (System.Xml.Schema.XmlSchemaValidationException)
             {
                 return false;
             }
@@ -311,7 +311,7 @@ namespace SsisUnit
             {
                 throw new ApplicationException("The test suite is not in a valid format. It cannot be executed until the errors have been corrected.");
             }
-            if (_parentSuite==null)
+            if (_parentSuite == null)
             {
                 _stats.Reset();    
             }

@@ -4,8 +4,6 @@ using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Globalization;
-using System.Reflection;
-using System.IO;
 using System.ComponentModel;
 
 namespace SsisUnit
@@ -13,7 +11,6 @@ namespace SsisUnit
     public class Test : SsisUnitBaseObject
     {
         private SsisTestSuite _testSuite;
-        //private string _name;
         private string _task;
         private string _taskName;
         private string _package;
@@ -21,7 +18,6 @@ namespace SsisUnit
         private CommandSet _setup;
         private CommandSet _teardown;
         private DTSExecResult _taskResult = DTSExecResult.Success;
-        //private string _validationMessages = string.Empty;
 
         public Test(SsisTestSuite testSuite, string name, string package, string task)
             : this(testSuite, name, package, task, DTSExecResult.Success)
@@ -37,7 +33,6 @@ namespace SsisUnit
             _setup = new CommandSet(_testSuite);
             _teardown = new CommandSet(_testSuite);
             _taskResult = taskResult;
-            return;
         }
 
         public Test(SsisTestSuite testSuite, XmlNode testXml)
@@ -255,15 +250,13 @@ namespace SsisUnit
             return returnValue;
         }
 
-        private void LoadPackageAndTask(string packagePath, string taskID, ref Package package, ref DtsContainer taskHost)
+        private void LoadPackageAndTask(string packagePath, string taskId, ref Package package, ref DtsContainer taskHost)
         {
-            string pathToPackage = string.Empty;
-
             try
             {
                 package = Helper.LoadPackage(_testSuite, packagePath);
 
-                taskHost = Helper.FindExecutable(package, taskID);
+                taskHost = Helper.FindExecutable(package, taskId);
                 if (taskHost == null)
                 {
                     throw new Exception("The task host was not found.");
@@ -275,7 +268,7 @@ namespace SsisUnit
             }
             catch (Exception ex)
             {
-                throw new ArgumentException(string.Format("The package path ({0}) or the task host ({1}) is not valid." + ex.Message, packagePath, taskID));
+                throw new ArgumentException(string.Format("The package path ({0}) or the task host ({1}) is not valid." + ex.Message, packagePath, taskId));
             }
         }
 

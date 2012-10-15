@@ -55,7 +55,7 @@ namespace SsisUnit
             }
             else
             {
-                //writing to the variable
+                // writing to the variable
                 object varValue = this.Value;
                 dispenser.LockOneForWrite(varName, ref vars);
                 vars[varName].Value = System.Convert.ChangeType(varValue, vars[varName].DataType);
@@ -65,7 +65,7 @@ namespace SsisUnit
             return returnValue;
         }
 
-        //TODO: Add a TypeConverter that lists the variables in the package?
+        // TODO: Add a TypeConverter that lists the variables in the package?
         [Description("The name of the variable to operate on.")]
         public string VariableName
         {
