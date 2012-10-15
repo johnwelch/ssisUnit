@@ -1,106 +1,87 @@
-﻿using SsisUnit;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml;
-using Microsoft.SqlServer.Dts.Runtime;
-using System;
+using SsisUnit;
 
 namespace UTssisUnit
 {
-    
-    
     /// <summary>
-    ///This is a test class for DirectoryCommandTest and is intended
-    ///to contain all DirectoryCommandTest Unit Tests
-    ///</summary>
-    [TestClass()]
-    public class DirectoryCommandTest
+    /// This is a test class for DirectoryCommandTest and is intended
+    /// to contain all DirectoryCommandTest Unit Tests
+    /// </summary>
+    [TestClass]
+    public class DirectoryCommandTest : ExternalFileResourceTestBase
     {
-        private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_Directory.xml";
-        private SsisTestSuite testSuite;
-        private XmlDocument testCaseDoc;
-        
-        private TestContext testContextInstance;
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
+        public TestContext TestContext { get; set; }
+
+        private SsisTestSuite _testSuite;
 
         #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        [TestInitialize()]
-        public void MyTestInitialize()
+
+        [TestInitialize]
+        public new void Setup()
         {
-            testSuite = new SsisTestSuite(TEST_XML_FILE_PATH);
-            testCaseDoc = new XmlDocument();
-            testCaseDoc.Load(TEST_XML_FILE_PATH);
-            //connections = testCaseDoc.DocumentElement["ConnectionList"];
-            //namespaceMgr = new XmlNamespaceManager(testCaseDoc.NameTable);
-            //namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-        }        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
+            base.Setup();
+            _testSuite = new SsisTestSuite();
+        }
+
+        [TestCleanup]
+        public new void Teardown()
+        {
+            base.Teardown();
+        }
+
         #endregion
 
-
-        [TestMethod()]
+        [TestMethod]
         public void CreateTest()
         {
-            DirectoryCommand target = new DirectoryCommand(testSuite);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[0];
-            object actual;
-            actual = target.Execute( command, null, null);
+            var tempPath = GetTempPath(@"SsisUnitTests\");
+
+            var target = new DirectoryCommand(_testSuite)
+                             {
+                                 Operation = DirectoryOperation.Create,
+                                 Argument1 = tempPath
+                             };
+
+            object actual = target.Execute();
             Assert.AreEqual(0, actual);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void MoveTest()
         {
-            DirectoryCommand target = new DirectoryCommand(testSuite);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[1];
-            object actual;
-            actual = target.Execute(command, null, null);
+            var fromPath = GetTempPath(@"MoveFromTest", true);
+            var toPath = GetTempPath(@"MoveToTest");
+
+            var target = new DirectoryCommand(_testSuite)
+                             {
+                                 Operation = DirectoryOperation.Move,
+                                 Argument1 = fromPath,
+                                 Argument2 = toPath
+                             };
+
+            object actual = target.Execute();
             Assert.AreEqual(0, actual);
         }
 
+        [TestMethod]
         public void MoveWithoutTargetTest()
         {
-            DirectoryCommand target = new DirectoryCommand(testSuite);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[2];
-            object actual;
+            var fromPath = GetTempPath(@"MoveFromTest");
+
+            var target = new DirectoryCommand(_testSuite)
+                             {
+                                 Operation = DirectoryOperation.Move,
+                                 Argument1 = fromPath
+                             };
+
             try
             {
-                actual = target.Execute(command, null, null);
+                target.Execute();
                 Assert.Fail("Method did not throw the expected ArgumentException.");
             }
             catch (ArgumentException)
@@ -109,44 +90,67 @@ namespace UTssisUnit
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ExistsTest()
         {
-            DirectoryCommand target = new DirectoryCommand(testSuite);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[3];
-            object actual;
-            actual = target.Execute(command, null, null);
+            var tempPath = GetTempPath(@"SsisUnitTests\", true);
+
+            var target = new DirectoryCommand(_testSuite)
+                             {
+                                 Operation = DirectoryOperation.Exists,
+                                 Argument1 = tempPath
+                             };
+
+            object actual = target.Execute();
             Assert.AreEqual(true, actual);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void DoesntExistTest()
         {
-            DirectoryCommand target = new DirectoryCommand(testSuite);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[4];
-            object actual;
-            actual = target.Execute(command, null, null);
+            var tempPath = GetTempPath("DoesntExist");
+
+            var target = new DirectoryCommand(_testSuite)
+                        {
+                            Operation = DirectoryOperation.Exists,
+                            Argument1 = tempPath
+                        };
+
+            object actual = target.Execute();
             Assert.AreEqual(false, actual);
         }
 
-
-        [TestMethod()]
+        [TestMethod]
         public void DeleteTest()
         {
-            DirectoryCommand target = new DirectoryCommand(testSuite);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[5];
-            object actual;
-            actual = target.Execute(command, null, null);
+            var tempPath = GetTempPath("DeleteMe", true);
+
+            var target = new DirectoryCommand(_testSuite)
+                             {
+                                 Operation = DirectoryOperation.Delete,
+                                 Argument1 = tempPath
+                             };
+
+            object actual = target.Execute();
             Assert.AreEqual(0, actual);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void FileCountTest()
         {
-            DirectoryCommand target = new DirectoryCommand(testSuite);
-            XmlNode command = testCaseDoc.DocumentElement["Setup"].ChildNodes[6];
-            object actual;
-            actual = target.Execute(command, null, null);
+            var tempPath = GetTempPath("FileCount", true);
+            CreateTempFile(tempPath, "test1.aaa");
+            CreateTempFile(tempPath, "test2.aaa");
+            CreateTempFile(tempPath, "test3.aaa");
+
+            var target = new DirectoryCommand(_testSuite)
+                             {
+                                 Operation = DirectoryOperation.FileCount,
+                                 Argument1 = tempPath,
+                                 Argument2 = "*.aaa"
+                             };
+
+            object actual = target.Execute();
             Assert.AreEqual(3, actual);
         }
     }
