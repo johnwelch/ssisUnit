@@ -17,26 +17,21 @@ namespace SsisUnit.Design
             return base.CanConvertFrom(context, t);
         }
 
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-        {
-            return base.CanConvertTo(context, destinationType);
-        }
-
         public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo info, object value)
         {
-
-            if (value is string)
+            var key = value as string;
+            if (key != null)
             {
-                if (((string)value) == string.Empty) return null;
+                if ((key) == string.Empty) return null;
                 try
                 {
-                    CommandBase command = (CommandBase)context.Instance;
-                    ConnectionRef cRef = command.TestSuite.ConnectionRefs[(string)value];
+                    var command = (CommandBase)context.Instance;
+                    ConnectionRef cRef = command.TestSuite.ConnectionRefs[key];
                     return cRef;
                 }
                 catch
                 {
-                    throw new ArgumentException("Can not convert '" + (string)value + "' to type ConnectionRef");
+                    throw new ArgumentException("Can not convert '" + key + "' to type ConnectionRef");
                 }
             }
             return base.ConvertFrom(context, info, value);
@@ -46,7 +41,7 @@ namespace SsisUnit.Design
         {
             if (destType == typeof(string) && value is ConnectionRef)
             {
-                ConnectionRef cRef = (ConnectionRef)value;
+                var cRef = (ConnectionRef)value;
 
                 return cRef.ReferenceName;
             }
@@ -56,8 +51,8 @@ namespace SsisUnit.Design
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             //Get the TestSuite reference
-            CommandBase command = (CommandBase)context.Instance;
-            string[] refs = new string[command.TestSuite.ConnectionRefs.Count];
+            var command = (CommandBase)context.Instance;
+            var refs = new string[command.TestSuite.ConnectionRefs.Count];
             int count = 0;
             foreach (ConnectionRef cRef in command.TestSuite.ConnectionRefs.Values)
             {

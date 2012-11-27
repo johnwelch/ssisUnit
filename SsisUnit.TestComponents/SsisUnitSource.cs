@@ -55,9 +55,9 @@ namespace SsisUnit.TestComponents
                     var dataTable = LoadDataTable(propertyValue.ToString());
                     CreateOutputColumns(dataTable);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw new ArgumentException("The TestData value does not contain a valid XML representation of a data table", "propertyValue");
+                    throw new ArgumentException("The TestData value does not contain a valid XML representation of a data table.", "propertyValue", ex);
                 }
             }
 
@@ -212,8 +212,8 @@ namespace SsisUnit.TestComponents
                     }
                     else
                     {
-                        buffer[columnMapping.Value] = dataRow[columnMapping.Key];    
-                    }                    
+                        buffer[columnMapping.Value] = dataRow[columnMapping.Key];
+                    }
                 }
             }
 

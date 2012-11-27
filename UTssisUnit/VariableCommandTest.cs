@@ -1,109 +1,51 @@
-﻿using SsisUnit;
+﻿using System.Globalization;
+
+using SsisUnit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 
 namespace UTssisUnit
 {
-    
-    
-    /// <summary>
-    ///This is a test class for VariableCommandTest and is intended
-    ///to contain all VariableCommandTest Unit Tests
-    ///</summary>
-    [TestClass()]
-    public class VariableCommandTest
+    [TestClass]
+    public class VariableCommandTest : ExternalFileResourceTestBase
     {
-        private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.ssisUnit";
-        private const string TEST_DTSX_FILE_PATH = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
+        private string _dtsxFilePath;
 
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
+        [TestInitialize]
+        public void Initialize()
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
+            _dtsxFilePath = this.UnpackToFile("UTssisUnit.TestPackages.SimplePackage.dtsx");
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        /// <summary>
-        ///A test for VariableCommand Constructor
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void VariableCommandConstructorTest()
         {
-            //XmlNode connections = null; // TODO: Initialize to an appropriate value
-            //XmlNamespaceManager namespaceMgr = null; // TODO: Initialize to an appropriate value
-            VariableCommand target = new VariableCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
+            var target = new VariableCommand(new SsisTestSuite());
             Assert.IsNotNull(target);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void RunVariableCommandSetTest()
         {
-            SsisTestSuite ts = new SsisTestSuite(TEST_XML_FILE_PATH);
-            VariableCommand target = (VariableCommand)ts.TeardownCommands.Commands[1];
-            Application ssisApp = new Application();
-            Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
+            var ts = new SsisTestSuite();
+            var target = new VariableCommand(ts, VariableCommand.VariableOperation.Set, "VariableTest", "10");
+            var ssisApp = new Application();
+            Package package = ssisApp.LoadPackage(_dtsxFilePath, null);
             DtsContainer container = package;
             string actual = target.Execute(package, container).ToString();
             Assert.AreEqual("10", actual);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void RunVariableCommandGetTest()
         {
-            SsisTestSuite ts = new SsisTestSuite(TEST_XML_FILE_PATH);
-            VariableCommand target = (VariableCommand)ts.SetupCommands.Commands[3];
-
-            Application ssisApp = new Application();
-            Package package = ssisApp.LoadPackage(TEST_DTSX_FILE_PATH, null);
+            var ts = new SsisTestSuite();
+            var target = new VariableCommand(ts, VariableCommand.VariableOperation.Get, "VariableTest", "0");
+            var ssisApp = new Application();
+            Package package = ssisApp.LoadPackage(_dtsxFilePath, null);
             DtsContainer container = package;
-            object actual;
-            actual = target.Execute(package, container);
-            Assert.AreEqual(100, actual);
+            string actual = target.Execute(package, container).ToString();
+            Assert.AreEqual("55", actual);
         }
-
     }
 }

@@ -79,8 +79,16 @@ namespace ssisUnitTestRunnerUI
 
         void _testSuite_AssertCompleted(object sender, AssertCompletedEventArgs e)
         {
-            dataGridView1.Rows.Add("Assert", e.TestExecResult.TestExecutionTime, e.TestExecResult.PackageName, e.TestExecResult.TaskName,
+            var rowId = dataGridView1.Rows.Add("Assert", e.TestExecResult.TestExecutionTime, e.TestExecResult.PackageName, e.TestExecResult.TaskName,
                 e.TestExecResult.TestName, e.TestExecResult.TestResultMsg, e.TestExecResult.TestPassed);
+            if (!e.TestExecResult.TestPassed)
+            {
+                dataGridView1.Rows[rowId].Cells[0].Style.BackColor = Color.Red;
+            }
+            else
+            {
+                dataGridView1.Rows[rowId].Cells[0].Style.BackColor = Color.White;
+            }
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)

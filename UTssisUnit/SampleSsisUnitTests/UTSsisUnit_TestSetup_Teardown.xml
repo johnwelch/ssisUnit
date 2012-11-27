@@ -14,7 +14,7 @@
   <Setup>
   </Setup>
   <Tests>
-    <Test name="testLocal" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT">
+    <Test name="testLocal" package="filePkg" task="SELECT COUNT">
       <TestSetup>
         <SqlCommand connectionRef="Sandbox" returnsValue="false">
           INSERT INTO UTTable VALUES('Test')

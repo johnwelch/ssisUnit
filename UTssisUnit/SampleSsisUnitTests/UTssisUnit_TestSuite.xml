@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
   <ConnectionList>
-    <Connection name="Sandbox" connection="Provider=SQLNCLI;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Sandbox" connectionType="ConnectionString"/>
+    <Connection name="Sandbox" connection="Provider=SQLNCLI;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb" connectionType="ConnectionString"/>
   </ConnectionList>
   <TestSuiteSetup>
     <SqlCommand connectionRef="Sandbox" returnsValue="false">

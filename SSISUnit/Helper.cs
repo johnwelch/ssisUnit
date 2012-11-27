@@ -74,7 +74,7 @@ namespace SsisUnit
             {
                 if (packagePath.Contains(".dtsx"))
                 {
-                    //Assume that it is a file path.
+                    // Assume that it is a file path.
                     package = ssisApp.LoadPackage(packagePath, null);
                 }
                 else
@@ -98,7 +98,7 @@ namespace SsisUnit
             }
             catch (KeyNotFoundException)
             {
-                throw new KeyNotFoundException(String.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
+                throw new KeyNotFoundException(string.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
             }
 
             return package;

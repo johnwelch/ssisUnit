@@ -5,88 +5,33 @@ using System;
 
 namespace UTssisUnit
 {
-
-
-    /// <summary>
-    ///This is a test class for SsisAssertTest and is intended
-    ///to contain all SsisAssertTest Unit Tests
-    ///</summary>
-    [TestClass()]
-    public class SsisAssertTest
+    [TestClass]
+    public class SsisAssertTest : ExternalFileResourceTestBase
     {
+        private string _dtsxFilePath;
 
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
+        [TestInitialize]
+        public void Initialize()
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
+            _dtsxFilePath = this.UnpackToFile("UTssisUnit.TestPackages.UTBasicScenario2012.dtsx");
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        /// <summary>
-        ///A test for LoadFromXml
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void LoadFromXmlTest1()
         {
-            SsisTestSuite testSuite = new SsisTestSuite();
+            var testSuite = new SsisTestSuite();
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
             assertXml += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
             XmlNode assertXml1 = Helper.GetXmlNodeFromString(assertXml);
-            SsisAssert target = new SsisAssert(testSuite, "", null, true);
+            var target = new SsisAssert(testSuite, string.Empty, null, true);
             target.LoadFromXml(assertXml1);
-            Assert.AreEqual<string>(assertXml, target.PersistToXml());
+            Assert.AreEqual(assertXml, target.PersistToXml());
         }
 
-        /// <summary>
-        ///A test for LoadFromXml
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void LoadFromXmlTest()
         {
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
@@ -95,36 +40,30 @@ namespace UTssisUnit
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
 
-            SsisTestSuite testSuite = new SsisTestSuite();
-            SsisAssert target = new SsisAssert(testSuite, "", null, true);
+            var testSuite = new SsisTestSuite();
+            var target = new SsisAssert(testSuite, string.Empty, null, true);
             target.LoadFromXml(assertXml);
-            Assert.AreEqual<string>(assertXml, target.PersistToXml());
+            Assert.AreEqual(assertXml, target.PersistToXml());
         }
 
-        /// <summary>
-        ///A test for SsisAssert Constructor
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void SsisAssertConstructorTest()
         {
-            SsisTestSuite testSuite = new SsisTestSuite();
-            const string name = "Test";
+            var testSuite = new SsisTestSuite();
+            const string Name = "Test";
             object expectedResult = 100;
-            bool testBefore = false;
-            Test ssisTest = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
+            
+            var ssisTest = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
             testSuite.Tests.Add("Test", ssisTest);
-            SsisAssert target = new SsisAssert(testSuite, name, expectedResult, testBefore);
+            var target = new SsisAssert(testSuite, Name, expectedResult, false);
             ssisTest.Asserts.Add("Test", target);
-            Assert.AreEqual<int>(1, ssisTest.Asserts.Count);
-            Assert.AreEqual<string>("Test", ssisTest.Asserts["Test"].Name);
+            Assert.AreEqual(1, ssisTest.Asserts.Count);
+            Assert.AreEqual("Test", ssisTest.Asserts["Test"].Name);
             Assert.AreEqual(100, ssisTest.Asserts["Test"].ExpectedResult);
-            Assert.AreEqual<bool>(false, ssisTest.Asserts["Test"].TestBefore);
+            Assert.AreEqual(false, ssisTest.Asserts["Test"].TestBefore);
          }
 
-        /// <summary>
-        ///A test for PersistToXml
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void PersistToXmlTest()
         {
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
@@ -133,73 +72,63 @@ namespace UTssisUnit
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
 
-            SsisTestSuite testSuite = new SsisTestSuite();
-            SsisAssert target = new SsisAssert(testSuite, assertXml);
+            var testSuite = new SsisTestSuite();
+            var target = new SsisAssert(testSuite, assertXml);
 
-            string expected = assertXml;
-            string actual = target.PersistToXml();
-            Assert.AreEqual(assertXml, actual);
+            Assert.AreEqual(assertXml, target.PersistToXml());
         }
 
-        /// <summary>
-        ///A test for SsisAssert Constructor
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void SsisAssertConstructorTest1()
         {
-            SsisTestSuite testSuite = new SsisTestSuite();
+            var testSuite = new SsisTestSuite();
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
             assertXml += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
             XmlNode assertXml1 = Helper.GetXmlNodeFromString(assertXml);
-            SsisAssert target = new SsisAssert(testSuite, assertXml1);
-            Assert.AreEqual<string>("Test", target.Name);
-            Assert.AreEqual<string>("1", target.ExpectedResult.ToString());
-            Assert.AreEqual<bool>(false, target.TestBefore);
-            Assert.AreEqual<string>("SqlCommand", target.Command.CommandName);
+            var target = new SsisAssert(testSuite, assertXml1);
+            Assert.AreEqual("Test", target.Name);
+            Assert.AreEqual("1", target.ExpectedResult.ToString());
+            Assert.AreEqual(false, target.TestBefore);
+            Assert.AreEqual("SqlCommand", target.Command.CommandName);
         }
 
-        /// <summary>
-        ///A test for SsisAssert Constructor
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void SsisAssertConstructorTest2()
         {
-            SsisTestSuite testSuite = new SsisTestSuite();
+            var testSuite = new SsisTestSuite();
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
             assertXml += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
-            SsisAssert target = new SsisAssert(testSuite, assertXml);
-            Assert.AreEqual<string>("Test", target.Name);
-            Assert.AreEqual<string>("1", target.ExpectedResult.ToString());
-            Assert.AreEqual<bool>(false, target.TestBefore);
-            Assert.AreEqual<string>("SqlCommand", target.Command.CommandName);
+            var target = new SsisAssert(testSuite, assertXml);
+            Assert.AreEqual("Test", target.Name);
+            Assert.AreEqual("1", target.ExpectedResult.ToString());
+            Assert.AreEqual(false, target.TestBefore);
+            Assert.AreEqual("SqlCommand", target.Command.CommandName);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void TestDynamicAssert()
         {
-            SsisTestSuite target = new SsisTestSuite();
+            var target = new SsisTestSuite();
 
-            //Add connection ref
             target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
-                "Provider=SQLNCLI;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks",
+                "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
-            //Add package ref
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", PackageRef.PackageStorageType.FileSystem));
+            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageRef.PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (2)"));
 
-            Test ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
+            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
-            SsisAssert ssisAssert = new SsisAssert(target, "Test Count", "(int)result==2", false, true);
+            var ssisAssert = new SsisAssert(target, "Test Count", "(int)result==2", false, true);
             ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test");
 
             ssisTest.Asserts.Add("Test Count", ssisAssert);
@@ -219,7 +148,6 @@ namespace UTssisUnit
 
             ssisTest.Asserts.Add("Test Count 4", ssisAssert);
 
-
             target.TestSuiteTeardown.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "DROP TABLE dbo.Test"));
 
             int testCount = 0;
@@ -233,33 +161,30 @@ namespace UTssisUnit
                 Assert.Fail(ex.Message);
             }
 
-            Assert.AreEqual<int>(1, testCount);
-            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual<int>(5, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual<int>(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
-
+            Assert.AreEqual(1, testCount);
+            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
+            Assert.AreEqual(5, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void TestCompileFail()
         {
-            SsisTestSuite target = new SsisTestSuite();
+            var target = new SsisTestSuite();
 
-            //Add connection ref
             target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
-                "Provider=SQLNCLI;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks",
+                "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
-            //Add package ref
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", PackageRef.PackageStorageType.FileSystem));
+            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageRef.PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (2)"));
 
-            Test ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
+            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
-            SsisAssert ssisAssert = new SsisAssert(target, "Test Count", "result==2", false);
+            var ssisAssert = new SsisAssert(target, "Test Count", "result==2", false);
             ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test");
 
             ssisTest.Asserts.Add("Test Count", ssisAssert);
@@ -277,26 +202,22 @@ namespace UTssisUnit
                 Assert.Fail(ex.Message);
             }
 
-            Assert.AreEqual<int>(1, testCount);
-            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual<int>(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
-
+            Assert.AreEqual(1, testCount);
+            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void TestAssertCreation()
         {
-
             string assertXml = "<Assert name=\"Test\" expectedResult=\"\" testBefore=\"false\" expression=\"false\" ";
             assertXml += "/>";
 
-            SsisTestSuite testSuite = new SsisTestSuite();
-            SsisAssert ssisAssert = new SsisAssert(testSuite, "Test", null, false, false);
+            var testSuite = new SsisTestSuite();
+            var ssisAssert = new SsisAssert(testSuite, "Test", null, false, false);
 
-            string expected = assertXml;
-            string actual = ssisAssert.PersistToXml();
-            Assert.AreEqual(assertXml, actual);
+            Assert.AreEqual(assertXml, ssisAssert.PersistToXml());
         }
     }
 }

@@ -1,158 +1,117 @@
-﻿using SsisUnit;
+﻿using System.Diagnostics;
+
+using SsisUnit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
-using Microsoft.SqlServer.Dts.Runtime;
-using System.Data.Common;
 using System;
 
 namespace UTssisUnit
 {
-    
-    
-    /// <summary>
-    ///This is a test class for SqlCommandTest and is intended
-    ///to contain all SqlCommandTest Unit Tests
-    ///</summary>
-    [TestClass()]
-    public class SqlCommandTest
+    [TestClass]
+    public class SqlCommandTest : ExternalFileResourceTestBase
     {
-        private const string TEST_XML_FILE_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit.ssisUnit";
-        private const string TEST_XML_FILE_BAD_DATA_PATH = "C:\\Projects\\SSISUnit\\UTssisUnit\\UTSsisUnit_BadData.xml";
-        private const string TEST_DTSX_FILE_PATH = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
+        private string _badTestFile;
+        private string _testFile;
+        private SsisTestSuite _testSuite;
 
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
+        [TestInitialize]
+        public void Initialize()
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
+            _badTestFile = UnpackToFile("UTssisUnit.SampleSsisUnitTests.UTSsisUnit_BadData.ssisUnit");
+            _testFile = UnpackToFile("UTssisUnit.SampleSsisUnitTests.UTSsisUnit.ssisUnit");
+            _testSuite = new SsisTestSuite(_testFile);
+            _testSuite.ConnectionRefs["AdventureWorks"].ConnectionString = "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-        /// <summary>
-        ///A test for SqlCommand Constructor
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void SqlCommandConstructorTest()
         {
-            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
+            var target = new SqlCommand(_testSuite);
             Assert.IsNotNull(target);
         }
 
-        /// <summary>
-        ///A test for Execute
-        ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void ExecuteNoResultsTest()
         {
-            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
+            var target = new SqlCommand(_testSuite);
+            var doc = new XmlDocument();
+            doc.Load(_testFile);
+            Debug.Assert(doc.DocumentElement != null, "doc.DocumentElement != null");
+            Debug.Assert(doc.DocumentElement["Setup"] != null, "doc.DocumentElement != null");
             XmlNode command = doc.DocumentElement["Setup"].ChildNodes[1];
 
             object result = target.Execute(command, null, null);
             Assert.IsNull(result);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ExecuteResultsTest()
         {
-            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
-            XmlDocument doc = new XmlDocument();
-            doc.Load(TEST_XML_FILE_PATH);
+            var target = new SqlCommand(_testSuite);
+            var doc = new XmlDocument();
+            doc.Load(_testFile);
+            Debug.Assert(doc.DocumentElement != null, "doc.DocumentElement != null");
+            Debug.Assert(doc.DocumentElement["Setup"] != null, "doc.DocumentElement != null");
             XmlNode command = doc.DocumentElement["Setup"]["SqlCommand"];
 
             object result = target.Execute(command, null, null);
-            Assert.AreEqual(504, result);
+            Assert.AreEqual(80, result);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ExecuteNoConnectionRefTest()
         {
-            XmlDocument testCaseDoc = new XmlDocument();
-            testCaseDoc.Load(TEST_XML_FILE_BAD_DATA_PATH);
-            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_BAD_DATA_PATH), testCaseDoc.DocumentElement["Setup"].ChildNodes[0]);
+            var testCaseDoc = new XmlDocument();
+            testCaseDoc.Load(_badTestFile);
+
+            Debug.Assert(testCaseDoc.DocumentElement != null, "doc.DocumentElement != null");
+            Debug.Assert(testCaseDoc.DocumentElement["Setup"] != null, "doc.DocumentElement != null");
+
+            var target = new SqlCommand(new SsisTestSuite(_badTestFile), testCaseDoc.DocumentElement["Setup"].ChildNodes[0]);
 
             try
             {
-                object result = target.Execute(null, null);
+                target.Execute(null, null);
                 Assert.Fail("The method did not throw the expected key not found exception.");
             }
             catch (ApplicationException)
             {
                 Assert.IsTrue(true);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 Assert.Fail("The method did not throw the expected key not found exception.");
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void CommandTypeTest()
         {
-            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
+            var target = new SqlCommand(_testSuite);
             Assert.AreEqual("SqlCommand", target.CommandName);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void CommandPersistTest()
         {
-            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
-            target.ConnectionReference = new ConnectionRef("AdventureWorks", "", ConnectionRef.ConnectionTypeEnum.ConnectionString);
-            target.ReturnsValue = false;
-            target.SQLStatement = "DROP TABLE dbo.TestTable";
+            var target = new SqlCommand(_testSuite)
+                {
+                    ConnectionReference = new ConnectionRef("AdventureWorks", string.Empty, ConnectionRef.ConnectionTypeEnum.ConnectionString),
+                    ReturnsValue = false,
+                    SQLStatement = "DROP TABLE dbo.TestTable"
+                };
             string result = target.PersistToXml();
             Assert.AreEqual("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"false\">DROP TABLE dbo.TestTable</SqlCommand>", result);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void CommandLoadTest()
         {
-            SqlCommand target = new SqlCommand(new SsisTestSuite(TEST_XML_FILE_PATH));
+            var target = new SqlCommand(_testSuite);
             target.LoadFromXml("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"false\">DROP TABLE dbo.TestTable</SqlCommand>");
-            Assert.AreEqual<string>("AdventureWorks", target.ConnectionReference.ReferenceName) ;
-            Assert.AreEqual<bool>(false ,target.ReturnsValue);
-            Assert.AreEqual<string>("DROP TABLE dbo.TestTable", target.SQLStatement);
+            Assert.AreEqual("AdventureWorks", target.ConnectionReference.ReferenceName);
+            Assert.AreEqual(false, target.ReturnsValue);
+            Assert.AreEqual("DROP TABLE dbo.TestTable", target.SQLStatement);
         }
     }
 }

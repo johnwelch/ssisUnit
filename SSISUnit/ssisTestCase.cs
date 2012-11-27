@@ -7,15 +7,18 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml;
+using System.Xml.Schema;
+
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
 using System.ComponentModel;
 
 #if SQL2005
 [assembly: InternalsVisibleTo("SsisUnit.Design, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cd0c8c9049e8ae2a4e2665f34aad415e66587e19a343aeb1138671262a9f4eee33296545920a87dfd785ed54df26d766634eefd55633e11ae91b501962c69cb227f56ccd450486356ad3a8f854f8037e5a37eb3d674fff96bfc2c1d9f30d1e17570a9dc96b53e1c49da433fa381b9d00e6be0536aae4612e76400862e5127298")]
-#endif
-#if SQL2008
+#elif SQL2008
 [assembly: InternalsVisibleTo("SsisUnit2008.Design, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cd0c8c9049e8ae2a4e2665f34aad415e66587e19a343aeb1138671262a9f4eee33296545920a87dfd785ed54df26d766634eefd55633e11ae91b501962c69cb227f56ccd450486356ad3a8f854f8037e5a37eb3d674fff96bfc2c1d9f30d1e17570a9dc96b53e1c49da433fa381b9d00e6be0536aae4612e76400862e5127298")]
+#elif SQL2012
+[assembly: InternalsVisibleTo("SsisUnit.Design.2012, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cd0c8c9049e8ae2a4e2665f34aad415e66587e19a343aeb1138671262a9f4eee33296545920a87dfd785ed54df26d766634eefd55633e11ae91b501962c69cb227f56ccd450486356ad3a8f854f8037e5a37eb3d674fff96bfc2c1d9f30d1e17570a9dc96b53e1c49da433fa381b9d00e6be0536aae4612e76400862e5127298")]
 #endif
 namespace SsisUnit
 {
@@ -37,8 +40,6 @@ namespace SsisUnit
         private TestSuiteResults _stats = new TestSuiteResults();
         private string _validationMessages = string.Empty;
 
-
-
         #region Constructors
 
         public SsisTestSuite()
@@ -49,11 +50,20 @@ namespace SsisUnit
 
         public SsisTestSuite(string testCaseFile)
         {
+            if (testCaseFile == null)
+            {
+                throw new ArgumentNullException("testCaseFile");
+            }
             InitializeTestCase(testCaseFile);
         }
 
         public SsisTestSuite(Stream testCase)
         {
+            if (testCase == null)
+            {
+                throw new ArgumentNullException("testCase");
+            }
+
             InitializeTestCase(testCase);
         }
 
@@ -282,12 +292,12 @@ namespace SsisUnit
                 var settings = new XmlReaderSettings();
                 settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
                 settings.ValidationType = ValidationType.Schema;
-                
+
                 var bytes = Encoding.ASCII.GetBytes(this.PersistToXml());
 
                 var test = new XmlDocument();
                 test.Load(XmlReader.Create(new MemoryStream(bytes), settings));
-                
+
                 if (test.SchemaInfo.Validity != System.Xml.Schema.XmlSchemaValidity.Valid)
                 {
                     return false;
@@ -313,9 +323,9 @@ namespace SsisUnit
             }
             if (_parentSuite == null)
             {
-                _stats.Reset();    
+                _stats.Reset();
             }
-            
+
 
             _testSuiteSetup.Execute();
 
@@ -355,7 +365,7 @@ namespace SsisUnit
 #if SQL2005
             Stream resource = asm.GetManifestResourceStream(asm.GetName().Name + "." + resourceName);
 #endif
-#if SQL2008
+#if SQL2008 || SQL2012
             Stream resource = asm.GetManifestResourceStream("SsisUnit." + resourceName);
 #endif
             return resource;
@@ -396,9 +406,9 @@ namespace SsisUnit
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new ApplicationException(string.Format("The unit test file is malformed or corrupt. Please verify that the file format conforms to the ssisUnit schema, provided in the SsisUnit.xsd file."));
+                throw new ApplicationException(string.Format("The unit test file is malformed or corrupt. Please verify that the file format conforms to the ssisUnit schema, provided in the SsisUnit.xsd file."), ex);
             }
         }
 
@@ -450,14 +460,13 @@ namespace SsisUnit
             try
             {
                 Stream strm = GetStreamFromExecutingAssembly("SsisUnit.xsd");
-                
+
 
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
-                
                 XmlDocument test = new XmlDocument();
                 test.Load(XmlReader.Create(file, settings));
-                
+
                 return test;
             }
             catch (System.Xml.Schema.XmlSchemaValidationException)

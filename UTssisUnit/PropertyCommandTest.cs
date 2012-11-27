@@ -53,23 +53,28 @@ namespace UTssisUnit
         [TestMethod]
         public void CheckVariousPathsTest()
         {
-            var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+#if SQL2008
+               var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+#elif SQL2012
+               var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2012.dtsx");
+#endif
+
             var ts = new SsisTestSuite();
             ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFile, PackageRef.PackageStorageType.FileSystem));
 
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\Sequence Container\\Script Task.Properties[Description]", "Test Descr"));
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\Sequence Container.Properties[Description]", "Test Descr"));
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\Execute SQL Task.Properties[Description]", "Test Descr"));
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.Properties[CreationDate]", "2000-01-01"));
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]", "Test Descr"));
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]", false));
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError].Properties[Description]", "Test Descr"));
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Sequence Container\Script Task.Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Sequence Container.Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Execute SQL Task.Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Properties[CreationDate]", "2000-01-01"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]", false));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.EventHandlers[OnError].Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.EventHandlers[OnError]\Script Task.Properties[Description]", "Test Descr"));
 
             // Added to verify work item #7188 - multiple periods in object names
-            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", "\\Package.Connections[test.multple.periods.in.path].Properties[Description]", "Test Descr"));
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[test.multple.periods.in.path].Properties[Description]", "Test Descr"));
 
-            ts.Tests.Add("Test", new Test(ts, "Test", "PackageA", "{5A32107F-F3A6-4345-BEB5-0B8434DDB102}"));
+            ts.Tests.Add("Test", new Test(ts, "Test", "PackageA", "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}"));
             ts.Tests["Test"].Asserts.Add("TestA", AddNewAssert(ts, "TestA", "Test Descr", "\\Package\\Sequence Container\\Script Task.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestB", AddNewAssert(ts, "TestB", "Test Descr", "\\Package\\Sequence Container.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestC", AddNewAssert(ts, "TestC", "Test Descr", "\\Package\\Execute SQL Task.Properties[Description]"));

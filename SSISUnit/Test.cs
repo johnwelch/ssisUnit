@@ -169,19 +169,14 @@ namespace SsisUnit
 
                         validationResult = assert.Execute(packageToTest, taskHost);
                     }
-
-                    //DTSExecResult vResult = taskHost.Validate(packageToTest.Connections, taskHost.Variables, null, null);
-                    //if (vResult==DTSExecResult.Success)
-                    //{
-                        
-                    //}
+                    
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
                     DTSExecResult result = taskHost.ExecutionResult;
                     _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertCount);
 
                     if (result == _taskResult)
                     {
-                        _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, String.Format("Task Completed: Actual result ({0}) was equal to the expected result ({1}).", result.ToString(), _taskResult.ToString()), true)));
+                        _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, string.Format("Task Completed: Actual result ({0}) was equal to the expected result ({1}).", result.ToString(), _taskResult.ToString()), true)));
                         _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
 
                         foreach (SsisAssert assert in _asserts.Values)
@@ -196,7 +191,7 @@ namespace SsisUnit
                     }
                     else
                     {
-                        _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, String.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), _taskResult.ToString()), false)));
+                        _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, _package, _taskName, this.Name, string.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), _taskResult.ToString()), false)));
                         _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
                         foreach (DtsError err in packageToTest.Errors)
                         {

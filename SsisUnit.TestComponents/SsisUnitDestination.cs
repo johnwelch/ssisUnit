@@ -145,7 +145,7 @@ namespace SsisUnit.TestComponents
                 var property = ComponentMetaData.CustomPropertyCollection[DataTablePropertyName];
                 property.Value = xml;
 
-                var variableName = ComponentMetaData.CustomPropertyCollection[VariablePropertyName].Value.ToString();
+                string variableName = ComponentMetaData.CustomPropertyCollection[VariablePropertyName].Value.ToString();
                 if (!string.IsNullOrEmpty(variableName))
                 {
                     IDTSVariables100 variables = null;

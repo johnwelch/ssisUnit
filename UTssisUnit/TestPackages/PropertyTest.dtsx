@@ -40,7 +40,7 @@
     <DTS:ObjectData>
       <DTS:ConnectionManager>
         <DTS:Property DTS:Name="Retain">0</DTS:Property>
-        <DTS:Property DTS:Name="ConnectionString">Data Source=localhost;Initial Catalog=AdventureWorks;Provider=SQLNCLI10.1;Integrated Security=SSPI;Application Name=SSIS-PropertyTest-{1B033AF8-BBD1-4A37-A16A-67FA5D270267}localhost.AdventureWorks;Auto Translate=False;</DTS:Property>
+        <DTS:Property DTS:Name="ConnectionString">Data Source=localhost;Initial Catalog=tempdb;Provider=SQLNCLI10.1;Integrated Security=SSPI;Application Name=SSIS-PropertyTest-{1B033AF8-BBD1-4A37-A16A-67FA5D270267}localhost.AdventureWorks;Auto Translate=False;</DTS:Property>
       </DTS:ConnectionManager>
     </DTS:ObjectData>
   </DTS:ConnectionManager>

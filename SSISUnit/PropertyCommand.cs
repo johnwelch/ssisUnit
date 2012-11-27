@@ -73,93 +73,23 @@ namespace SsisUnit
             }
         }
 
-
-        //        public override object Execute()
-        //        {
-        //            string sourcePath = Properties[PROP_SOURCE_PATH].Value;
-        //            string targetPath = Properties[PROP_TARGET_PATH].Value;
-        //            string operation = Properties[PROP_OPERATION].Value;
-
-        //            object returnValue = null;
-
-        //            if (operation == "Copy" || operation == "Move")
-        //            {
-        //                if (targetPath == string.Empty)
-        //                {
-        //                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "The targetPath must be specified for the {0} operation.", operation));
-        //                }
-        //            }
-
-        //            try
-        //            {
-        //                if (operation == "Copy")
-        //                {
-        //                    File.Copy(sourcePath, targetPath, true);
-        //                    returnValue = 0;
-        //                }
-        //                else if (operation == "Exists")
-        //                {
-        //                    returnValue = File.Exists(sourcePath);
-        //                }
-        //                else if (operation == "Move")
-        //                {
-        //                    File.Move(sourcePath, targetPath);
-        //                    returnValue = 0;
-        //                }
-        //                else if (operation == "Delete")
-        //                {
-        //                    File.Delete(sourcePath);
-        //                    returnValue = 0;
-        //                }
-        //                else if (operation == "LineCount")
-        //                {
-        //                    return File.ReadAllLines(sourcePath).Length;
-        //                }
-        //            }
-        //            catch (Exception)
-        //            {
-        //                returnValue = -1;
-        //            }
-
-        //            return returnValue;
-        //        }
-
-        //        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package)
-        //        {
-        //            return this.Execute();
-        //        }
-
-        //        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
-        //        {
-        //            return this.Execute();
-        //        }
-
         public override object Execute(Package package, DtsContainer container)
         {
-            object returnValue;
-
-            string propertyPath = this.PropertyPath;
-
-            //Evaluate the property
-            returnValue = LocatePropertyValue(package, this.PropertyPath, this.Operation, this.Value);
-
+            object returnValue = LocatePropertyValue(package, this.PropertyPath, this.Operation, this.Value);
             return returnValue;
         }
-        public override object Execute(XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+
+        public override object Execute(XmlNode command, Package package, DtsContainer container)
         {
             throw new NotImplementedException();
-            //            this.LoadFromXml(command);
-            //            return Execute();
         }
 
         private PropertyOperation GetPropertyOperationFromString(string operation)
         {
             if (operation == "Get") return PropertyOperation.Get;
-            else if (operation == "Set") return PropertyOperation.Set;
-            else
-            {
-                throw new ArgumentException("The operation provided was not valid.");
-            }
+            if (operation == "Set") return PropertyOperation.Set;
+
+            throw new ArgumentException("The operation provided was not valid.");
         }
 
         [Description("Defines whether to get or set the property.")]
@@ -198,24 +128,20 @@ namespace SsisUnit
 
             if (propertyPath.Contains("."))
             {
-                //Can have periods in object names (like connection manager names)
-                //Need to verify that period is not between an index marker
-                int delimiterIndex = propertyPath.IndexOf(".");
-                //while (delimiterIndex > propertyPath.IndexOf("[") &&
-                //    delimiterIndex < propertyPath.IndexOf("]"))
-                //{
-                //    delimiterIndex = propertyPath.IndexOf(".", delimiterIndex + 1 );
-                //}
-                if (delimiterIndex > propertyPath.IndexOf("[") &&
-                    delimiterIndex < propertyPath.IndexOf("]"))
+                // Can have periods in object names (like connection manager names)
+                // Need to verify that period is not between an index marker
+                int delimiterIndex = propertyPath.IndexOf(".", StringComparison.Ordinal);
+
+                if (delimiterIndex > propertyPath.IndexOf("[", StringComparison.Ordinal) &&
+                    delimiterIndex < propertyPath.IndexOf("]", StringComparison.Ordinal))
                 {
-                    delimiterIndex = propertyPath.IndexOf(".", propertyPath.IndexOf("]"));
+                    delimiterIndex = propertyPath.IndexOf(".", propertyPath.IndexOf("]", StringComparison.Ordinal), StringComparison.Ordinal);
                 }
 
                 if (delimiterIndex > -1)
                 {
                     firstPart = propertyPath.Substring(0, delimiterIndex);
-                    restOfString = propertyPath.Substring(delimiterIndex + 1, (propertyPath.Length - (delimiterIndex + 1)));
+                    restOfString = propertyPath.Substring(delimiterIndex + 1, propertyPath.Length - (delimiterIndex + 1));
                     if (firstPart.Length == 0)
                     {
                         return LocatePropertyValue(dtsObject, restOfString, operation, value);
@@ -233,7 +159,7 @@ namespace SsisUnit
                 return LocatePropertyValue(dtsObject, restOfString, operation, value);
             }
 
-            //    \Package.Variables[User::TestVar].Properties[Value]
+            
             if (firstPart.ToUpper().StartsWith("VARIABLES"))
             {
                 if (!(dtsObject is DtsContainer))
@@ -250,7 +176,7 @@ namespace SsisUnit
                 return returnValue;
             }
 
-            //    \Package.Properties[CreationDate]
+            // \Package.Properties[CreationDate]
             if (firstPart.ToUpper().StartsWith("PROPERTIES"))
             {
                 if (!(dtsObject is IDTSPropertiesProvider))
@@ -276,7 +202,7 @@ namespace SsisUnit
                 return prop.GetValue(dtsObject);
             }
 
-            //    \Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]
+            // \Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]
             if (firstPart.ToUpper().StartsWith("CONNECTIONS"))
             {
                 if (!(dtsObject is Package))
@@ -288,7 +214,7 @@ namespace SsisUnit
                 return LocatePropertyValue(pkg.Connections[connIndex], restOfString, operation, value);
             }
 
-            //    \Package.EventHandlers[OnError].Properties[Description]
+            // \Package.EventHandlers[OnError].Properties[Description]
             if (firstPart.ToUpper().StartsWith("EVENTHANDLERS"))
             {
                 if (!(dtsObject is EventsProvider))
@@ -300,7 +226,7 @@ namespace SsisUnit
                 return LocatePropertyValue(eventProvider.EventHandlers[eventIndex], restOfString, operation, value);
             }
 
-            //First Part of string is not one of the hard-coded values - it's either a task or container
+            // First Part of string is not one of the hard-coded values - it's either a task or container
             if (!(dtsObject is IDTSSequence))
             {
                 throw new ArgumentException("Object must be of type IDTSSequence to reference other tasks or containers.", "dtsObject");
@@ -313,14 +239,11 @@ namespace SsisUnit
             }
 
 
-            //            \Package\Sequence Container\Script Task.Properties[Description]
-            //    \Package\Sequence Container.Properties[Description]
-            //    \Package\Execute SQL Task.Properties[Description]
-
-            //\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]
-            //    \Package.EventHandlers[OnError]\Script Task.Properties[Description]
-
-
+            // \Package\Sequence Container\Script Task.Properties[Description]
+            // \Package\Sequence Container.Properties[Description]
+            // \Package\Execute SQL Task.Properties[Description]
+            // \Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]
+            // \Package.EventHandlers[OnError]\Script Task.Properties[Description]
             if (restOfString.Length > 0)
             {
                 returnValue = LocatePropertyValue(dtsObject, restOfString, operation, value);
@@ -331,10 +254,9 @@ namespace SsisUnit
 
         private static string GetSubStringBetween(string stringToParse, string startString, string endString)
         {
-            string subString;
-            int startPosition = stringToParse.IndexOf(startString) + 1;
-            int endPosition = stringToParse.IndexOf(endString);
-            subString = stringToParse.Substring(startPosition, endPosition - startPosition);
+            int startPosition = stringToParse.IndexOf(startString, StringComparison.Ordinal) + 1;
+            int endPosition = stringToParse.IndexOf(endString, StringComparison.Ordinal);
+            string subString = stringToParse.Substring(startPosition, endPosition - startPosition);
             return subString;
         }
     }

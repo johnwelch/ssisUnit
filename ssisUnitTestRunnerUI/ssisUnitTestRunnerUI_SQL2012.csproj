@@ -9,8 +9,8 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ssisUnitTestRunnerUI</RootNamespace>
-    <AssemblyName>ssisUnitTestRunnerUI2008</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AssemblyName>ssisUnitTestRunnerUI2012</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -36,6 +36,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,7 +46,6 @@
     <DefineConstants>TRACE;DEBUG;SQL2008</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,10 +54,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
@@ -153,13 +152,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SsisUnitDesign\SsisUnit.Design_SQL2008.csproj">
-      <Project>{3B38F252-0DE8-4639-9AF9-AB8B216B685C}</Project>
-      <Name>SsisUnit.Design_SQL2008</Name>
+    <ProjectReference Include="..\SsisUnitDesign\SsisUnit.Design_SQL2012.csproj">
+      <Project>{3b38f252-0de8-4639-9af9-ab8b216b685c}</Project>
+      <Name>SsisUnit.Design_SQL2012</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SSISUnit\SSISUnit_SQL2008.csproj">
-      <Project>{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}</Project>
-      <Name>SSISUnit_SQL2008</Name>
+    <ProjectReference Include="..\SSISUnit\SSISUnit_SQL2012.csproj">
+      <Project>{8c839f0e-0afd-4d9a-8dee-5c7963e3e6c7}</Project>
+      <Name>SSISUnit_SQL2012</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

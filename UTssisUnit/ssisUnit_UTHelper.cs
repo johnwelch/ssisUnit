@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.IO;
-using System.Xml;
+﻿using System.Linq;
+
 using Microsoft.SqlServer.Dts.Runtime;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Xml;
 
 namespace UTssisUnit
 {
@@ -21,7 +21,12 @@ namespace UTssisUnit
 
             Assembly asm = Assembly.GetExecutingAssembly();
             Stream strm = asm.GetManifestResourceStream(asm.GetName().Name + "." + filename);
-            XmlDocument dom = new XmlDocument();
+            if (strm == null)
+            {
+                throw new ArgumentException("Test File could not be found as an embedded resource.", "unitTestName");
+            }
+
+            var dom = new XmlDocument();
             dom.Load(strm);
             dom.Save(fullPath);
             TempFiles.Add(fullPath);
@@ -38,7 +43,7 @@ namespace UTssisUnit
 
         public static XmlNode GetXmlNodeFromString(string xmlFragment)
         {
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
 
             XmlDocumentFragment frag = doc.CreateDocumentFragment();
             frag.InnerXml = xmlFragment;
@@ -57,11 +62,10 @@ namespace UTssisUnit
 
         public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
         {
-
-            //TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
+            // TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
 
             DtsContainer matchingExecutable = null;
-            DtsContainer parent = (DtsContainer)parentExecutable;
+            var parent = (DtsContainer)parentExecutable;
 
             if (parent.ID == taskId || parent.Name == taskId)
             {
@@ -69,27 +73,21 @@ namespace UTssisUnit
             }
             else
             {
-
                 if (parentExecutable.Executables.Contains(taskId))
                 {
                     matchingExecutable = (TaskHost)parentExecutable.Executables[taskId];
                 }
                 else
                 {
-                    foreach (Executable e in parentExecutable.Executables)
+                    foreach (var dtsSequence in parentExecutable.Executables.OfType<IDTSSequence>())
                     {
-                        if (e is IDTSSequence)
-                        {
-                            matchingExecutable = FindExecutable((IDTSSequence)e, taskId);
-                        }
+                        matchingExecutable = FindExecutable(dtsSequence, taskId);
                     }
                 }
             }
 
             return matchingExecutable;
         }
-
-
 
         #region IDisposable Members
 
