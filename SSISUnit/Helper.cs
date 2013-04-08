@@ -46,7 +46,7 @@ namespace SsisUnit
 
                 if (parentExecutable.Executables.Contains(taskId))
                 {
-                    return (TaskHost)parentExecutable.Executables[taskId];
+                    return (DtsContainer)parentExecutable.Executables[taskId];
                 }
                 else
                 {
