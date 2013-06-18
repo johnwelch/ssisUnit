@@ -166,7 +166,7 @@ namespace SsisUnit
             {
                 if (typeof(CommandBase).IsAssignableFrom(t) && (!ReferenceEquals(t, typeof(CommandBase))) && (!t.IsAbstract) && (t.Name == command))
                 {
-                    Type[] @params = { typeof(SsisTestSuite) };
+                    Type[] @params = { typeof(SsisTestSuite), typeof(object) };
 
                     ConstructorInfo con = t.GetConstructor(@params);
 
@@ -207,7 +207,7 @@ namespace SsisUnit
             {
                 if (typeof(CommandBase).IsAssignableFrom(t) && (!ReferenceEquals(t, typeof(CommandBase))) && (!t.IsAbstract) && (t.Name == commandXml.Name))
                 {
-                    Type[] @params = { typeof(SsisTestSuite), typeof(XmlNode) };
+                    Type[] @params = { typeof(SsisTestSuite), typeof(object), typeof(XmlNode) };
 
                     ConstructorInfo con = t.GetConstructor(@params);
                     if (con == null)
