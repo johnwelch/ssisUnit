@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.ComponentModel;
 
 namespace SsisUnit
 {
-    public class VariableCommand:CommandBase
+    public class VariableCommand : CommandBase
     {
-        private const string PROP_NAME = "name";
-        private const string PROP_VALUE = "value";
-        private const string PROP_OPERATION = "operation";
+        private const string PropName = "name";
+        private const string PropValue = "value";
+        private const string PropOperation = "operation";
 
         public VariableCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, VariableOperation.Get.ToString()));
-            Properties.Add(PROP_NAME, new CommandProperty(PROP_NAME, string.Empty));
-            Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, string.Empty));
+            Properties.Add(PropOperation, new CommandProperty(PropOperation, VariableOperation.Get.ToString()));
+            Properties.Add(PropName, new CommandProperty(PropName, string.Empty));
+            Properties.Add(PropValue, new CommandProperty(PropValue, string.Empty));
         }
 
         public VariableCommand(SsisTestSuite testSuite, string commandXml)
@@ -34,34 +32,49 @@ namespace SsisUnit
         public VariableCommand(SsisTestSuite testSuite, VariableOperation operation, string name, string value)
             : base(testSuite)
         {
-            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, operation.ToString()));
-            Properties.Add(PROP_NAME, new CommandProperty(PROP_NAME, name));
-            Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, value));
+            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation.ToString()));
+            Properties.Add(PropName, new CommandProperty(PropName, name));
+            Properties.Add(PropValue, new CommandProperty(PropValue, value));
         }
 
         public override object Execute(Package package, DtsContainer container)
         {
             object returnValue;
-            Variables vars = null;
-            VariableDispenser dispenser = container.VariableDispenser;
 
-            string varName = this.VariableName;
+            try
+            {
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
 
-            if (this.Operation== VariableOperation.Get)
-            {
-                dispenser.LockOneForRead(varName, ref vars);
-                returnValue = vars[varName].Value;
-                vars.Unlock();
+                Variables vars = null;
+                VariableDispenser dispenser = container.VariableDispenser;
+
+                string varName = VariableName;
+
+                if (Operation == VariableOperation.Get)
+                {
+                    dispenser.LockOneForRead(varName, ref vars);
+                    returnValue = vars[varName].Value;
+                    vars.Unlock();
+                }
+                else
+                {
+                    // writing to the variable
+                    object varValue = Value;
+                    dispenser.LockOneForWrite(varName, ref vars);
+                    vars[varName].Value = Convert.ChangeType(varValue, vars[varName].DataType);
+                    vars.Unlock();
+                    returnValue = varValue;
+                }
+
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
             }
-            else
+            catch (Exception ex)
             {
-                // writing to the variable
-                object varValue = this.Value;
-                dispenser.LockOneForWrite(varName, ref vars);
-                vars[varName].Value = System.Convert.ChangeType(varValue, vars[varName].DataType);
-                vars.Unlock();
-                returnValue = varValue;
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                
+                throw;
             }
+
             return returnValue;
         }
 
@@ -69,34 +82,24 @@ namespace SsisUnit
         [Description("The name of the variable to operate on.")]
         public string VariableName
         {
-            get { return Properties[PROP_NAME].Value; }
-            set { Properties[PROP_NAME].Value = value; }
+            get { return Properties[PropName].Value; }
+            set { Properties[PropName].Value = value; }
         }
 
         [Description("The value to set the variable to.")]
         public string Value
         {
-            get { return Properties[PROP_VALUE].Value; }
-            set { Properties[PROP_VALUE].Value = value; }
+            get { return Properties[PropValue].Value; }
+            set { Properties[PropValue].Value = value; }
         }
 
         [Description("Determines whether to get or set the variable."),
-        TypeConverter(typeof(System.ComponentModel.EnumConverter))]
+        TypeConverter(typeof(EnumConverter))]
         public VariableOperation Operation
         {
-            get { return (VariableOperation)Enum.Parse(typeof(VariableOperation), Properties[PROP_OPERATION].Value, true);}
-            set { Properties[PROP_OPERATION].Value = value.ToString(); }
+            get { return (VariableOperation)Enum.Parse(typeof(VariableOperation), Properties[PropOperation].Value, true); }
+            set { Properties[PropOperation].Value = value.ToString(); }
         }
-
-        //private VariableOperation GetVariableOperationFromString(string operation)
-        //{
-        //    if (operation == "Get") return VariableOperation.Get;
-        //    else if (operation == "Set") return VariableOperation.Set;
-        //    else
-        //    {
-        //        throw new ArgumentException("The operation provided was not valid.");
-        //    }
-        //}
 
         public enum VariableOperation
         {

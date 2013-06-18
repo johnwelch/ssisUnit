@@ -50,9 +50,15 @@
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
     <Compile Include="Assert.cs" />
-    <Compile Include="CommandPlugin.cs" />
+    <Compile Include="AssertCompletedEventArgs.cs" />
+    <Compile Include="CommandBase.cs" />
+    <Compile Include="CommandCompletedEventArgs.cs" />
+    <Compile Include="CommandFailedEventArgs.cs" />
+    <Compile Include="CommandProperty.cs" />
     <Compile Include="CommandSet.cs" />
+    <Compile Include="CommandStartedEventArgs.cs" />
     <Compile Include="ConnectionList.cs" />
+    <Compile Include="ConnectionRef.cs" />
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
@@ -63,14 +69,20 @@
     <Compile Include="ProcessCommand.cs" />
     <Compile Include="PropertyCommand.cs" />
     <Compile Include="ReflectorEval.cs" />
+    <Compile Include="SetupCompletedEventArgs.cs" />
     <Compile Include="SqlCommand.cs" />
     <Compile Include="SsisBaseObject.cs" />
-    <Compile Include="ssisTestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SsisTestSuite.cs" />
     <Compile Include="ssisUnit.cs">
       <DependentUpon>SsisUnit.xsd</DependentUpon>
     </Compile>
+    <Compile Include="TeardownCompletedEventArgs.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="TestCompletedEventArgs.cs" />
+    <Compile Include="TestRef.cs" />
+    <Compile Include="TestResult.cs" />
+    <Compile Include="TestSuiteResults.cs" />
     <Compile Include="VariableCommand.cs" />
   </ItemGroup>
   <ItemGroup>

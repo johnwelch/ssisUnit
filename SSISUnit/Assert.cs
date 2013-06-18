@@ -11,13 +11,13 @@ namespace SsisUnit
 {
     public class SsisAssert : SsisUnitBaseObject
     {
-        //private string _name;
+        private readonly SsisTestSuite _testSuite;
+
         private object _expectedResult;
         private bool _testBefore;
         private CommandBase _command;
-        private SsisTestSuite _testSuite;
+        
         private bool _expression;
-        //private string _validationMessages = string.Empty;
 
         public SsisAssert(SsisTestSuite testSuite, string name, object expectedResult, bool testBefore)
         {
@@ -25,8 +25,6 @@ namespace SsisUnit
             Name = name;
             _expectedResult = expectedResult;
             _testBefore = testBefore;
-
-            return;
         }
 
         public SsisAssert(SsisTestSuite testSuite, string name, object expectedResult, bool testBefore, bool expression)
@@ -36,21 +34,20 @@ namespace SsisUnit
             _expectedResult = expectedResult;
             _testBefore = testBefore;
             _expression = expression;
-            return;
         }
 
         public SsisAssert(SsisTestSuite testSuite, XmlNode assertXml)
         {
             _testSuite = testSuite;
+
             LoadFromXml(assertXml);
-            return;
         }
 
         public SsisAssert(SsisTestSuite testSuite, string assertXml)
         {
             _testSuite = testSuite;
+
             LoadFromXml(assertXml);
-            return;
         }
 
         #region Properties
@@ -101,9 +98,9 @@ namespace SsisUnit
 
             if (validationResult == null)
             {
-                throw new ApplicationException(String.Format(CultureInfo.CurrentCulture, "The return value from the {0} was null. " +
-                    "This may be because the specified Command does not return a value, or is set to not return a value.", _command.CommandName));
+                throw new ApplicationException(string.Format(CultureInfo.CurrentCulture, "The return value from the {0} was null. This may be because the specified Command does not return a value, or is set to not return a value.", _command.CommandName));
             }
+
             if (_expression)
             {
                 try
@@ -113,7 +110,7 @@ namespace SsisUnit
                 catch (ArgumentException ex)
                 {
                     returnValue = false;
-                    resultMessage = String.Format(CultureInfo.CurrentCulture, "The expression failed to evaluate: {0}", ex.Message);
+                    resultMessage = string.Format(CultureInfo.CurrentCulture, "The expression failed to evaluate: {0}", ex.Message);
                 }
             }
             else
@@ -123,12 +120,12 @@ namespace SsisUnit
 
             if (returnValue)
             {
-                resultMessage += String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
+                resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
                 _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
             }
             else
             {
-                resultMessage += String.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
+                resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
                 _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
             }
             _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage, returnValue));
@@ -185,12 +182,12 @@ namespace SsisUnit
             return xml.ToString();
         }
 
-        public override void LoadFromXml(string assertXml)
+        public override sealed void LoadFromXml(string assertXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(assertXml));
         }
 
-        public override void LoadFromXml(XmlNode assertXml)
+        public override sealed void LoadFromXml(XmlNode assertXml)
         {
             if (assertXml.Name != "Assert")
             {
@@ -209,17 +206,17 @@ namespace SsisUnit
             {
                 _expression = (xmlNode.Value == true.ToString().ToLower());
             }
-            _command = CommandBase.CreateCommand(_testSuite, assertXml.ChildNodes[0]);
+            _command = CommandBase.CreateCommand(_testSuite, this, assertXml.ChildNodes[0]);
         }
 
         public override bool Validate()
         {
-            _validationMessages = string.Empty;
+            ValidationMessages = string.Empty;
             if (this.Command == null)
             {
-                _validationMessages += "There must be one command for each assert." + Environment.NewLine;
+                ValidationMessages += "There must be one command for each assert." + Environment.NewLine;
             }
-            if (_validationMessages == string.Empty)
+            if (ValidationMessages == string.Empty)
             {
                 return true;
             }

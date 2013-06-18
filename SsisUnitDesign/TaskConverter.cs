@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 using Microsoft.SqlServer.Dts.Runtime;
-using System.Globalization;
 
 namespace SsisUnit.Design
 {
@@ -11,28 +8,22 @@ namespace SsisUnit.Design
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type t)
         {
-            if (t == typeof(string))
-            {
-                return true;
-            }
-            return base.CanConvertFrom(context, t);
+            return t == typeof(string) || base.CanConvertFrom(context, t);
         }
 
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-        {
-            return base.CanConvertTo(context, destinationType);
-        }
-
-        //Called to get the value to set on the underlying object
+        // Called to get the value to set on the underlying object
         public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo info, object value)
         {
-            if (value is string)
+            var s = value as string;
+
+            if (s != null)
             {
-                if (((string)value) == string.Empty) return null;
+                if (s == string.Empty) return null;
 
-                if (IsGuid(value)) return value;
+                if (IsGuid(s))
+                    return value;
 
-                //If we made it this far, it's not a GUID - it's a task name
+                // If we made it this far, it's not a GUID - it's a task name
                 try
                 {
                     Test test = (Test)context.Instance;
@@ -42,7 +33,7 @@ namespace SsisUnit.Design
                 }
                 catch
                 {
-                    throw new ArgumentException("Can not convert '" + (string)value + "' to GUID");
+                    throw new ArgumentException("Can not convert '" + s + "' to GUID");
                 }
             }
             return base.ConvertFrom(context, info, value);
@@ -52,7 +43,8 @@ namespace SsisUnit.Design
         {
             try
             {
-                Guid testGuid = new Guid(value.ToString());
+                Guid parsedGuid = new Guid(value.ToString());
+
                 return true;
             }
             catch (Exception)
@@ -61,7 +53,7 @@ namespace SsisUnit.Design
             }
         }
 
-        //Called to get the display value for the property grid
+        // Called to get the display value for the property grid
         public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destType)
         {
             if (destType == typeof(string) && value is string)
@@ -75,7 +67,5 @@ namespace SsisUnit.Design
             }
             return base.ConvertTo(context, culture, value, destType);
         }
-
-        
     }
 }

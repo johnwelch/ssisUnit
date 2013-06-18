@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.IO;
 using System.Globalization;
@@ -10,16 +8,16 @@ namespace SsisUnit
 {
     public class DirectoryCommand : CommandBase
     {
-        private const string PROP_OPERATION = "operation";
-        private const string PROP_ARGUMENT_1 = "argument1";
-        private const string PROP_ARGUMENT_2 = "argument2";
+        private const string PropOperation = "operation";
+        private const string PropArgument1 = "argument1";
+        private const string PropArgument2 = "argument2";
 
         public DirectoryCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, DirectoryOperation.Exists.ToString()));
-            Properties.Add(PROP_ARGUMENT_1, new CommandProperty(PROP_ARGUMENT_1, string.Empty));
-            Properties.Add(PROP_ARGUMENT_2, new CommandProperty(PROP_ARGUMENT_2, string.Empty));
+            Properties.Add(PropOperation, new CommandProperty(PropOperation, DirectoryOperation.Exists.ToString()));
+            Properties.Add(PropArgument1, new CommandProperty(PropArgument1, string.Empty));
+            Properties.Add(PropArgument2, new CommandProperty(PropArgument2, string.Empty));
         }
 
         public DirectoryCommand(SsisTestSuite testSuite, string commandXml)
@@ -35,41 +33,18 @@ namespace SsisUnit
         public DirectoryCommand(SsisTestSuite testSuite, string operation, string argument1, string argument2)
             : base(testSuite)
         {
-            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, operation));
-            Properties.Add(PROP_ARGUMENT_1, new CommandProperty(PROP_ARGUMENT_1, argument1));
-            Properties.Add(PROP_ARGUMENT_2, new CommandProperty(PROP_ARGUMENT_2, argument2));
+            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
+            Properties.Add(PropArgument1, new CommandProperty(PropArgument1, argument1));
+            Properties.Add(PropArgument2, new CommandProperty(PropArgument2, argument2));
         }
-
-        //public DirectoryCommand(XmlNode connections, XmlNamespaceManager namespaceMgr)
-        //    : base(connections, namespaceMgr)
-        //{ }
-
-        //#region Public Properties
-
-        //public DirectoryOperation Operation
-        //{
-        //    get { return DirectoryOperationFromString(_operation); }
-        //    set { _operation = DirectoryOperationToString(value); }
-        //}
-
-
-        //#endregion
-
-        //public string PersistToXml()
-        //{
-        //    string returnValue = "<" + this.CommandName + " operation=\"" + _operation + "\" argument1=\"" + _argument1 + "\"";
-        //    if (_argument2 != string.Empty) returnValue += " argument2=\"" + _argument2 + "\"";
-        //    returnValue += "</" + this.CommandName + ">";
-        //    return returnValue;
-        //}
 
         public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
             object returnValue = null;
 
-            string argument1 = Properties[PROP_ARGUMENT_1].Value;
-            string argument2 = Properties[PROP_ARGUMENT_2].Value;
-            DirectoryOperation operation = DirectoryOperationFromString(Properties[PROP_OPERATION].Value);
+            string argument1 = Properties[PropArgument1].Value;
+            string argument2 = Properties[PropArgument2].Value;
+            DirectoryOperation operation = DirectoryOperationFromString(Properties[PropOperation].Value);
 
             if (operation == DirectoryOperation.Move)
             {
@@ -81,65 +56,51 @@ namespace SsisUnit
 
             try
             {
-                if (operation == DirectoryOperation.Exists)
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+
+                switch (operation)
                 {
-                    returnValue = Directory.Exists(argument1);
+                    case DirectoryOperation.Exists:
+                        returnValue = Directory.Exists(argument1);
+                        break;
+                    case DirectoryOperation.Move:
+                        Directory.Move(argument1, argument2);
+                        returnValue = 0;
+                        break;
+                    case DirectoryOperation.Create:
+                        Directory.CreateDirectory(argument1);
+                        returnValue = 0;
+                        break;
+                    case DirectoryOperation.Delete:
+                        Directory.Delete(argument1);
+                        returnValue = 0;
+                        break;
+                    case DirectoryOperation.FileCount:
+                        if (argument2 == string.Empty)
+                        {
+                            argument2 = "*.*";
+                        }
+                        returnValue = Directory.GetFiles(argument1, argument2).Length;
+                        break;
                 }
-                else if (operation == DirectoryOperation.Move)
-                {
-                    Directory.Move(argument1, argument2);
-                    returnValue = 0;
-                }
-                else if (operation == DirectoryOperation.Create)
-                {
-                    Directory.CreateDirectory(argument1);
-                    returnValue = 0;
-                }
-                else if (operation == DirectoryOperation.Delete)
-                {
-                    Directory.Delete(argument1);
-                    returnValue = 0;
-                }
-                else if (operation == DirectoryOperation.FileCount)
-                {
-                    if (argument2 == string.Empty)
-                    {
-                        argument2 = "*.*";
-                    }
-                    return Directory.GetFiles(argument1, argument2).Length;
-                }
+
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                returnValue = -1;
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+
+                throw;
             }
 
             return returnValue;
         }
 
-        public override object Execute(System.Xml.XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        public override object Execute(XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
-            this.LoadFromXml(command);
-            return this.Execute(package, container);
-        }
-
-        private string DirectoryOperationToString(DirectoryOperation dirOperation)
-        {
-            switch (dirOperation)
-            {
-                case DirectoryOperation.FileCount:
-                    return "FileCount";
-                case DirectoryOperation.Create:
-                    return "Create";
-                case DirectoryOperation.Move:
-                    return "Move";
-                case DirectoryOperation.Delete:
-                    return "Delete";
-                case DirectoryOperation.Exists:
-                    return "Exists";
-                default:
-                    return "Unknown";
-            }
+            LoadFromXml(command);
+            
+            return Execute(package, container);
         }
 
         private DirectoryOperation DirectoryOperationFromString(string dirOperation)
@@ -156,23 +117,23 @@ namespace SsisUnit
          Editor("System.Windows.Forms.Design.FolderNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string Argument1
         {
-            get { return Properties[PROP_ARGUMENT_1].Value; }
-            set { Properties[PROP_ARGUMENT_1].Value = value; }
+            get { return Properties[PropArgument1].Value; }
+            set { Properties[PropArgument1].Value = value; }
         }
 
         [Description("The second argument to the operation."),
         Editor("System.Windows.Forms.Design.FolderNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string Argument2
         {
-            get { return Properties[PROP_ARGUMENT_2].Value; }
-            set { Properties[PROP_ARGUMENT_2].Value = value; }
+            get { return Properties[PropArgument2].Value; }
+            set { Properties[PropArgument2].Value = value; }
         }
 
         [Description("The operation to perform on the specified directory.")]
         public DirectoryOperation Operation
         {
-            get { return DirectoryOperationFromString(Properties[PROP_OPERATION].Value); }
-            set { Properties[PROP_OPERATION].Value= value.ToString(); }
+            get { return DirectoryOperationFromString(Properties[PropOperation].Value); }
+            set { Properties[PropOperation].Value = value.ToString(); }
         }
     }
 

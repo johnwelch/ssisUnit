@@ -41,14 +41,7 @@ namespace SsisUnit
 
             Properties[PROP_OPERATION].Value = operation;
             Properties[PROP_PATH].Value = propertyPath;
-            if (value == null)
-            {
-                Properties[PROP_VALUE].Value = string.Empty;
-            }
-            else
-            {
-                Properties[PROP_VALUE].Value = value.ToString();
-            }
+            Properties[PROP_VALUE].Value = value == null ? string.Empty : value.ToString();
         }
 
         /// <summary>
@@ -75,8 +68,22 @@ namespace SsisUnit
 
         public override object Execute(Package package, DtsContainer container)
         {
-            object returnValue = LocatePropertyValue(package, this.PropertyPath, this.Operation, this.Value);
-            return returnValue;
+            try
+            {
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+
+                object returnValue = LocatePropertyValue(package, this.PropertyPath, this.Operation, this.Value);
+
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
+
+                return returnValue;
+            }
+            catch (Exception ex)
+            {
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+
+                throw;
+            }
         }
 
         public override object Execute(XmlNode command, Package package, DtsContainer container)

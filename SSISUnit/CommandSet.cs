@@ -9,26 +9,49 @@ namespace SsisUnit
 {
     public class CommandSet
     {
-        private SsisTestSuite _testSuite;
+        #region Public Events
+
+        public event EventHandler<CommandCompletedEventArgs> CommandCompleted;
+        public event EventHandler<CommandFailedEventArgs> CommandFailed;
+        public event EventHandler<CommandStartedEventArgs> CommandStarted;
+
+        #endregion
+
         private List<CommandBase> _commands = new List<CommandBase>();
 
         public CommandSet(SsisTestSuite testSuite)
         {
-            _testSuite = testSuite;
+            TestSuite = testSuite;
+        }
+
+        public CommandSet(string commandSetName, SsisTestSuite testSuite)
+            : this(testSuite)
+        {
+            CommandSetName = commandSetName;
         }
 
         public CommandSet(SsisTestSuite testSuite, XmlNode testXml)
+            : this(null, testSuite)
         {
-            _testSuite = testSuite;
             LoadFromXml(testXml);
-            return;
+        }
+
+        public CommandSet(string commandSetName, SsisTestSuite testSuite, XmlNode testXml)
+            : this(commandSetName, testSuite)
+        {
+            LoadFromXml(testXml);
         }
 
         public CommandSet(SsisTestSuite testSuite, string testXml)
+            : this(null, testSuite)
         {
-            _testSuite = testSuite;
             LoadFromXml(testXml);
-            return;
+        }
+
+        public CommandSet(string commandSetName, SsisTestSuite testSuite, string testXml)
+            : this(commandSetName, testSuite)
+        {
+            LoadFromXml(testXml);
         }
 
         #region Properties
@@ -39,22 +62,42 @@ namespace SsisUnit
             get { return _commands; }
         }
 
+        public string CommandSetName { get; private set; }
+
+        [Browsable(false)]
+        public SsisTestSuite TestSuite { get; private set; }
+
         #endregion
 
         public void Execute()
         {
             Execute(null, null);
-            return ;
         }
 
         public int Execute(Package package, DtsContainer task)
         {
             int commandCount = 0;
+
             foreach (CommandBase command in _commands)
             {
-                command.Execute(package, task);
+                try
+                {
+                    command.CommandStarted += CommandStarted;
+                    command.CommandCompleted += CommandCompleted;
+                    command.CommandFailed += CommandFailed;
+
+                    command.Execute(package, task);
+                }
+                finally
+                {
+                    command.CommandStarted -= CommandStarted;
+                    command.CommandCompleted -= CommandCompleted;
+                    command.CommandFailed -= CommandFailed;
+                }
+
                 commandCount++;
             }
+            
             return commandCount;
         }
 
@@ -77,14 +120,8 @@ namespace SsisUnit
 
         public void LoadFromXml(XmlNode testXml)
         {
-            //if (testXml.Name != "Test")
-            //{
-            //    throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Test"));
-            //}
-
             _commands = LoadCommands(testXml);
         }
-
 
         private List<CommandBase> LoadCommands(XmlNode commands)
         {
@@ -97,16 +134,15 @@ namespace SsisUnit
 
             foreach (XmlNode command in commands)
             {
-                CommandBase commandObj = CommandBase.CreateCommand(_testSuite, command);
+                CommandBase commandObj = CommandBase.CreateCommand(TestSuite, this, command);
+
                 if (commandObj != null)
                 {
                     returnValue.Add(commandObj);
                 }
-                
             }
+
             return returnValue;
         }
-        
-
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Xml;
 using System.Globalization;
 using Microsoft.SqlServer.Dts.Runtime;
@@ -21,54 +19,54 @@ namespace SsisUnit
 
         public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
         {
+            // TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
 
-            //TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
-
-            DtsContainer matchingExecutable = null;
+            DtsContainer matchingExecutable;
             DtsContainer parent = (DtsContainer)parentExecutable;
 
             if (parent.ID == taskId || parent.Name == taskId)
             {
                 return parent;
             }
-            else
-            {
-                if (parent is EventsProvider)
-                {
-                    EventsProvider ep = (EventsProvider)parent;
-                    
-                    foreach (DtsEventHandler eh in ep.EventHandlers)
-                    {
-                        matchingExecutable = FindExecutable((IDTSSequence)eh, taskId);
-                        if (matchingExecutable != null) return matchingExecutable;
-                    }
-                }
 
-                if (parentExecutable.Executables.Contains(taskId))
+            var provider = parent as EventsProvider;
+
+            if (provider != null)
+            {
+                foreach (DtsEventHandler eh in provider.EventHandlers)
                 {
-                    return (DtsContainer)parentExecutable.Executables[taskId];
-                }
-                else
-                {
-                    foreach (Executable e in parentExecutable.Executables)
-                    {
-                        if (e is IDTSSequence)
-                        {
-                            matchingExecutable = FindExecutable((IDTSSequence)e, taskId);
-                            if (matchingExecutable != null) return matchingExecutable;
-                        }
-                    }
+                    matchingExecutable = FindExecutable(eh, taskId);
+
+                    if (matchingExecutable != null)
+                        return matchingExecutable;
                 }
             }
 
-            return matchingExecutable;
+            if (parentExecutable.Executables.Contains(taskId))
+            {
+                return (DtsContainer)parentExecutable.Executables[taskId];
+            }
+
+            foreach (Executable e in parentExecutable.Executables)
+            {
+                var sequence = e as IDTSSequence;
+
+                if (sequence == null)
+                    continue;
+
+                matchingExecutable = FindExecutable(sequence, taskId);
+
+                if (matchingExecutable != null)
+                    return matchingExecutable;
+            }
+
+            return null;
         }
 
         public static Package LoadPackage(SsisTestSuite testSuite, string packagePath)
         {
             Application ssisApp = new Application();
             Package package = null;
-            string pathToPackage = string.Empty;
 
             try
             {
@@ -79,20 +77,20 @@ namespace SsisUnit
                 }
                 else
                 {
-                    //PackageList Reference
+                    // PackageList Reference
                     PackageRef packageRef = testSuite.PackageRefs[packagePath];
 
-                    if (packageRef.StorageType == PackageRef.PackageStorageType.FileSystem)
+                    switch (packageRef.StorageType)
                     {
-                        package = ssisApp.LoadPackage(packageRef.PackagePath, null);
-                    }
-                    else if (packageRef.StorageType == PackageRef.PackageStorageType.MSDB)
-                    {
-                        package = ssisApp.LoadFromSqlServer(packageRef.PackagePath, packageRef.Server, null, null, null);
-                    }
-                    else if (packageRef.StorageType == PackageRef.PackageStorageType.PackageStore)
-                    {
-                        package = ssisApp.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
+                        case PackageRef.PackageStorageType.FileSystem:
+                            package = ssisApp.LoadPackage(packageRef.PackagePath, null);
+                            break;
+                        case PackageRef.PackageStorageType.MSDB:
+                            package = ssisApp.LoadFromSqlServer(packageRef.PackagePath, packageRef.Server, null, null, null);
+                            break;
+                        case PackageRef.PackageStorageType.PackageStore:
+                            package = ssisApp.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
+                            break;
                     }
                 }
             }
@@ -108,8 +106,7 @@ namespace SsisUnit
         {
             return null;
         }
-        //\package.variables[myvariable].Value
-        //\Package\Sequence Container\Script Task.Properties[Description]
-
+        // \package.variables[myvariable].Value
+        // \Package\Sequence Container\Script Task.Properties[Description]
     }
 }

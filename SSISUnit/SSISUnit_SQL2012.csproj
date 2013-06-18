@@ -54,7 +54,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SQL2008</DefineConstants>
+    <DefineConstants>TRACE;SQL2012</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -81,7 +81,13 @@
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
     <Compile Include="Assert.cs" />
-    <Compile Include="CommandPlugin.cs" />
+    <Compile Include="CommandCompletedEventArgs.cs" />
+    <Compile Include="CommandFailedEventArgs.cs" />
+    <Compile Include="CommandStartedEventArgs.cs" />
+    <Compile Include="ConnectionRef.cs" />
+    <Compile Include="AssertCompletedEventArgs.cs" />
+    <Compile Include="CommandBase.cs" />
+    <Compile Include="CommandProperty.cs" />
     <Compile Include="CommandSet.cs" />
     <Compile Include="ComponentSourceCommand.cs" />
     <Compile Include="ConnectionList.cs" />
@@ -96,9 +102,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyCommand.cs" />
     <Compile Include="ReflectorEval.cs" />
+    <Compile Include="SetupCompletedEventArgs.cs" />
     <Compile Include="SqlCommand.cs" />
     <Compile Include="SsisBaseObject.cs" />
-    <Compile Include="ssisTestCase.cs" />
+    <Compile Include="SsisTestSuite.cs" />
     <Compile Include="SsisUnit.cs">
       <DependentUpon>SsisUnit.xsd</DependentUpon>
     </Compile>
@@ -108,7 +115,12 @@
       <DependentUpon>ssisUnit.settings</DependentUpon>
     </Compile>
     <Compile Include="ssisUnit1.Designer.cs" />
+    <Compile Include="TeardownCompletedEventArgs.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="TestCompletedEventArgs.cs" />
+    <Compile Include="TestRef.cs" />
+    <Compile Include="TestResult.cs" />
+    <Compile Include="TestSuiteResults.cs" />
     <Compile Include="VariableCommand.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +162,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

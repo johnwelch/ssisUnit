@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.Diagnostics;
 using System.ComponentModel;
@@ -9,41 +7,49 @@ namespace SsisUnit
 {
     public class ProcessCommand : CommandBase
     {
-        private const string PROP_PROCESS = "process";
-        private const string PROP_ARGUMENTS = "arguments";
+        private const string PropProcess = "process";
+        private const string PropArguments = "arguments";
 
         public ProcessCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            Properties.Add(PROP_PROCESS, new CommandProperty(PROP_PROCESS, string.Empty));
-            Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, string.Empty));
+            Properties.Add(PropProcess, new CommandProperty(PropProcess, string.Empty));
+            Properties.Add(PropArguments, new CommandProperty(PropArguments, string.Empty));
         }
 
         public ProcessCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
         {
-            if (!Properties.ContainsKey(PROP_ARGUMENTS))
+            if (!Properties.ContainsKey(PropProcess))
             {
-                Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, string.Empty));
+                Properties.Add(PropProcess, new CommandProperty(PropProcess, string.Empty));
+            }
+
+            if (!Properties.ContainsKey(PropArguments))
+            {
+                Properties.Add(PropArguments, new CommandProperty(PropArguments, string.Empty));
             }
         }
 
         public ProcessCommand(SsisTestSuite testSuite, XmlNode commandXml)
             : base(testSuite, commandXml)
         {
-            if (!Properties.ContainsKey(PROP_ARGUMENTS))
+            if (!Properties.ContainsKey(PropProcess))
             {
-                Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, string.Empty));
+                Properties.Add(PropProcess, new CommandProperty(PropProcess, string.Empty));
+            }
+
+            if (!Properties.ContainsKey(PropArguments))
+            {
+                Properties.Add(PropArguments, new CommandProperty(PropArguments, string.Empty));
             }
         }
 
         public ProcessCommand(SsisTestSuite testSuite, string process, string arguments)
-            : base(testSuite)
+            : this(testSuite)
         {
-            if (!Properties.ContainsKey(PROP_ARGUMENTS))
-            {
-                Properties.Add(PROP_ARGUMENTS, new CommandProperty(PROP_ARGUMENTS, string.Empty));
-            }
+            Process = process;
+            Arguments = arguments;
         }
 
         public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
@@ -51,22 +57,25 @@ namespace SsisUnit
             int exitCode;
 
             Process proc = null;
+
             try
             {
-                string args = Properties[PROP_ARGUMENTS].Value;
-                string process = Properties[PROP_PROCESS].Value;
-                if (args == string.Empty)
-                {
-                    proc = System.Diagnostics.Process.Start(process);
-                }
+                string args = Properties[PropArguments].Value;
+                string process = Properties[PropProcess].Value;
+
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+
+                proc = args == string.Empty ? System.Diagnostics.Process.Start(process) : System.Diagnostics.Process.Start(process, args);
+
+                if (proc == null)
+                    exitCode = 0;
                 else
                 {
-                    proc = System.Diagnostics.Process.Start(process, args);
-                }
-                while (!proc.WaitForExit(app.Default.ProcessCheckForExitDelay))
-                {
-                    if (proc.StartTime.AddSeconds(app.Default.ProcessTimeout).CompareTo(DateTime.Now) < 0)
+                    while (!proc.WaitForExit(app.Default.ProcessCheckForExitDelay))
                     {
+                        if (proc.StartTime.AddSeconds(app.Default.ProcessTimeout).CompareTo(DateTime.Now) >= 0)
+                            continue;
+
                         try
                         {
                             proc.CloseMainWindow();
@@ -76,37 +85,40 @@ namespace SsisUnit
                             break;
                         }
                     }
+
+                    exitCode = proc.ExitCode;
                 }
 
-                exitCode = proc.ExitCode;
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
             }
             catch (Exception ex)
             {
-                throw new ArgumentException("The RunProcessNode contained an invalid command or process.", ex);
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+
+                throw;
             }
             finally
             {
-                proc.Close();
+                if (proc != null)
+                    proc.Close();
             }
 
             return exitCode;
-            
         }
 
         [Description("The process to execute."),
          Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string Process
         {
-            get { return this.Properties[PROP_PROCESS].Value; }
-            set { this.Properties[PROP_PROCESS].Value = value; }
+            get { return Properties[PropProcess].Value; }
+            set { Properties[PropProcess].Value = value; }
         }
 
         [Description("The arguments to pass to the process.")]
         public string Arguments
         {
-            get { return this.Properties[PROP_ARGUMENTS].Value; }
-            set { this.Properties[PROP_ARGUMENTS].Value = value; }
+            get { return Properties[PropArguments].Value; }
+            set { Properties[PropArguments].Value = value; }
         }
-
     }
 }

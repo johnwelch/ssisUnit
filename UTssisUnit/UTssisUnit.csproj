@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DirectoryCommandTest.cs" />
+    <Compile Include="ExternalFileResourceTestBase.cs" />
     <Compile Include="FileCommandTest.cs" />
     <Compile Include="PackageRefTest.cs" />
     <Compile Include="ProcessCommandTest.cs" />
@@ -69,21 +70,21 @@
     <Compile Include="VariableCommandTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AuthoringTests.txt" />
+    <None Include="SampleSsisUnitTests\UTSsisUnit.ssisUnit" />
+    <None Include="SampleSsisUnitTests\UTSsisUnit_BadData.ssisUnit" />
+    <None Include="SampleSsisUnitTests\UTSsisUnit_Property.ssisUnit" />
+    <None Include="SampleSsisUnitTests\UT_BadTestFile.ssisUnit" />
     <None Include="SsisUnit.pfx" />
-    <Shadow Include="Test References\ssisUnit.accessor" />
-    <None Include="UTSsisUnit_Directory.xml" />
-    <None Include="UTSsisUnit_PackageList.xml" />
-    <EmbeddedResource Include="UTSsisUnit_Property.ssisUnit" />
-    <None Include="UTSsisUnit_TestSetup_Teardown.xml" />
-    <Content Include="UTSsisUnit_File.xml" />
-    <Content Include="UTSsisUnit_Process.xml" />
-    <Content Include="UTSsisUnitChild.xml" />
-    <Content Include="UTSsisUnitParent.xml" />
-    <Content Include="UTSsisUnit_BadData.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnitChild.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnitParent.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_Directory.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_File.xml" />
+    <Content Include="SampleSsisUnitTests\UTssisUnit_Package.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_PackageList.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_Process.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_TestSetup_Teardown.xml" />
+    <Content Include="SampleSsisUnitTests\UTssisUnit_TestSuite.xml" />
     <EmbeddedResource Include="UTSsisUnit.ssisUnit" />
-    <Content Include="UTssisUnit_Package.xml" />
-    <Content Include="UTssisUnit_TestSuite.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SSISUnit\SsisUnit.csproj">
@@ -94,6 +95,9 @@
       <Project>{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}</Project>
       <Name>ssisUnitTestRunner</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Test References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

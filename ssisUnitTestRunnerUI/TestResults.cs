@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -11,34 +8,48 @@ namespace ssisUnitTestRunnerUI
 {
     public partial class TestResults : Form
     {
-        SsisTestSuite _testSuite;
-        EventHandler<AssertCompletedEventArgs> ehAssertCompleted;
-        EventHandler<SetupCompletedEventArgs> ehSetupCompleted;
-        EventHandler<TeardownCompletedEventArgs> ehTeardownCompleted;
-        EventHandler<TestCompletedEventArgs> ehTestCompleted;
+        private SsisTestSuite _testSuite;
+
+        private EventHandler<AssertCompletedEventArgs> ehAssertCompleted;
+        private EventHandler<SetupCompletedEventArgs> ehSetupCompleted;
+        private EventHandler<TeardownCompletedEventArgs> ehTeardownCompleted;
+        private EventHandler<TestCompletedEventArgs> ehTestCompleted;
+        private EventHandler<CommandStartedEventArgs> ehCommandStarted;
+        private EventHandler<CommandCompletedEventArgs> ehCommandCompleted;
+        private EventHandler<CommandFailedEventArgs> ehCommandFailed;
 
         public TestResults(SsisTestSuite testSuite)
         {
             InitializeComponent();
             _testSuite = testSuite;
 
-            ehAssertCompleted = new EventHandler<AssertCompletedEventArgs>(_testSuite_AssertCompleted);
-            ehSetupCompleted= new EventHandler<SetupCompletedEventArgs>(_testSuite_SetupCompleted);
-            ehTeardownCompleted= new EventHandler<TeardownCompletedEventArgs>(_testSuite_TeardownCompleted);
-            ehTestCompleted = new EventHandler<TestCompletedEventArgs>(_testSuite_TestCompleted);
+            ehAssertCompleted = _testSuite_AssertCompleted;
+            ehSetupCompleted = _testSuite_SetupCompleted;
+            ehTeardownCompleted = _testSuite_TeardownCompleted;
+            ehTestCompleted = _testSuite_TestCompleted;
+            ehCommandStarted = _testSuite_CommandStarted;
+            ehCommandCompleted = _testSuite_CommandCompleted;
+            ehCommandFailed = _testSuite_CommandFailed;
 
             _testSuite.AssertCompleted += ehAssertCompleted;
             _testSuite.SetupCompleted += ehSetupCompleted;
             _testSuite.TeardownCompleted += ehTeardownCompleted;
             _testSuite.TestCompleted += ehTestCompleted;
+            _testSuite.CommandStarted += ehCommandStarted;
+            _testSuite.CommandCompleted += ehCommandCompleted;
+            _testSuite.CommandFailed += ehCommandFailed;
         }
+
+        
 
         public void RunSuite()
         {
             try
             {
-                this.Show();
+                Show();
+
                 _testSuite.Execute();
+                
                 lblTestCount.Text = "Test Count: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount).ToString();
                 lblTestPassed.Text = "Tests Passed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount).ToString();
                 lblTestsFailed.Text = "Tests Failed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestFailedCount).ToString();
@@ -50,7 +61,6 @@ namespace ssisUnitTestRunnerUI
             {
                 MessageBox.Show("The following error occurred when executing the test: " + ex.Message);
             }
-
         }
 
         public void RunTest(string testName)
@@ -89,6 +99,24 @@ namespace ssisUnitTestRunnerUI
             {
                 dataGridView1.Rows[rowId].Cells[0].Style.BackColor = Color.White;
             }
+        }
+
+        private void _testSuite_CommandFailed(object sender, CommandFailedEventArgs e)
+        {
+            dataGridView1.Rows.Add("Command", e.FailedExecutionTime, e.Package, e.CommandName,
+                 null, e.Results, false);
+        }
+
+        private void _testSuite_CommandCompleted(object sender, CommandCompletedEventArgs e)
+        {
+            dataGridView1.Rows.Add("Command", e.CompletedExecutionTime, e.Package, e.CommandName,
+                 null, e.Results, true);
+        }
+
+        private void _testSuite_CommandStarted(object sender, CommandStartedEventArgs e)
+        {
+            // dataGridView1.Rows.Add("Command", e.StartedExecutionTime, e.Package, e.CommandName,
+            //      null, null, true);
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -134,12 +162,11 @@ namespace ssisUnitTestRunnerUI
                     retry = true;
                 }
             }
-            
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void runTestSuiteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -148,7 +175,8 @@ namespace ssisUnitTestRunnerUI
             {
                 dataGridView1.Rows.Clear();
             }
-            this.RunSuite();
+
+            RunSuite();
         }
 
         private void TestResults_FormClosing(object sender, FormClosingEventArgs e)
@@ -157,7 +185,9 @@ namespace ssisUnitTestRunnerUI
             _testSuite.SetupCompleted -= ehSetupCompleted;
             _testSuite.TeardownCompleted -= ehTeardownCompleted;
             _testSuite.TestCompleted -= ehTestCompleted;
-
+            _testSuite.CommandStarted -= ehCommandStarted;
+            _testSuite.CommandCompleted -= ehCommandCompleted;
+            _testSuite.CommandFailed -= ehCommandFailed;
         }
     }
 }

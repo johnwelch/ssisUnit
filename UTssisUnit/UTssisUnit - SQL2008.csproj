@@ -45,7 +45,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SQL2008</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -54,7 +54,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;SQL2008</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -94,20 +94,19 @@
   <ItemGroup>
     <EmbeddedResource Include="SampleSsisUnitTests\UTSsisUnit_Property.ssisUnit" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTSsisUnit.ssisUnit" />
+    <None Include="SampleSsisUnitTests\UTSsisUnit_BadData.ssisUnit" />
     <None Include="SsisUnit.pfx" />
-    <EmbeddedResource Include="UTSsisUnit_PackageList.xml" />
-    <EmbeddedResource Include="UTSsisUnit_TestSetup_Teardown.xml" />
-    <EmbeddedResource Include="UTSsisUnit_Property.ssisUnit" />
     <EmbeddedResource Include="TestPackages\PropertyTest.dtsx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="UT_BadTestFile.ssisUnit" />
-    <Content Include="UTSsisUnitChild.xml" />
-    <EmbeddedResource Include="UTSsisUnitParent.xml" />
-    <EmbeddedResource Include="UTSsisUnit_BadData.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnitChild.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnitParent.xml" />
+    <Content Include="SampleSsisUnitTests\UTssisUnit_Package.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_PackageList.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_TestSetup_Teardown.xml" />
+    <Content Include="SampleSsisUnitTests\UTssisUnit_TestSuite.xml" />
     <EmbeddedResource Include="UTSsisUnit.ssisUnit" />
-    <Content Include="UTssisUnit_Package.xml" />
-    <EmbeddedResource Include="UTssisUnit_TestSuite.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SSISUnit\SSISUnit_SQL2008.csproj">

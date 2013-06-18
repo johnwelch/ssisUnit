@@ -58,33 +58,37 @@ namespace SsisUnit
 
             try
             {
-                if (operation == "Copy")
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+
+                switch (operation)
                 {
-                    File.Copy(sourcePath, targetPath, true);
-                    returnValue = 0;
+                    case "Copy":
+                        File.Copy(sourcePath, targetPath, true);
+                        returnValue = 0;
+                        break;
+                    case "Exists":
+                        returnValue = File.Exists(sourcePath);
+                        break;
+                    case "Move":
+                        File.Move(sourcePath, targetPath);
+                        returnValue = 0;
+                        break;
+                    case "Delete":
+                        File.Delete(sourcePath);
+                        returnValue = 0;
+                        break;
+                    case "LineCount":
+                        returnValue = File.ReadAllLines(sourcePath).Length;
+                        break;
                 }
-                else if (operation == "Exists")
-                {
-                    returnValue = File.Exists(sourcePath);
-                }
-                else if (operation == "Move")
-                {
-                    File.Move(sourcePath, targetPath);
-                    returnValue = 0;
-                }
-                else if (operation == "Delete")
-                {
-                    File.Delete(sourcePath);
-                    returnValue = 0;
-                }
-                else if (operation == "LineCount")
-                {
-                    return File.ReadAllLines(sourcePath).Length;
-                }
+
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                returnValue = -1;
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+
+                throw;
             }
 
             return returnValue;

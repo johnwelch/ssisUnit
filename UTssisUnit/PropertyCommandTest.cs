@@ -53,14 +53,16 @@ namespace UTssisUnit
         [TestMethod]
         public void CheckVariousPathsTest()
         {
+            string packageFilepath = string.Empty;
+
 #if SQL2008
-               var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+            packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
 #elif SQL2012
-               var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2012.dtsx");
+            packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2012.dtsx");
 #endif
 
             var ts = new SsisTestSuite();
-            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFile, PackageRef.PackageStorageType.FileSystem));
+            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageRef.PackageStorageType.FileSystem));
 
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Sequence Container\Script Task.Properties[Description]", "Test Descr"));
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Sequence Container.Properties[Description]", "Test Descr"));
