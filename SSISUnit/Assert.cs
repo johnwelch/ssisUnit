@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Globalization;
 using System.ComponentModel;
-using System.IO;
 
 namespace SsisUnit
 {
@@ -51,14 +49,8 @@ namespace SsisUnit
         }
 
         #region Properties
-
-        //public string Name
-        //{
-        //    get { return _name; }
-        //    set { _name = value; }
-        //}
-
-        [TypeConverter(typeof(System.ComponentModel.StringConverter))]// "System.ComponentModel.StringConverter, System.ComponentModel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+        
+        [TypeConverter(typeof(StringConverter))]
         public object ExpectedResult
         {
             get { return _expectedResult; }
@@ -115,19 +107,20 @@ namespace SsisUnit
             }
             else
             {
-                returnValue = (_expectedResult.ToString() == validationResult.ToString());
+                returnValue = _expectedResult.ToString() == validationResult.ToString();
             }
 
             if (returnValue)
             {
-                resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
+                resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult, _expectedResult);
                 _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
             }
             else
             {
-                resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult.ToString(), _expectedResult.ToString());
+                resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult, _expectedResult);
                 _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
             }
+
             _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage, returnValue));
 
             return returnValue;
@@ -137,11 +130,7 @@ namespace SsisUnit
         {
             StringBuilder xml = new StringBuilder();
 
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.OmitXmlDeclaration = true;
-            settings.ConformanceLevel = ConformanceLevel.Fragment;
-            settings.NewLineHandling = NewLineHandling.None;
-            settings.Indent = false;
+            XmlWriterSettings settings = new XmlWriterSettings { OmitXmlDeclaration = true, ConformanceLevel = ConformanceLevel.Fragment, NewLineHandling = NewLineHandling.None, Indent = false };
 
             XmlWriter xw = XmlWriter.Create(xml, settings);
 
@@ -152,14 +141,7 @@ namespace SsisUnit
             xw.WriteEndAttribute();
 
             xw.WriteStartAttribute("expectedResult");
-            if (_expectedResult == null)
-            {
-                xw.WriteValue(string.Empty);
-            }
-            else
-            {
-                xw.WriteValue(_expectedResult.ToString());
-            }
+            xw.WriteValue(_expectedResult == null ? string.Empty : _expectedResult.ToString());
             xw.WriteEndAttribute();
 
             xw.WriteStartAttribute("testBefore");
@@ -194,42 +176,32 @@ namespace SsisUnit
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Assert"));
             }
 
-            Name = assertXml.Attributes["name"].Value;
-            _expectedResult = assertXml.Attributes["expectedResult"].Value;
-            _testBefore = (assertXml.Attributes["testBefore"].Value == true.ToString().ToLower());
-            XmlNode xmlNode = assertXml.Attributes.GetNamedItem("expression");
+            Name = assertXml.Attributes != null ? assertXml.Attributes["name"].Value : null;
+            _expectedResult = assertXml.Attributes != null ? assertXml.Attributes["expectedResult"].Value : null;
+            _testBefore = assertXml.Attributes != null && (assertXml.Attributes["testBefore"].Value == true.ToString().ToLower());
+            XmlNode xmlNode = assertXml.Attributes != null ? assertXml.Attributes.GetNamedItem("expression") : null;
+            
             if (xmlNode == null)
             {
                 _expression = false;
             }
             else
             {
-                _expression = (xmlNode.Value == true.ToString().ToLower());
+                _expression = xmlNode.Value == true.ToString().ToLower();
             }
+            
             _command = CommandBase.CreateCommand(_testSuite, this, assertXml.ChildNodes[0]);
         }
 
         public override bool Validate()
         {
             ValidationMessages = string.Empty;
-            if (this.Command == null)
+            if (Command == null)
             {
                 ValidationMessages += "There must be one command for each assert." + Environment.NewLine;
             }
-            if (ValidationMessages == string.Empty)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
-        //[Browsable(false)]
-        //public string ValidationMessages
-        //{
-        //    get { return _validationMessages; }
-        //}
+            return ValidationMessages == string.Empty;
+        }
     }
 }

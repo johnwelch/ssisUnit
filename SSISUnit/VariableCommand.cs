@@ -14,23 +14,49 @@ namespace SsisUnit
         public VariableCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            Properties.Add(PropOperation, new CommandProperty(PropOperation, VariableOperation.Get.ToString()));
-            Properties.Add(PropName, new CommandProperty(PropName, string.Empty));
-            Properties.Add(PropValue, new CommandProperty(PropValue, string.Empty));
+            InitializeProperties();
+        }
+
+        public VariableCommand(SsisTestSuite testSuite, object parent)
+            : base(testSuite, parent)
+        {
+            InitializeProperties();
         }
 
         public VariableCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
         {
+            InitializeProperties();
+        }
+
+        public VariableCommand(SsisTestSuite testSuite, object parent, string commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public VariableCommand(SsisTestSuite testSuite, XmlNode commandXml)
             : base(testSuite, commandXml)
         {
+            InitializeProperties();
+        }
+
+        public VariableCommand(SsisTestSuite testSuite, object parent, XmlNode commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public VariableCommand(SsisTestSuite testSuite, VariableOperation operation, string name, string value)
             : base(testSuite)
+        {
+            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation.ToString()));
+            Properties.Add(PropName, new CommandProperty(PropName, name));
+            Properties.Add(PropValue, new CommandProperty(PropValue, value));
+        }
+
+        public VariableCommand(SsisTestSuite testSuite, object parent, VariableOperation operation, string name, string value)
+            : base(testSuite, parent)
         {
             Properties.Add(PropOperation, new CommandProperty(PropOperation, operation.ToString()));
             Properties.Add(PropName, new CommandProperty(PropName, name));
@@ -43,7 +69,7 @@ namespace SsisUnit
 
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
 
                 Variables vars = null;
                 VariableDispenser dispenser = container.VariableDispenser;
@@ -66,11 +92,11 @@ namespace SsisUnit
                     returnValue = varValue;
                 }
 
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
                 
                 throw;
             }
@@ -105,6 +131,18 @@ namespace SsisUnit
         {
             Get = 0,
             Set = 1
+        }
+
+        private void InitializeProperties()
+        {
+            if (!Properties.ContainsKey(PropOperation))
+                Properties.Add(PropOperation, new CommandProperty(PropOperation, VariableOperation.Get.ToString()));
+
+            if (!Properties.ContainsKey(PropName))
+                Properties.Add(PropName, new CommandProperty(PropName, string.Empty));
+
+            if (!Properties.ContainsKey(PropValue))
+                Properties.Add(PropValue, new CommandProperty(PropValue, string.Empty));
         }
     }
 }

@@ -82,23 +82,47 @@ namespace SsisUnit
             {
                 try
                 {
-                    command.CommandStarted += CommandStarted;
-                    command.CommandCompleted += CommandCompleted;
-                    command.CommandFailed += CommandFailed;
+                    command.CommandStarted += CommandOnCommandStarted;
+                    command.CommandCompleted += CommandOnCommandCompleted;
+                    command.CommandFailed += CommandOnCommandFailed;
 
                     command.Execute(package, task);
                 }
                 finally
                 {
-                    command.CommandStarted -= CommandStarted;
-                    command.CommandCompleted -= CommandCompleted;
-                    command.CommandFailed -= CommandFailed;
+                    command.CommandStarted -= CommandOnCommandStarted;
+                    command.CommandCompleted -= CommandOnCommandCompleted;
+                    command.CommandFailed -= CommandOnCommandFailed;
                 }
 
                 commandCount++;
             }
             
             return commandCount;
+        }
+
+        private void CommandOnCommandStarted(object sender, CommandStartedEventArgs e)
+        {
+            EventHandler<CommandStartedEventArgs> handler = CommandStarted;
+
+            if (handler != null)
+                handler(sender, e);
+        }
+
+        private void CommandOnCommandCompleted(object sender, CommandCompletedEventArgs e)
+        {
+            EventHandler<CommandCompletedEventArgs> handler = CommandCompleted;
+
+            if (handler != null)
+                handler(sender, e);
+        }
+
+        private void CommandOnCommandFailed(object sender, CommandFailedEventArgs e)
+        {
+            EventHandler<CommandFailedEventArgs> handler = CommandFailed;
+
+            if (handler != null)
+                handler(sender, e);
         }
 
         public string PersistToXml()

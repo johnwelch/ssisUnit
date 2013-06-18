@@ -241,18 +241,42 @@ namespace SsisUnit
 
             try
             {
-                commandSet.CommandStarted += CommandStarted;
-                commandSet.CommandCompleted += CommandCompleted;
-                commandSet.CommandFailed += CommandFailed;
+                commandSet.CommandStarted += CommandOnCommandStarted;
+                commandSet.CommandCompleted += CommandOnCommandCompleted;
+                commandSet.CommandFailed += CommandOnCommandFailed;
 
                 commandSet.Execute(packageToTest, taskHost);
             }
             finally
             {
-                commandSet.CommandStarted -= CommandStarted;
-                commandSet.CommandCompleted -= CommandCompleted;
-                commandSet.CommandFailed -= CommandFailed;
+                commandSet.CommandStarted -= CommandOnCommandStarted;
+                commandSet.CommandCompleted -= CommandOnCommandCompleted;
+                commandSet.CommandFailed -= CommandOnCommandFailed;
             }
+        }
+
+        private void CommandOnCommandStarted(object sender, CommandStartedEventArgs e)
+        {
+            EventHandler<CommandStartedEventArgs> handler = CommandStarted;
+
+            if (handler != null)
+                handler(sender, e);
+        }
+
+        private void CommandOnCommandCompleted(object sender, CommandCompletedEventArgs e)
+        {
+            EventHandler<CommandCompletedEventArgs> handler = CommandCompleted;
+
+            if (handler != null)
+                handler(sender, e);
+        }
+
+        private void CommandOnCommandFailed(object sender, CommandFailedEventArgs e)
+        {
+            EventHandler<CommandFailedEventArgs> handler = CommandFailed;
+
+            if (handler != null)
+                handler(sender, e);
         }
 
         private void LoadPackageAndTask(string packagePath, string taskId, ref Package package, ref DtsContainer taskHost)

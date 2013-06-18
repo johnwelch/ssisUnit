@@ -15,23 +15,49 @@ namespace SsisUnit
         public DirectoryCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            Properties.Add(PropOperation, new CommandProperty(PropOperation, DirectoryOperation.Exists.ToString()));
-            Properties.Add(PropArgument1, new CommandProperty(PropArgument1, string.Empty));
-            Properties.Add(PropArgument2, new CommandProperty(PropArgument2, string.Empty));
+            InitializeProperties();
+        }
+
+        public DirectoryCommand(SsisTestSuite testSuite, object parent)
+            : base(testSuite, parent)
+        {
+            InitializeProperties();
         }
 
         public DirectoryCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
         {
+            InitializeProperties();
+        }
+
+        public DirectoryCommand(SsisTestSuite testSuite, object parent, string commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public DirectoryCommand(SsisTestSuite testSuite, XmlNode commandXml)
             : base(testSuite, commandXml)
         {
+            InitializeProperties();
+        }
+
+        public DirectoryCommand(SsisTestSuite testSuite, object parent, XmlNode commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public DirectoryCommand(SsisTestSuite testSuite, string operation, string argument1, string argument2)
             : base(testSuite)
+        {
+            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
+            Properties.Add(PropArgument1, new CommandProperty(PropArgument1, argument1));
+            Properties.Add(PropArgument2, new CommandProperty(PropArgument2, argument2));
+        }
+
+        public DirectoryCommand(SsisTestSuite testSuite, object parent, string operation, string argument1, string argument2)
+            : base(testSuite, parent)
         {
             Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
             Properties.Add(PropArgument1, new CommandProperty(PropArgument1, argument1));
@@ -56,7 +82,7 @@ namespace SsisUnit
 
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
 
                 switch (operation)
                 {
@@ -84,13 +110,13 @@ namespace SsisUnit
                         break;
                 }
 
-                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
 
-                throw;
+                returnValue = -1;
             }
 
             return returnValue;
@@ -134,6 +160,18 @@ namespace SsisUnit
         {
             get { return DirectoryOperationFromString(Properties[PropOperation].Value); }
             set { Properties[PropOperation].Value = value.ToString(); }
+        }
+
+        private void InitializeProperties()
+        {
+            if (!Properties.ContainsKey(PropOperation))
+                Properties.Add(PropOperation, new CommandProperty(PropOperation, DirectoryOperation.Exists.ToString()));
+
+            if (!Properties.ContainsKey(PropArgument1))
+                Properties.Add(PropArgument1, new CommandProperty(PropArgument1, string.Empty));
+
+            if (!Properties.ContainsKey(PropArgument2))
+                Properties.Add(PropArgument2, new CommandProperty(PropArgument2, string.Empty));
         }
     }
 

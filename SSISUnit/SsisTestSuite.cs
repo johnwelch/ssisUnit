@@ -113,28 +113,28 @@ namespace SsisUnit
         public event EventHandler<TeardownCompletedEventArgs> TeardownCompleted;
         public event EventHandler<TestCompletedEventArgs> TestCompleted;
 
-        internal virtual void OnRaiseCommandCompleted(CommandCompletedEventArgs e)
+        internal virtual void OnRaiseCommandCompleted(object sender, CommandCompletedEventArgs e)
         {
             EventHandler<CommandCompletedEventArgs> handler = CommandCompleted;
 
             if (handler != null)
-                handler(this, e);
+                handler(sender, e);
         }
 
-        internal virtual void OnRaiseCommandFailed(CommandFailedEventArgs e)
+        internal virtual void OnRaiseCommandFailed(object sender, CommandFailedEventArgs e)
         {
             EventHandler<CommandFailedEventArgs> handler = CommandFailed;
 
             if (handler != null)
-                handler(this, e);
+                handler(sender, e);
         }
 
-        internal virtual void OnRaiseCommandStarted(CommandStartedEventArgs e)
+        internal virtual void OnRaiseCommandStarted(object sender, CommandStartedEventArgs e)
         {
             EventHandler<CommandStartedEventArgs> handler = CommandStarted;
 
             if (handler != null)
-                handler(this, e);
+                handler(sender, e);
         }
 
         internal virtual void OnRaiseAssertCompleted(AssertCompletedEventArgs e)
@@ -326,17 +326,17 @@ namespace SsisUnit
             {
                 try
                 {
-                    test.CommandStarted += CommandStarted;
-                    test.CommandCompleted += CommandCompleted;
-                    test.CommandFailed += CommandFailed;
+                    test.CommandStarted += OnRaiseCommandStarted;
+                    test.CommandCompleted += OnRaiseCommandCompleted;
+                    test.CommandFailed += OnRaiseCommandFailed;
 
                     test.Execute();
                 }
                 finally
                 {
-                    test.CommandStarted -= CommandStarted;
-                    test.CommandCompleted -= CommandCompleted;
-                    test.CommandFailed -= CommandFailed;
+                    test.CommandStarted -= OnRaiseCommandStarted;
+                    test.CommandCompleted -= OnRaiseCommandCompleted;
+                    test.CommandFailed -= OnRaiseCommandFailed;
                 }
             }
 
@@ -441,17 +441,17 @@ namespace SsisUnit
 
             try
             {
-                commandSet.CommandStarted += CommandStarted;
-                commandSet.CommandCompleted += CommandCompleted;
-                commandSet.CommandFailed += CommandFailed;
+                commandSet.CommandStarted += OnRaiseCommandStarted;
+                commandSet.CommandCompleted += OnRaiseCommandCompleted;
+                commandSet.CommandFailed += OnRaiseCommandFailed;
 
                 commandSet.Execute();
             }
             finally
             {
-                commandSet.CommandStarted -= CommandStarted;
-                commandSet.CommandCompleted -= CommandCompleted;
-                commandSet.CommandFailed -= CommandFailed;
+                commandSet.CommandStarted -= OnRaiseCommandStarted;
+                commandSet.CommandCompleted -= OnRaiseCommandCompleted;
+                commandSet.CommandFailed -= OnRaiseCommandFailed;
             }
         }
 

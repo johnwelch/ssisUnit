@@ -13,41 +13,53 @@ namespace SsisUnit
         public ProcessCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            Properties.Add(PropProcess, new CommandProperty(PropProcess, string.Empty));
-            Properties.Add(PropArguments, new CommandProperty(PropArguments, string.Empty));
+            InitializeProperties();
+        }
+
+        public ProcessCommand(SsisTestSuite testSuite, object parent)
+            : base(testSuite, parent)
+        {
+            InitializeProperties();
         }
 
         public ProcessCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
         {
-            if (!Properties.ContainsKey(PropProcess))
-            {
-                Properties.Add(PropProcess, new CommandProperty(PropProcess, string.Empty));
-            }
+            InitializeProperties();
+        }
 
-            if (!Properties.ContainsKey(PropArguments))
-            {
-                Properties.Add(PropArguments, new CommandProperty(PropArguments, string.Empty));
-            }
+        public ProcessCommand(SsisTestSuite testSuite, object parent, string commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public ProcessCommand(SsisTestSuite testSuite, XmlNode commandXml)
             : base(testSuite, commandXml)
         {
-            if (!Properties.ContainsKey(PropProcess))
-            {
-                Properties.Add(PropProcess, new CommandProperty(PropProcess, string.Empty));
-            }
+            InitializeProperties();
+        }
 
-            if (!Properties.ContainsKey(PropArguments))
-            {
-                Properties.Add(PropArguments, new CommandProperty(PropArguments, string.Empty));
-            }
+        public ProcessCommand(SsisTestSuite testSuite, object parent, XmlNode commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public ProcessCommand(SsisTestSuite testSuite, string process, string arguments)
             : this(testSuite)
         {
+            InitializeProperties();
+
+            Process = process;
+            Arguments = arguments;
+        }
+
+        public ProcessCommand(SsisTestSuite testSuite, object parent, string process, string arguments)
+            : this(testSuite, parent)
+        {
+            InitializeProperties();
+
             Process = process;
             Arguments = arguments;
         }
@@ -63,7 +75,7 @@ namespace SsisUnit
                 string args = Properties[PropArguments].Value;
                 string process = Properties[PropProcess].Value;
 
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
 
                 proc = args == string.Empty ? System.Diagnostics.Process.Start(process) : System.Diagnostics.Process.Start(process, args);
 
@@ -89,13 +101,13 @@ namespace SsisUnit
                     exitCode = proc.ExitCode;
                 }
 
-                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
 
-                throw;
+                throw new ArgumentException("The RunProcessNode contained an invalid command or process.", ex);
             }
             finally
             {
@@ -119,6 +131,15 @@ namespace SsisUnit
         {
             get { return Properties[PropArguments].Value; }
             set { Properties[PropArguments].Value = value; }
+        }
+
+        private void InitializeProperties()
+        {
+            if (!Properties.ContainsKey(PropProcess))
+                Properties.Add(PropProcess, new CommandProperty(PropProcess, string.Empty));
+
+            if (!Properties.ContainsKey(PropArguments))
+                Properties.Add(PropArguments, new CommandProperty(PropArguments, string.Empty));
         }
     }
 }

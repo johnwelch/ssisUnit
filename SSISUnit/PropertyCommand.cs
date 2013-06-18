@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.ComponentModel;
@@ -9,21 +7,30 @@ namespace SsisUnit
 {
     public class PropertyCommand : CommandBase
     {
-        private const string PROP_OPERATION = "operation";
-        private const string PROP_PATH = "propertyPath";
-        private const string PROP_VALUE = "value";
+        private const string PropOperation = "operation";
+        private const string PropPath = "propertyPath";
+        private const string PropValue = "value";
 
         public PropertyCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
             InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
-            //Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, PropertyOperation.Get.ToString()));
-            //Properties.Add(PROP_PATH, new CommandProperty(PROP_PATH, string.Empty));
-            //Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, string.Empty));
+        }
+
+        public PropertyCommand(SsisTestSuite testSuite, object parent)
+            : base(testSuite, parent)
+        {
+            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
         }
 
         public PropertyCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
+        {
+            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
+        }
+
+        public PropertyCommand(SsisTestSuite testSuite, object parent, string commandXml)
+            : base(testSuite, parent, commandXml)
         {
             InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
         }
@@ -34,14 +41,30 @@ namespace SsisUnit
             InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
         }
 
+        public PropertyCommand(SsisTestSuite testSuite, object parent, XmlNode commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
+        }
+
         public PropertyCommand(SsisTestSuite testSuite, string operation, string propertyPath, object value)
             : base(testSuite)
         {
             InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
 
-            Properties[PROP_OPERATION].Value = operation;
-            Properties[PROP_PATH].Value = propertyPath;
-            Properties[PROP_VALUE].Value = value == null ? string.Empty : value.ToString();
+            Properties[PropOperation].Value = operation;
+            Properties[PropPath].Value = propertyPath;
+            Properties[PropValue].Value = value == null ? string.Empty : value.ToString();
+        }
+
+        public PropertyCommand(SsisTestSuite testSuite, object parent, string operation, string propertyPath, object value)
+            : base(testSuite, parent)
+        {
+            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
+
+            Properties[PropOperation].Value = operation;
+            Properties[PropPath].Value = propertyPath;
+            Properties[PropValue].Value = value == null ? string.Empty : value.ToString();
         }
 
         /// <summary>
@@ -52,35 +75,31 @@ namespace SsisUnit
         /// <param name="value"></param>
         private void InitializeProperties(string operation, string propertyPath, object value)
         {
-            if (!Properties.ContainsKey(PROP_OPERATION))
-            {
-                Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, operation));
-            }
-            if (!Properties.ContainsKey(PROP_PATH))
-            {
-                Properties.Add(PROP_PATH, new CommandProperty(PROP_PATH, propertyPath));
-            }
-            if (!Properties.ContainsKey(PROP_VALUE))
-            {
-                Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, value.ToString()));
-            }
+            if (!Properties.ContainsKey(PropOperation))
+                Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
+
+            if (!Properties.ContainsKey(PropPath))
+                Properties.Add(PropPath, new CommandProperty(PropPath, propertyPath));
+
+            if (!Properties.ContainsKey(PropValue))
+                Properties.Add(PropValue, new CommandProperty(PropValue, value.ToString()));
         }
 
         public override object Execute(Package package, DtsContainer container)
         {
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
 
-                object returnValue = LocatePropertyValue(package, this.PropertyPath, this.Operation, this.Value);
+                object returnValue = LocatePropertyValue(package, PropertyPath, Operation, Value);
 
-                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
 
                 return returnValue;
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
 
                 throw;
             }
@@ -102,22 +121,22 @@ namespace SsisUnit
         [Description("Defines whether to get or set the property.")]
         public PropertyOperation Operation
         {
-            get { return GetPropertyOperationFromString(Properties[PROP_OPERATION].Value); }
-            set { Properties[PROP_OPERATION].Value = value.ToString(); }
+            get { return GetPropertyOperationFromString(Properties[PropOperation].Value); }
+            set { Properties[PropOperation].Value = value.ToString(); }
         }
 
         [Description("Sets the path of the property to get or set.")]
         public string PropertyPath
         {
-            get { return Properties[PROP_PATH].Value; }
-            set { Properties[PROP_PATH].Value = value; }
+            get { return Properties[PropPath].Value; }
+            set { Properties[PropPath].Value = value; }
         }
 
         [Description("Sets the value to apply to the property.")]
         public string Value
         {
-            get { return Properties[PROP_VALUE].Value; }
-            set { Properties[PROP_VALUE].Value = value; }
+            get { return Properties[PropValue].Value; }
+            set { Properties[PropValue].Value = value; }
         }
 
         public enum PropertyOperation
@@ -156,7 +175,6 @@ namespace SsisUnit
                 }
             }
 
-
             if (firstPart.ToUpper().StartsWith("PACKAGE"))
             {
                 if (!(dtsObject is Package))
@@ -165,7 +183,6 @@ namespace SsisUnit
                 }
                 return LocatePropertyValue(dtsObject, restOfString, operation, value);
             }
-
             
             if (firstPart.ToUpper().StartsWith("VARIABLES"))
             {
@@ -245,7 +262,6 @@ namespace SsisUnit
                 return LocatePropertyValue(seq.Executables[firstPart], restOfString, operation, value);
             }
 
-
             // \Package\Sequence Container\Script Task.Properties[Description]
             // \Package\Sequence Container.Properties[Description]
             // \Package\Execute SQL Task.Properties[Description]
@@ -267,5 +283,4 @@ namespace SsisUnit
             return subString;
         }
     }
-
 }

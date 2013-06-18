@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.ComponentModel;
@@ -10,22 +8,30 @@ namespace SsisUnit
     // TODO: This might be better as a special class of assert
     public class ComponentSourceCommand : CommandBase
     {
-        private const string PROP_OPERATION = "component";
-        private const string PROP_PATH = "input";
-
-        private const string PROP_VALUE = "inputValues";
+        private const string PropOperation = "component";
+        private const string PropPath = "input";
+        private const string PropValue = "inputValues";
 
         public ComponentSourceCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
             InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
-            //Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, PropertyOperation.Get.ToString()));
-            //Properties.Add(PROP_PATH, new CommandProperty(PROP_PATH, string.Empty));
-            //Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, string.Empty));
+        }
+
+        public ComponentSourceCommand(SsisTestSuite testSuite, object parent)
+            : base(testSuite, parent)
+        {
+            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
         }
 
         public ComponentSourceCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
+        {
+            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
+        }
+
+        public ComponentSourceCommand(SsisTestSuite testSuite, object parent, string commandXml)
+            : base(testSuite, parent, commandXml)
         {
             InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
         }
@@ -36,21 +42,30 @@ namespace SsisUnit
             InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
         }
 
+        public ComponentSourceCommand(SsisTestSuite testSuite, object parent, XmlNode commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
+        }
+
         public ComponentSourceCommand(SsisTestSuite testSuite, string operation, string propertyPath, object value)
             : base(testSuite)
         {
             InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
 
-            Properties[PROP_OPERATION].Value = operation;
-            Properties[PROP_PATH].Value = propertyPath;
-            if (value == null)
-            {
-                Properties[PROP_VALUE].Value = string.Empty;
-            }
-            else
-            {
-                Properties[PROP_VALUE].Value = value.ToString();
-            }
+            Properties[PropOperation].Value = operation;
+            Properties[PropPath].Value = propertyPath;
+            Properties[PropValue].Value = value == null ? string.Empty : value.ToString();
+        }
+
+        public ComponentSourceCommand(SsisTestSuite testSuite, object parent, string operation, string propertyPath, object value)
+            : base(testSuite, parent)
+        {
+            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
+
+            Properties[PropOperation].Value = operation;
+            Properties[PropPath].Value = propertyPath;
+            Properties[PropValue].Value = value == null ? string.Empty : value.ToString();
         }
 
         /// <summary>
@@ -61,18 +76,14 @@ namespace SsisUnit
         /// <param name="value"></param>
         private void InitializeProperties(string operation, string propertyPath, object value)
         {
-            if (!Properties.ContainsKey(PROP_OPERATION))
-            {
-                Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, operation));
-            }
-            if (!Properties.ContainsKey(PROP_PATH))
-            {
-                Properties.Add(PROP_PATH, new CommandProperty(PROP_PATH, propertyPath));
-            }
-            if (!Properties.ContainsKey(PROP_VALUE))
-            {
-                Properties.Add(PROP_VALUE, new CommandProperty(PROP_VALUE, value.ToString()));
-            }
+            if (!Properties.ContainsKey(PropOperation))
+                Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
+
+            if (!Properties.ContainsKey(PropPath))
+                Properties.Add(PropPath, new CommandProperty(PropPath, propertyPath));
+
+            if (!Properties.ContainsKey(PropValue))
+                Properties.Add(PropValue, new CommandProperty(PropValue, value.ToString()));
         }
 
 
@@ -128,61 +139,55 @@ namespace SsisUnit
 
         //        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package)
         //        {
-        //            return this.Execute();
+        //            return Execute();
         //        }
 
         //        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         //        {
-        //            return this.Execute();
+        //            return Execute();
         //        }
 
         public override object Execute(Package package, DtsContainer container)
         {
-            object returnValue;
-
-            string propertyPath = this.PropertyPath;
-
-            //Evaluate the property
-            returnValue = LocatePropertyValue(package, this.PropertyPath, this.Operation, this.Value);
-
-            return returnValue;
+            // Evaluate the property
+            return LocatePropertyValue(package, PropertyPath, Operation, Value);
         }
-        public override object Execute(XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+
+        public override object Execute(XmlNode command, Package package, DtsContainer container)
         {
             throw new NotImplementedException();
-            //            this.LoadFromXml(command);
-            //            return Execute();
         }
 
         private PropertyOperation GetPropertyOperationFromString(string operation)
         {
-            if (operation == "Get") return PropertyOperation.Get;
-            else if (operation == "Set") return PropertyOperation.Set;
-            else
-            {
-                throw new ArgumentException("The operation provided was not valid.");
-            }
+            if (operation == "Get")
+                return PropertyOperation.Get;
+            
+            if (operation == "Set")
+                return PropertyOperation.Set;
+
+            throw new ArgumentException("The operation provided was not valid.");
         }
 
         [Description("Defines whether to get or set the property.")]
         public PropertyOperation Operation
         {
-            get { return GetPropertyOperationFromString(Properties[PROP_OPERATION].Value); }
-            set { Properties[PROP_OPERATION].Value = value.ToString(); }
+            get { return GetPropertyOperationFromString(Properties[PropOperation].Value); }
+            set { Properties[PropOperation].Value = value.ToString(); }
         }
 
         [Description("Sets the path of the property to get or set.")]
         public string PropertyPath
         {
-            get { return Properties[PROP_PATH].Value; }
-            set { Properties[PROP_PATH].Value = value; }
+            get { return Properties[PropPath].Value; }
+            set { Properties[PropPath].Value = value; }
         }
 
         [Description("Sets the value to apply to the property.")]
         public string Value
         {
-            get { return Properties[PROP_VALUE].Value; }
-            set { Properties[PROP_VALUE].Value = value; }
+            get { return Properties[PropValue].Value; }
+            set { Properties[PropValue].Value = value; }
         }
 
         public enum PropertyOperation
@@ -200,14 +205,14 @@ namespace SsisUnit
 
             if (propertyPath.Contains("."))
             {
-                //Can have periods in object names (like connection manager names)
-                //Need to verify that period is not between an index marker
+                // Can have periods in object names (like connection manager names)
+                // Need to verify that period is not between an index marker
                 int delimiterIndex = propertyPath.IndexOf(".");
-                //while (delimiterIndex > propertyPath.IndexOf("[") &&
-                //    delimiterIndex < propertyPath.IndexOf("]"))
-                //{
-                //    delimiterIndex = propertyPath.IndexOf(".", delimiterIndex + 1 );
-                //}
+                // while (delimiterIndex > propertyPath.IndexOf("[") &&
+                //     delimiterIndex < propertyPath.IndexOf("]"))
+                // {
+                //     delimiterIndex = propertyPath.IndexOf(".", delimiterIndex + 1 );
+                // }
                 if (delimiterIndex > propertyPath.IndexOf("[") &&
                     delimiterIndex < propertyPath.IndexOf("]"))
                 {
@@ -235,7 +240,7 @@ namespace SsisUnit
                 return LocatePropertyValue(dtsObject, restOfString, operation, value);
             }
 
-            //    \Package.Variables[User::TestVar].Properties[Value]
+            // \Package.Variables[User::TestVar].Properties[Value]
             if (firstPart.ToUpper().StartsWith("VARIABLES"))
             {
                 if (!(dtsObject is DtsContainer))
@@ -252,33 +257,33 @@ namespace SsisUnit
                 return returnValue;
             }
 
-            //    \Package.Properties[CreationDate]
+            // \Package.Properties[CreationDate]
             if (firstPart.ToUpper().StartsWith("PROPERTIES"))
             {
                 if (!(dtsObject is IDTSPropertiesProvider))
                 {
                     throw new ArgumentException("Object must be of type IDTSPropertiesProvider to reference properties.", "dtsObject");
                 }
+                
                 IDTSPropertiesProvider propProv = (IDTSPropertiesProvider)dtsObject;
                 string propIndex = GetSubStringBetween(firstPart, "[", "]");
 
                 DtsProperty prop = propProv.Properties[propIndex];
+                
                 if (operation == PropertyOperation.Set)
                 {
-                    if (dtsObject is Variable)
-                    {
-                        Variable var = (Variable)dtsObject;
-                        prop.SetValue(dtsObject, Convert.ChangeType(value, var.DataType));
-                    }
+                    var variable = dtsObject as Variable;
+
+                    if (variable != null)
+                        prop.SetValue(variable, Convert.ChangeType(value, variable.DataType));
                     else
-                    {
                         prop.SetValue(dtsObject, Convert.ChangeType(value, propProv.Properties[propIndex].Type));
-                    }
                 }
+
                 return prop.GetValue(dtsObject);
             }
 
-            //    \Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]
+            // \Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]
             if (firstPart.ToUpper().StartsWith("CONNECTIONS"))
             {
                 if (!(dtsObject is Package))
@@ -290,7 +295,7 @@ namespace SsisUnit
                 return LocatePropertyValue(pkg.Connections[connIndex], restOfString, operation, value);
             }
 
-            //    \Package.EventHandlers[OnError].Properties[Description]
+            // \Package.EventHandlers[OnError].Properties[Description]
             if (firstPart.ToUpper().StartsWith("EVENTHANDLERS"))
             {
                 if (!(dtsObject is EventsProvider))
@@ -302,7 +307,7 @@ namespace SsisUnit
                 return LocatePropertyValue(eventProvider.EventHandlers[eventIndex], restOfString, operation, value);
             }
 
-            //First Part of string is not one of the hard-coded values - it's either a task or container
+            // First Part of string is not one of the hard-coded values - it's either a task or container
             if (!(dtsObject is IDTSSequence))
             {
                 throw new ArgumentException("Object must be of type IDTSSequence to reference other tasks or containers.", "dtsObject");
@@ -314,15 +319,12 @@ namespace SsisUnit
                 return LocatePropertyValue(seq.Executables[firstPart], restOfString, operation, value);
             }
 
+            // \Package\Sequence Container\Script Task.Properties[Description]
+            // \Package\Sequence Container.Properties[Description]
+            // \Package\Execute SQL Task.Properties[Description]
 
-            //            \Package\Sequence Container\Script Task.Properties[Description]
-            //    \Package\Sequence Container.Properties[Description]
-            //    \Package\Execute SQL Task.Properties[Description]
-
-            //\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]
-            //    \Package.EventHandlers[OnError]\Script Task.Properties[Description]
-
-
+            // \Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]
+            // \Package.EventHandlers[OnError]\Script Task.Properties[Description]
             if (restOfString.Length > 0)
             {
                 returnValue = LocatePropertyValue(dtsObject, restOfString, operation, value);

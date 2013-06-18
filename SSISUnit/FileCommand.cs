@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.IO;
 using System.Globalization;
@@ -10,41 +8,67 @@ namespace SsisUnit
 {
     public class FileCommand : CommandBase
     {
-        private const string PROP_OPERATION = "operation";
-        private const string PROP_SOURCE_PATH = "sourcePath";
-        private const string PROP_TARGET_PATH = "targetPath";
+        private const string PropOperation = "operation";
+        private const string PropSourcePath = "sourcePath";
+        private const string PropTargetPath = "targetPath";
 
         public FileCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, FileOperation.Exists.ToString()));
-            Properties.Add(PROP_SOURCE_PATH, new CommandProperty(PROP_SOURCE_PATH, string.Empty));
-            Properties.Add(PROP_TARGET_PATH, new CommandProperty(PROP_TARGET_PATH, string.Empty));
+            InitializeProperties();
+        }
+
+        public FileCommand(SsisTestSuite testSuite, object parent)
+            : base(testSuite, parent)
+        {
+            InitializeProperties();
         }
 
         public FileCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
         {
+            InitializeProperties();
+        }
+
+        public FileCommand(SsisTestSuite testSuite, object parent, string commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public FileCommand(SsisTestSuite testSuite, XmlNode commandXml)
             : base(testSuite, commandXml)
         {
+            InitializeProperties();
+        }
+
+        public FileCommand(SsisTestSuite testSuite, object parent, XmlNode commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public FileCommand(SsisTestSuite testSuite, string operation, string sourcePath, string targetPath)
             : base(testSuite)
         {
-            Properties.Add(PROP_OPERATION, new CommandProperty(PROP_OPERATION, operation));
-            Properties.Add(PROP_SOURCE_PATH, new CommandProperty(PROP_SOURCE_PATH, sourcePath));
-            Properties.Add(PROP_TARGET_PATH, new CommandProperty(PROP_TARGET_PATH, targetPath));
+            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
+            Properties.Add(PropSourcePath, new CommandProperty(PropSourcePath, sourcePath));
+            Properties.Add(PropTargetPath, new CommandProperty(PropTargetPath, targetPath));
+        }
+
+        public FileCommand(SsisTestSuite testSuite, object parent, string operation, string sourcePath, string targetPath)
+            : base(testSuite, parent)
+        {
+            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
+            Properties.Add(PropSourcePath, new CommandProperty(PropSourcePath, sourcePath));
+            Properties.Add(PropTargetPath, new CommandProperty(PropTargetPath, targetPath));
         }
 
         public override object Execute()
         {
-            string sourcePath = Properties[PROP_SOURCE_PATH].Value;
-            string targetPath = Properties[PROP_TARGET_PATH].Value;
-            string operation = Properties[PROP_OPERATION].Value;
+            string sourcePath = Properties[PropSourcePath].Value;
+            string targetPath = Properties[PropTargetPath].Value;
+            string operation = Properties[PropOperation].Value;
 
             object returnValue = null;
 
@@ -58,7 +82,7 @@ namespace SsisUnit
 
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
 
                 switch (operation)
                 {
@@ -82,13 +106,13 @@ namespace SsisUnit
                         break;
                 }
 
-                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
 
-                throw;
+                returnValue = -1;
             }
 
             return returnValue;
@@ -96,57 +120,76 @@ namespace SsisUnit
 
         public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package)
         {
-            return this.Execute();
+            return Execute();
         }
 
         public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
-            return this.Execute();
+            return Execute();
         }
 
         public override object Execute(XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {
-            this.LoadFromXml(command);
+            LoadFromXml(command);
             return Execute();
         }
 
         [Description("Defines the operation to perform on a file.")]
         public FileOperation Operation
         {
-            get { return ConvertFileOperationString(Properties[PROP_OPERATION].Value); }
-            set { Properties[PROP_OPERATION].Value = value.ToString(); }
+            get { return ConvertFileOperationString(Properties[PropOperation].Value); }
+            set { Properties[PropOperation].Value = value.ToString(); }
         }
 
         [Description("Sets the source file for file operations."),
          Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string SourcePath
         {
-            get { return Properties[PROP_SOURCE_PATH].Value; }
-            set { Properties[PROP_SOURCE_PATH].Value = value; }
+            get { return Properties[PropSourcePath].Value; }
+            set { Properties[PropSourcePath].Value = value; }
         }
 
         [Description("Sets the target path for file operations that need it."),
          Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string TargetPath
         {
-            get { return Properties[PROP_TARGET_PATH].Value; }
-            set { Properties[PROP_TARGET_PATH].Value = value; }
+            get { return Properties[PropTargetPath].Value; }
+            set { Properties[PropTargetPath].Value = value; }
         }
 
         private static FileOperation ConvertFileOperationString(string type)
         {
-            if (type == "Copy") return FileOperation.Copy;
-            else if (type == "Move") return FileOperation.Move;
-            else if (type == "Delete") return FileOperation.Delete;
-            else if (type == "Exists") return FileOperation.Exists;
-            else if (type == "LineCount") return FileOperation.LineCount;
-            else
-            {
-                throw new ArgumentException(String.Format("The provided file operation ({0}) is not recognized.", type));
-            }
+            if (type == "Copy")
+                return FileOperation.Copy;
+
+            if (type == "Move")
+                return FileOperation.Move;
+
+            if (type == "Delete")
+                return FileOperation.Delete;
+
+            if (type == "Exists")
+                return FileOperation.Exists;
+
+            if (type == "LineCount")
+                return FileOperation.LineCount;
+
+            throw new ArgumentException(string.Format("The provided file operation ({0}) is not recognized.", type));
         }
 
-        public enum FileOperation : int
+        private void InitializeProperties()
+        {
+            if (!Properties.ContainsKey(PropOperation))
+                Properties.Add(PropOperation, new CommandProperty(PropOperation, FileOperation.Exists.ToString()));
+
+            if (!Properties.ContainsKey(PropSourcePath))
+                Properties.Add(PropSourcePath, new CommandProperty(PropSourcePath, string.Empty));
+
+            if (!Properties.ContainsKey(PropTargetPath))
+                Properties.Add(PropTargetPath, new CommandProperty(PropTargetPath, string.Empty));
+        }
+
+        public enum FileOperation
         {
             Copy = 0,
             Move = 1,
@@ -155,6 +198,4 @@ namespace SsisUnit
             LineCount = 4
         }
     }
-
-
 }

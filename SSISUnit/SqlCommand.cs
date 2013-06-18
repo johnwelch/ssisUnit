@@ -20,24 +20,49 @@ namespace SsisUnit
         public SqlCommand(SsisTestSuite testSuite)
             : base(testSuite)
         {
-            // Initialize properties to default values
-            Properties.Add(PropConnection, new CommandProperty(PropConnection, string.Empty));
-            Properties.Add(PropReturnsValue, new CommandProperty(PropReturnsValue, false.ToString().ToLower()));
-            Body = string.Empty;
+            InitializeProperties();
+        }
+
+        public SqlCommand(SsisTestSuite testSuite, object parent)
+            : base(testSuite, parent)
+        {
+            InitializeProperties();
         }
 
         public SqlCommand(SsisTestSuite testSuite, XmlNode commandXml)
             : base(testSuite, commandXml)
         {
+            InitializeProperties();
+        }
+
+        public SqlCommand(SsisTestSuite testSuite, object parent, XmlNode commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public SqlCommand(SsisTestSuite testSuite, string commandXml)
             : base(testSuite, commandXml)
         {
+            InitializeProperties();
+        }
+
+        public SqlCommand(SsisTestSuite testSuite, object parent, string commandXml)
+            : base(testSuite, parent, commandXml)
+        {
+            InitializeProperties();
         }
 
         public SqlCommand(SsisTestSuite testSuite, string connectionRef, bool returnsValue, string command)
             : base(testSuite)
+        {
+            Properties.Add(PropConnection, new CommandProperty(PropConnection, connectionRef));
+            Properties.Add(PropReturnsValue, new CommandProperty(PropReturnsValue, returnsValue.ToString().ToLower()));
+            Body = command;
+        }
+
+        public SqlCommand(SsisTestSuite testSuite, object parent, string connectionRef, bool returnsValue, string command)
+            : base(testSuite, parent)
         {
             Properties.Add(PropConnection, new CommandProperty(PropConnection, connectionRef));
             Properties.Add(PropReturnsValue, new CommandProperty(PropReturnsValue, returnsValue.ToString().ToLower()));
@@ -56,7 +81,7 @@ namespace SsisUnit
 
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
 
                 dbCommand = GetCommand(ConnectionReference, SQLStatement);
 
@@ -71,11 +96,11 @@ namespace SsisUnit
                     result = null;
                 }
 
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, string.Format("The {0} command has completed.", Name)));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
 
                 throw;
             }
@@ -91,53 +116,38 @@ namespace SsisUnit
             return result;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="testSuite"></param>
-        /// <param name="package"></param>
-        /// <param name="container"></param>
-        /// <returns></returns>
-        //public override object Execute(SsisTestSuite testSuite, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
-        //{
-        //    string provider = string.Empty;
-        //    object result = null;
+        private void InitializeProperties()
+        {
+            // Initialize properties to default values
+            if (!Properties.ContainsKey(PropConnection))
+                Properties.Add(PropConnection, new CommandProperty(PropConnection, string.Empty));
 
-        //    ConnectionRef connection = testSuite.ConnectionRefs[ConnectionRef];
-        //    //XmlNode connection = Connections.SelectSingleNode("SsisUnit:Connection[@name='" + ConnectionRef + "']", NamespaceMgr);
-        //    if (connection == null)
-        //    {
-        //        throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The connectionRef attribute is {0}, which does not reference a valid connection.", ConnectionRef));
-        //    }
+            if (!Properties.ContainsKey(PropReturnsValue))
+                Properties.Add(PropReturnsValue, new CommandProperty(PropReturnsValue, false.ToString().ToLower()));
 
-        //    using (DbCommand dbCommand = GetCommand(connection, SQLStatement))
-        //    {
-        //        dbCommand.Connection.Open();
-        //        if (ReturnsValue)
-        //        {
-        //            result = dbCommand.ExecuteScalar();
-        //        }
-        //        else
-        //        {
-        //            dbCommand.ExecuteNonQuery();
-        //        }
-        //        dbCommand.Connection.Close();
-        //    }
-        //    return result;
-
-        //}
+            Body = string.Empty;
+        }
 
         private DbCommand GetCommand(ConnectionRef connectionRef, string commandText)
         {
             DbProviderFactory dbFactory = GetFactory(connectionRef.ConnectionString);
 
             DbConnection conn = dbFactory.CreateConnection();
+
+            if (conn == null)
+                return null;
+
             conn.ConnectionString = connectionRef.ConnectionString;
+
             DbCommand dbCommand = dbFactory.CreateCommand();
+
+            if (dbCommand == null)
+                return null;
+
             dbCommand.Connection = conn;
             dbCommand.CommandText = commandText;
+            
             return dbCommand;
-
         }
 
         /// <summary>
@@ -149,7 +159,7 @@ namespace SsisUnit
         /// <returns>A generic provider factory based on the provider type passed in.</returns>
         private DbProviderFactory GetFactory(string providerType)
         {
-            string factoryInvariantName = string.Empty;
+            string factoryInvariantName;
 
             if (providerType.Contains(TagOledb))
             {
@@ -161,12 +171,12 @@ namespace SsisUnit
             }
             else
             {
-                throw (new ArgumentException("Connection type not supported"));
+                throw new ArgumentException("Connection type not supported");
             }
 
             return DbProviderFactories.GetFactory(factoryInvariantName);
-
         }
+
 #if SQL2005
         [Description("The Connection that the SQLCommand will use"),
          TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
@@ -183,21 +193,13 @@ namespace SsisUnit
                 {
                     return TestSuite.ConnectionRefs[Properties[PropConnection].Value];
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
+
             set
             {
-                if (value == null)
-                {
-                    Properties[PropConnection].Value = string.Empty;
-                }
-                else
-                {
-                    Properties[PropConnection].Value = value.ReferenceName;
-                }
+                Properties[PropConnection].Value = value == null ? string.Empty : value.ReferenceName;
             }
         }
 
@@ -205,23 +207,26 @@ namespace SsisUnit
          DefaultValue(false)]
         public bool ReturnsValue
         {
-            get { return (Properties[PropReturnsValue].Value == "true"); }
+            get { return Properties[PropReturnsValue].Value == "true"; }
             set { Properties[PropReturnsValue].Value = value.ToString().ToLower(); }
         }
 
 #if SQL2005
         [Description("The SQL statement to be executed by the SQLCommand"),
          Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
-#endif
-#if SQL2008
+#elif SQL2008
         [Description("The SQL statement to be executed by the SQLCommand"),
          Editor("SsisUnit.Design.QueryEditor, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#elif SQL2012
+        [Description("The SQL statement to be executed by the SQLCommand"),
+         Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
 #endif
+        // ReSharper disable InconsistentNaming
         public string SQLStatement
         {
             get { return Body; }
             set { Body = value; }
         }
+        // ReSharper restore InconsistentNaming
     }
-
 }
