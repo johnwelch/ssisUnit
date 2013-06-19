@@ -92,7 +92,7 @@ namespace SsisUnit
                     returnValue = varValue;
                 }
 
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
             }
             catch (Exception ex)
             {
