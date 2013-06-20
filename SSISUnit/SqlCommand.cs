@@ -124,8 +124,6 @@ namespace SsisUnit
 
             if (!Properties.ContainsKey(PropReturnsValue))
                 Properties.Add(PropReturnsValue, new CommandProperty(PropReturnsValue, false.ToString().ToLower()));
-
-            Body = string.Empty;
         }
 
         private DbCommand GetCommand(ConnectionRef connectionRef, string commandText)
