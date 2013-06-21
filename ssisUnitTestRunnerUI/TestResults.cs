@@ -40,8 +40,6 @@ namespace ssisUnitTestRunnerUI
             _testSuite.CommandFailed += ehCommandFailed;
         }
 
-        
-
         public void RunSuite()
         {
             try
@@ -65,8 +63,11 @@ namespace ssisUnitTestRunnerUI
 
         public void RunTest(string testName)
         {
-            this.Show();
-            _testSuite.Tests[testName].Execute();
+            Show();
+
+            Test test = _testSuite.Tests[testName];
+
+            test.Execute();
         }
 
         void _testSuite_TestCompleted(object sender, TestCompletedEventArgs e)

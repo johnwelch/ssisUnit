@@ -326,18 +326,9 @@ namespace SsisUnit
             {
                 try
                 {
-                    test.CommandStarted += OnRaiseCommandStarted;
-                    test.CommandCompleted += OnRaiseCommandCompleted;
-                    test.CommandFailed += OnRaiseCommandFailed;
-
                     test.Execute();
                 }
-                finally
-                {
-                    test.CommandStarted -= OnRaiseCommandStarted;
-                    test.CommandCompleted -= OnRaiseCommandCompleted;
-                    test.CommandFailed -= OnRaiseCommandFailed;
-                }
+                catch(Exception) { }
             }
 
             foreach (TestRef testRef in TestRefs.Values)
@@ -411,7 +402,13 @@ namespace SsisUnit
                         if (test.Attributes == null)
                             continue;
 
-                        Tests.Add(test.Attributes["name"].Value, new Test(this, test));
+                        Test newTest = new Test(this, test);
+
+                        newTest.CommandCompleted += OnRaiseCommandCompleted;
+                        newTest.CommandFailed += OnRaiseCommandFailed;
+                        newTest.CommandStarted += OnRaiseCommandStarted;
+
+                        Tests.Add(test.Attributes["name"].Value, newTest);
                     }
                 }
 
@@ -552,6 +549,9 @@ namespace SsisUnit
 
         internal void RunTestSuite(SsisTestSuite ts)
         {
+            ts.CommandStarted += TestCaseCommandStarted;
+            ts.CommandCompleted += TestCaseCommandCompleted;
+            ts.CommandFailed += TestCaseCommandFailed;
             ts.SetupCompleted += TestCaseSetupCompleted;
             ts.TestCompleted += TestCaseTestCompleted;
             ts.TeardownCompleted += TestCaseTeardownCompleted;
@@ -561,6 +561,21 @@ namespace SsisUnit
         }
 
         #region Event Handlers
+
+        private void TestCaseCommandCompleted(object sender, CommandCompletedEventArgs e)
+        {
+            OnRaiseCommandCompleted(sender, e);
+        }
+
+        private void TestCaseCommandFailed(object sender, CommandFailedEventArgs e)
+        {
+            OnRaiseCommandFailed(sender, e);
+        }
+
+        private void TestCaseCommandStarted(object sender, CommandStartedEventArgs e)
+        {
+            OnRaiseCommandStarted(sender, e);
+        }
 
         private void TestCaseTeardownCompleted(object sender, TeardownCompletedEventArgs e)
         {
