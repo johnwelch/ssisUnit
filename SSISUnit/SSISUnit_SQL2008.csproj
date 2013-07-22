@@ -91,6 +91,11 @@
     <Compile Include="ComponentSourceCommand.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="ConnectionRef.cs" />
+    <Compile Include="DataCompareAssertCompletedEventArgs.cs" />
+    <Compile Include="DataCompareCommand.cs" />
+    <Compile Include="DataCompareCommandCompletedEventArgs.cs" />
+    <Compile Include="DataCompareCommandResults.cs" />
+    <Compile Include="Dataset.cs" />
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
@@ -122,6 +127,7 @@
     <Compile Include="TestResult.cs" />
     <Compile Include="TestSuiteResults.cs" />
     <Compile Include="VariableCommand.cs" />
+    <Compile Include="XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

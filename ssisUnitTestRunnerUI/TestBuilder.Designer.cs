@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(testSuiteUI));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.testBrowser1 = new ssisUnitTestRunnerUI.TestBrowser();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabProperties = new System.Windows.Forms.TabPage();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
@@ -52,6 +53,7 @@
             this.addTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addConnectionRefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addPackageRefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.addTestFromPackageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -72,8 +74,8 @@
             this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.testBrowser1 = new ssisUnitTestRunnerUI.TestBrowser();
             this.runTestSuiteTtoolStripButton = new System.Windows.Forms.ToolStripButton();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -103,6 +105,17 @@
             this.splitContainer1.Size = new System.Drawing.Size(615, 439);
             this.splitContainer1.SplitterDistance = 205;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // testBrowser1
+            // 
+            this.testBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.testBrowser1.Location = new System.Drawing.Point(0, 0);
+            this.testBrowser1.MinimumSize = new System.Drawing.Size(50, 50);
+            this.testBrowser1.Name = "testBrowser1";
+            this.testBrowser1.Size = new System.Drawing.Size(205, 439);
+            this.testBrowser1.TabIndex = 0;
+            this.testBrowser1.NodeSelected += new System.EventHandler<ssisUnitTestRunnerUI.NodeSelectedEventArgs>(this.testBrowser1_NodeSelected);
+            this.testBrowser1.TestSuiteSelected += new System.EventHandler<ssisUnitTestRunnerUI.TestSuiteSelectedEventArgs>(this.testBrowser1_TestSuiteSelected);
             // 
             // tabControl1
             // 
@@ -171,9 +184,9 @@
             // 
             // txtXML
             // 
-            this.txtXML.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtXML.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtXML.Location = new System.Drawing.Point(6, 6);
             this.txtXML.Multiline = true;
             this.txtXML.Name = "txtXML";
@@ -267,6 +280,7 @@
             this.addTestToolStripMenuItem,
             this.addConnectionRefToolStripMenuItem,
             this.addPackageRefToolStripMenuItem,
+            this.addDatasetToolStripMenuItem,
             this.toolStripSeparator1,
             this.addTestFromPackageToolStripMenuItem,
             this.toolStripSeparator2,
@@ -308,6 +322,13 @@
             this.addPackageRefToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.addPackageRefToolStripMenuItem.Text = "Add Pa&ckage Ref";
             this.addPackageRefToolStripMenuItem.Click += new System.EventHandler(this.addPackageRefToolStripMenuItem_Click);
+            // 
+            // addDatasetToolStripMenuItem
+            // 
+            this.addDatasetToolStripMenuItem.Name = "addDatasetToolStripMenuItem";
+            this.addDatasetToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.addDatasetToolStripMenuItem.Text = "Add Dataset";
+            this.addDatasetToolStripMenuItem.Click += new System.EventHandler(this.addDatasetToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -369,7 +390,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -492,17 +513,6 @@
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             this.toolStripSeparator3.Visible = false;
             // 
-            // testBrowser1
-            // 
-            this.testBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.testBrowser1.Location = new System.Drawing.Point(0, 0);
-            this.testBrowser1.MinimumSize = new System.Drawing.Size(50, 50);
-            this.testBrowser1.Name = "testBrowser1";
-            this.testBrowser1.Size = new System.Drawing.Size(205, 439);
-            this.testBrowser1.TabIndex = 0;
-            this.testBrowser1.TestSuiteSelected += new System.EventHandler<ssisUnitTestRunnerUI.TestSuiteSelectedEventArgs>(this.testBrowser1_TestSuiteSelected);
-            this.testBrowser1.NodeSelected += new System.EventHandler<ssisUnitTestRunnerUI.NodeSelectedEventArgs>(this.testBrowser1_NodeSelected);
-            // 
             // runTestSuiteTtoolStripButton
             // 
             this.runTestSuiteTtoolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -524,6 +534,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabProperties.ResumeLayout(false);
@@ -589,6 +600,7 @@
         private System.Windows.Forms.ToolStripButton pasteToolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton runTestSuiteTtoolStripButton;
+        private System.Windows.Forms.ToolStripMenuItem addDatasetToolStripMenuItem;
     }
 }
 

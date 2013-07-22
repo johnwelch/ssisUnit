@@ -36,6 +36,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SQL2005</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;SQL2005</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -59,6 +75,11 @@
     <Compile Include="CommandStartedEventArgs.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="ConnectionRef.cs" />
+    <Compile Include="DataCompareAssertCompletedEventArgs.cs" />
+    <Compile Include="DataCompareCommand.cs" />
+    <Compile Include="DataCompareCommandCompletedEventArgs.cs" />
+    <Compile Include="DataCompareCommandResults.cs" />
+    <Compile Include="Dataset.cs" />
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
@@ -84,6 +105,7 @@
     <Compile Include="TestResult.cs" />
     <Compile Include="TestSuiteResults.cs" />
     <Compile Include="VariableCommand.cs" />
+    <Compile Include="XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SsisUnit.xsd" />

@@ -42,21 +42,22 @@
             this.dlgFileOpen = new System.Windows.Forms.OpenFileDialog();
             this.btnFileOpen = new System.Windows.Forms.Button();
             this.imgList = new System.Windows.Forms.ImageList(this.components);
+            this.addDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeTest
             // 
-            this.treeTest.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeTest.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.treeTest.ContextMenuStrip = this.mnuContextMenuStrip;
             this.treeTest.Location = new System.Drawing.Point(4, 29);
             this.treeTest.Name = "treeTest";
             this.treeTest.Size = new System.Drawing.Size(178, 366);
             this.treeTest.TabIndex = 0;
-            this.treeTest.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeTest_AfterSelect);
-            this.treeTest.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeTest_BeforeSelect);
+            this.treeTest.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeTestBeforeSelect);
+            this.treeTest.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeTestAfterSelect);
             // 
             // mnuContextMenuStrip
             // 
@@ -66,17 +67,18 @@
             this.addTestToolStripMenuItem,
             this.addConnectionRefToolStripMenuItem,
             this.addPackageRefToolStripMenuItem,
+            this.addDatasetToolStripMenuItem,
             this.toolStripMenuItem1,
             this.deleteItemToolStripMenuItem});
             this.mnuContextMenuStrip.Name = "mnuContextMenuStrip";
-            this.mnuContextMenuStrip.Size = new System.Drawing.Size(182, 164);
+            this.mnuContextMenuStrip.Size = new System.Drawing.Size(182, 186);
             // 
             // addAssertToolStripMenuItem
             // 
             this.addAssertToolStripMenuItem.Name = "addAssertToolStripMenuItem";
             this.addAssertToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.addAssertToolStripMenuItem.Text = "Add Assert";
-            this.addAssertToolStripMenuItem.Click += new System.EventHandler(this.addAssertToolStripMenuItem_Click);
+            this.addAssertToolStripMenuItem.Click += new System.EventHandler(this.AddAssertToolStripMenuItemClick);
             // 
             // addCommandToolStripMenuItem
             // 
@@ -89,21 +91,21 @@
             this.addTestToolStripMenuItem.Name = "addTestToolStripMenuItem";
             this.addTestToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.addTestToolStripMenuItem.Text = "Add Test";
-            this.addTestToolStripMenuItem.Click += new System.EventHandler(this.addTestToolStripMenuItem_Click);
+            this.addTestToolStripMenuItem.Click += new System.EventHandler(this.AddTestToolStripMenuItemClick);
             // 
             // addConnectionRefToolStripMenuItem
             // 
             this.addConnectionRefToolStripMenuItem.Name = "addConnectionRefToolStripMenuItem";
             this.addConnectionRefToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.addConnectionRefToolStripMenuItem.Text = "Add Connection Ref";
-            this.addConnectionRefToolStripMenuItem.Click += new System.EventHandler(this.addConnectionRefToolStripMenuItem_Click);
+            this.addConnectionRefToolStripMenuItem.Click += new System.EventHandler(this.AddConnectionRefToolStripMenuItemClick);
             // 
             // addPackageRefToolStripMenuItem
             // 
             this.addPackageRefToolStripMenuItem.Name = "addPackageRefToolStripMenuItem";
             this.addPackageRefToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.addPackageRefToolStripMenuItem.Text = "Add Package Ref";
-            this.addPackageRefToolStripMenuItem.Click += new System.EventHandler(this.addPackageRefToolStripMenuItem_Click);
+            this.addPackageRefToolStripMenuItem.Click += new System.EventHandler(this.AddPackageRefToolStripMenuItemClick);
             // 
             // toolStripMenuItem1
             // 
@@ -115,18 +117,18 @@
             this.deleteItemToolStripMenuItem.Name = "deleteItemToolStripMenuItem";
             this.deleteItemToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.deleteItemToolStripMenuItem.Text = "Delete Item";
-            this.deleteItemToolStripMenuItem.Click += new System.EventHandler(this.deleteItemToolStripMenuItem_Click);
+            this.deleteItemToolStripMenuItem.Click += new System.EventHandler(this.DeleteItemToolStripMenuItemClick);
             // 
             // cboTests
             // 
-            this.cboTests.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboTests.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboTests.FormattingEnabled = true;
             this.cboTests.Location = new System.Drawing.Point(4, 3);
             this.cboTests.Name = "cboTests";
             this.cboTests.Size = new System.Drawing.Size(152, 21);
             this.cboTests.TabIndex = 1;
-            this.cboTests.SelectionChangeCommitted += new System.EventHandler(this.cboTests_SelectionChangeCommitted);
+            this.cboTests.SelectionChangeCommitted += new System.EventHandler(this.CboTestsSelectionChangeCommitted);
             // 
             // dlgFileOpen
             // 
@@ -141,13 +143,20 @@
             this.btnFileOpen.TabIndex = 2;
             this.btnFileOpen.Text = "...";
             this.btnFileOpen.UseVisualStyleBackColor = true;
-            this.btnFileOpen.Click += new System.EventHandler(this.btnFileOpen_Click);
+            this.btnFileOpen.Click += new System.EventHandler(this.BtnFileOpenClick);
             // 
             // imgList
             // 
             this.imgList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.imgList.ImageSize = new System.Drawing.Size(16, 16);
             this.imgList.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // addDatasetToolStripMenuItem
+            // 
+            this.addDatasetToolStripMenuItem.Name = "addDatasetToolStripMenuItem";
+            this.addDatasetToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addDatasetToolStripMenuItem.Text = "Add Dataset";
+            this.addDatasetToolStripMenuItem.Click += new System.EventHandler(this.AddDatasetToolStripMenuItemClick);
             // 
             // TestBrowser
             // 
@@ -179,5 +188,6 @@
         private System.Windows.Forms.ToolStripMenuItem addPackageRefToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem deleteItemToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addDatasetToolStripMenuItem;
     }
 }

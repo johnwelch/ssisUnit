@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace SsisUnit.Design
 {
-    class ConnectionRefConverter : TypeConverter
+    class DatasetConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type t)
         {
@@ -24,16 +24,16 @@ namespace SsisUnit.Design
                     CommandBase commandBase = context.Instance as CommandBase;
 
                     if (commandBase != null)
-                        return commandBase.TestSuite.ConnectionRefs[key];
+                        return commandBase.TestSuite.Datasets[key];
 
                     Dataset dataset = context.Instance as Dataset;
 
                     if (dataset != null)
-                        return dataset.TestSuite.ConnectionRefs[key];
+                        return dataset.TestSuite.Datasets[key];
                 }
                 catch
                 {
-                    throw new ArgumentException("Can not convert '" + key + "' to type ConnectionRef");
+                    throw new ArgumentException("Can not convert '" + key + "' to type Dataset");
                 }
             }
             
@@ -42,11 +42,11 @@ namespace SsisUnit.Design
 
         public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destType)
         {
-            if (destType == typeof(string) && value is ConnectionRef)
+            if (destType == typeof(string) && value is Dataset)
             {
-                var cRef = (ConnectionRef)value;
+                var cRef = (Dataset)value;
 
-                return cRef.ReferenceName;
+                return cRef.Name;
             }
 
             return base.ConvertTo(context, culture, value, destType);
@@ -66,14 +66,14 @@ namespace SsisUnit.Design
             if (commandBase == null && dataset != null)
                 testSuite = dataset.TestSuite;
 
-            if (testSuite == null || testSuite.ConnectionRefs == null)
-                return new StandardValuesCollection(new ConnectionRef[0]);
+            if (testSuite == null || testSuite.Datasets == null)
+                return new StandardValuesCollection(new Dataset[0]);
 
-            ConnectionRef[] connections = new ConnectionRef[testSuite.ConnectionRefs.Count];
+            Dataset[] datasets = new Dataset[testSuite.Datasets.Count];
 
-            testSuite.ConnectionRefs.Values.CopyTo(connections, 0);
+            testSuite.Datasets.Values.CopyTo(datasets, 0);
 
-            return new StandardValuesCollection(connections);
+            return new StandardValuesCollection(datasets);
         }
 
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)

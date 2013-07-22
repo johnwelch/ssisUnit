@@ -12,6 +12,8 @@ namespace SsisUnit
 {
     public abstract class CommandBase : SsisUnitBaseObject
     {
+        private const string PropName = "name";
+
         #region Public Events
         
         public event EventHandler<CommandCompletedEventArgs> CommandCompleted;
@@ -22,7 +24,7 @@ namespace SsisUnit
 
         #region Fields
 
-        private readonly Dictionary<string, CommandProperty> _properties = new Dictionary<string, CommandProperty>();
+        private readonly Dictionary<string, CommandProperty> _properties;
 
         private readonly SsisTestSuite _testSuite;
 
@@ -32,7 +34,13 @@ namespace SsisUnit
 
         #region Constructors and Destructors
 
+        protected CommandBase()
+        {
+            _properties = new Dictionary<string, CommandProperty> { { PropName, new CommandProperty(PropName, string.Empty) } };
+        }
+
         protected CommandBase(SsisTestSuite testSuite)
+            : this()
         {
             _testSuite = testSuite;
         }
@@ -44,8 +52,8 @@ namespace SsisUnit
         }
 
         protected CommandBase(SsisTestSuite testSuite, string commandXml)
+            : this(testSuite)
         {
-            _testSuite = testSuite;
             LoadFromXml(commandXml);
         }
 
@@ -56,8 +64,8 @@ namespace SsisUnit
         }
 
         protected CommandBase(SsisTestSuite testSuite, XmlNode commandXml)
+            : this(testSuite)
         {
-            _testSuite = testSuite;
             LoadFromXml(commandXml);
         }
 
@@ -65,10 +73,6 @@ namespace SsisUnit
             : this(testSuite, commandXml)
         {
             Parent = parent;
-        }
-
-        protected CommandBase()
-        {
         }
 
         #endregion
@@ -81,16 +85,6 @@ namespace SsisUnit
             get
             {
                 return GetType().Name;
-            }
-        }
-
-        // TODO: Implement support for names - need to add to XSD and persistence logic, then delete this - it hides the name in the base class.
-        [Browsable(false)]
-        public new string Name
-        {
-            get
-            {
-                return string.Empty;
             }
         }
 
@@ -130,6 +124,18 @@ namespace SsisUnit
             get
             {
                 return _properties;
+            }
+        }
+
+        public new string Name
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Properties[PropName].Value) ? Properties[PropName].Value : CommandName;
+            }
+            set
+            {
+                Properties[PropName].Value = !string.IsNullOrEmpty(value) ? value : CommandName;
             }
         }
 
@@ -267,6 +273,7 @@ namespace SsisUnit
 
             XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings);
             xmlWriter.WriteStartElement(CommandName);
+            
             foreach (CommandProperty prop in _properties.Values)
             {
                 xmlWriter.WriteAttributeString(prop.Name, prop.Value);
@@ -274,8 +281,10 @@ namespace SsisUnit
 
             if (_body != string.Empty)
                 xmlWriter.WriteString(_body);
+
             xmlWriter.WriteEndElement();
             xmlWriter.Close();
+
             return xml.ToString();
         }
 

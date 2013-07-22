@@ -25,48 +25,44 @@ namespace SsisUnit
 
         #region Constructors
 
-        public SsisTestSuite()
+        private SsisTestSuite(bool isLoadDefaultTest)
         {
+            PackageRefs = new Dictionary<string, PackageRef>();
+            ConnectionRefs = new Dictionary<string, ConnectionRef>();
+            Datasets = new Dictionary<string, Dataset>();
+            Tests = new Dictionary<string, Test>();
+            TestRefs = new Dictionary<string, TestRef>();
+            Statistics = new TestSuiteResults();
             ValidationMessages = string.Empty;
             SsisApplication = new Application();
-            PackageRefs = new Dictionary<string, PackageRef>();
-            TestRefs = new Dictionary<string, TestRef>();
-            Tests = new Dictionary<string, Test>();
-            ConnectionRefs = new Dictionary<string, ConnectionRef>();
-            Statistics = new TestSuiteResults();
+
+            if (!isLoadDefaultTest)
+                return;
+
             Stream baseTest = GetStreamFromExecutingAssembly("BaseTest.xml");
+
             InitializeTestCase(baseTest);
         }
 
-        public SsisTestSuite(string testCaseFile)
+        public SsisTestSuite()
+            : this(true)
         {
-            ValidationMessages = string.Empty;
-            SsisApplication = new Application();
-            PackageRefs = new Dictionary<string, PackageRef>();
-            TestRefs = new Dictionary<string, TestRef>();
-            Tests = new Dictionary<string, Test>();
-            ConnectionRefs = new Dictionary<string, ConnectionRef>();
-            Statistics = new TestSuiteResults();
+        }
+
+        public SsisTestSuite(string testCaseFile)
+            : this(false)
+        {
             if (testCaseFile == null)
-            {
                 throw new ArgumentNullException("testCaseFile");
-            }
+            
             InitializeTestCase(testCaseFile);
         }
 
         public SsisTestSuite(Stream testCase)
+            : this(false)
         {
-            ValidationMessages = string.Empty;
-            SsisApplication = new Application();
-            PackageRefs = new Dictionary<string, PackageRef>();
-            TestRefs = new Dictionary<string, TestRef>();
-            Tests = new Dictionary<string, Test>();
-            ConnectionRefs = new Dictionary<string, ConnectionRef>();
-            Statistics = new TestSuiteResults();
             if (testCase == null)
-            {
                 throw new ArgumentNullException("testCase");
-            }
 
             InitializeTestCase(testCase);
         }
@@ -78,6 +74,8 @@ namespace SsisUnit
         public TestSuiteResults Statistics { get; private set; }
 
         public Dictionary<string, ConnectionRef> ConnectionRefs { get; private set; }
+
+        public Dictionary<string, Dataset> Datasets { get; private set; } 
 
         public Dictionary<string, Test> Tests { get; private set; }
 
@@ -212,73 +210,80 @@ namespace SsisUnit
 
         internal string PersistToXml()
         {
-            StringBuilder xml = new StringBuilder();
-            xml.AppendFormat(@"<?xml version=""1.0"" encoding=""utf-8"" ?>{0}", Environment.NewLine);
-            xml.AppendFormat(@"<TestSuite xmlns=""http://tempuri.org/SsisUnit.xsd"">{0}", Environment.NewLine);
-            xml.AppendFormat(@"  <ConnectionList>{0}", Environment.NewLine);
-            foreach (ConnectionRef conn in ConnectionRefs.Values)
+            using (StringWriter stringWriter = new StringWriter())
             {
-                xml.Append(conn.PersistToXml());
+                XmlWriterSettings settings = new XmlWriterSettings { Indent = true, Encoding = Encoding.UTF8, ConformanceLevel = ConformanceLevel.Document, OmitXmlDeclaration = false, NewLineOnAttributes = false };
+
+                using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter, settings))
+                {
+                    xmlWriter.WriteProcessingInstruction("xml", @"version=""1.0"" encoding=""utf-8"" ");
+                    xmlWriter.WriteStartElement("TestSuite", "http://tempuri.org/SsisUnit.xsd");
+
+                    xmlWriter.WriteStartElement("ConnectionList");
+
+                    foreach (ConnectionRef conn in ConnectionRefs.Values)
+                    {
+                        xmlWriter.WriteRaw(conn.PersistToXml());
+                    }
+
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteStartElement("PackageList");
+
+                    foreach (PackageRef pkg in PackageRefs.Values)
+                    {
+                        xmlWriter.WriteRaw(pkg.PersistToXml());
+                    }
+
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteStartElement("DatasetList");
+
+                    foreach (Dataset dataset in Datasets.Values)
+                    {
+                        xmlWriter.WriteRaw(dataset.PersistToXml());
+                    }
+
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteStartElement("TestSuiteSetup");
+                    xmlWriter.WriteRaw(TestSuiteSetup.PersistToXml());
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteStartElement("Setup");
+                    xmlWriter.WriteRaw(SetupCommands.PersistToXml());
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteStartElement("Tests");
+
+                    foreach (Test test in Tests.Values)
+                    {
+                        xmlWriter.WriteRaw(test.PersistToXml());
+                    }
+
+                    foreach (TestRef testRef in TestRefs.Values)
+                    {
+                        xmlWriter.WriteRaw(testRef.PersistToXml());
+                    }
+
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteStartElement("Teardown");
+                    xmlWriter.WriteRaw(TeardownCommands.PersistToXml());
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteStartElement("TestSuiteTeardown");
+                    xmlWriter.WriteRaw(TestSuiteTeardown.PersistToXml());
+                    xmlWriter.WriteEndElement();
+
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.WriteEndDocument();
+
+                    xmlWriter.Close();
+                }
+
+                return stringWriter.ToString();
             }
-            xml.AppendFormat(@"  </ConnectionList>{0}", Environment.NewLine);
-            xml.AppendFormat(@"  <PackageList>{0}", Environment.NewLine);
-            
-            foreach (PackageRef pkg in PackageRefs.Values)
-            {
-                xml.Append(pkg.PersistToXml());
-            }
-
-            xml.AppendFormat(@"  </PackageList>{0}", Environment.NewLine);
-            xml.AppendFormat(@"  <TestSuiteSetup>{0}", Environment.NewLine);
-            xml.Append(TestSuiteSetup.PersistToXml());
-            xml.AppendFormat(@"  </TestSuiteSetup>{0}", Environment.NewLine);
-
-            xml.AppendFormat(@"  <Setup>{0}", Environment.NewLine);
-            xml.Append(SetupCommands.PersistToXml());
-            xml.AppendFormat(@"  </Setup>{0}", Environment.NewLine);
-
-            xml.AppendFormat(@"  <Tests>{0}", Environment.NewLine);
-            
-            foreach (Test test in Tests.Values)
-            {
-                xml.Append(test.PersistToXml());
-            }
-
-            foreach (TestRef testRef in TestRefs.Values)
-            {
-                xml.Append(testRef.PersistToXml());
-            }
-
-            xml.AppendFormat(@"  </Tests>{0}", Environment.NewLine);
-
-            xml.AppendFormat(@"  <Teardown>{0}", Environment.NewLine);
-            xml.Append(TeardownCommands.PersistToXml());
-            xml.AppendFormat(@"  </Teardown>{0}", Environment.NewLine);
-
-            xml.AppendFormat(@"  <TestSuiteTeardown>{0}", Environment.NewLine);
-            xml.Append(TestSuiteTeardown.PersistToXml());
-            xml.AppendFormat(@"  </TestSuiteTeardown>{0}", Environment.NewLine);
-
-            xml.AppendFormat(@"</TestSuite>");
-            return xml.ToString();
-        }
-
-        internal void LoadFromXml(string packageXml)
-        {
-            LoadFromXml(Helper.GetXmlNodeFromString(packageXml));
-        }
-
-        internal void LoadFromXml(XmlNode packageXml)
-        {
-            // if (packageXml.Name != "Package")
-            // {
-            //     throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Package"));
-            // }
-               
-            // _packagePath = packageXml.Attributes["packagePath"].Value;
-            // _storageType = packageXml.Attributes["storageType"].Value;
-            // _name = packageXml.Attributes["name"].Value;
-            // _server = packageXml.Attributes["server"].Value;
         }
 
         public bool Validate()
@@ -374,11 +379,6 @@ namespace SsisUnit
             {
                 _namespaceMgr = new XmlNamespaceManager(_testCaseDoc.NameTable);
                 _namespaceMgr.AddNamespace("SsisUnit", "http://tempuri.org/SsisUnit.xsd");
-                ConnectionRefs = _testCaseDoc.DocumentElement != null ? LoadConnectionRefs(_testCaseDoc.DocumentElement["ConnectionList"]) : new Dictionary<string, ConnectionRef>();
-                TestSuiteSetup = _testCaseDoc.DocumentElement != null ? new CommandSet("Test Suite Setup", this, _testCaseDoc.DocumentElement["TestSuiteSetup"]) : new CommandSet(this);
-                TestSuiteTeardown = _testCaseDoc.DocumentElement != null ? new CommandSet("Test Suite Teardown", this, _testCaseDoc.DocumentElement["TestSuiteTeardown"]) : new CommandSet(this);
-                SetupCommands = _testCaseDoc.DocumentElement != null ? new CommandSet("Unit Test Setup", this, _testCaseDoc.DocumentElement["Setup"]) : new CommandSet(this);
-                TeardownCommands = _testCaseDoc.DocumentElement != null ? new CommandSet("Unit Test Teardown", this, _testCaseDoc.DocumentElement["Teardown"]) : new CommandSet(this);
 
                 var xmlPackageReferences = _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:PackageList/SsisUnit:Package", _namespaceMgr);
 
@@ -392,6 +392,26 @@ namespace SsisUnit
                         PackageRefs.Add(pkgRef.Attributes["name"].Value, new PackageRef(pkgRef));
                     }
                 }
+
+                ConnectionRefs = _testCaseDoc.DocumentElement != null ? LoadConnectionRefs(_testCaseDoc.DocumentElement["ConnectionList"]) : new Dictionary<string, ConnectionRef>();
+
+                var xmlDatasets = _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:DatasetList/SsisUnit:Dataset", _namespaceMgr);
+
+                if (xmlDatasets != null)
+                {
+                    foreach (XmlNode xmlDataset in xmlDatasets)
+                    {
+                        if (xmlDataset.Attributes == null)
+                            continue;
+
+                        Datasets.Add(xmlDataset.Attributes["name"].Value, new Dataset(this, xmlDataset));
+                    }
+                }
+                
+                TestSuiteSetup = _testCaseDoc.DocumentElement != null ? new CommandSet("Test Suite Setup", this, _testCaseDoc.DocumentElement["TestSuiteSetup"]) : new CommandSet(this);
+                TestSuiteTeardown = _testCaseDoc.DocumentElement != null ? new CommandSet("Test Suite Teardown", this, _testCaseDoc.DocumentElement["TestSuiteTeardown"]) : new CommandSet(this);
+                SetupCommands = _testCaseDoc.DocumentElement != null ? new CommandSet("Unit Test Setup", this, _testCaseDoc.DocumentElement["Setup"]) : new CommandSet(this);
+                TeardownCommands = _testCaseDoc.DocumentElement != null ? new CommandSet("Unit Test Teardown", this, _testCaseDoc.DocumentElement["Teardown"]) : new CommandSet(this);
 
                 var xmlTests = _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:Tests/SsisUnit:Test", _namespaceMgr);
 
@@ -537,15 +557,6 @@ namespace SsisUnit
         {
             return SetupCommands.Execute(pkg, task);
         }
-
-        // internal void RunTestSuite(XmlNode test)
-        // {
-        //     SsisTestSuite testCase = new SsisTestSuite(test.Attributes["path"].Value);
-        //     testCase.SetupCompleted += new EventHandler<SetupCompletedEventArgs>(testCase_SetupCompleted);
-        //     testCase.TestCompleted += new EventHandler<TestCompletedEventArgs>(testCase_TestCompleted);
-        //     testCase.TeardownCompleted += new EventHandler<TeardownCompletedEventArgs>(testCase_TeardownCompleted);
-        //     testCase.Execute(this);
-        // }
 
         internal void RunTestSuite(SsisTestSuite ts)
         {

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -37,6 +38,13 @@
             this.runTestSuiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.keepResultsToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.ResultType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExecutionTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PackageName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TestName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AssertResult = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TestPassed = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblTestCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblTestPassed = new System.Windows.Forms.ToolStripStatusLabel();
@@ -45,13 +53,6 @@
             this.lblAssertPassed = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblAssertsFailed = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-            this.ResultType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ExecutionTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PackageName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TaskName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TestName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AssertResult = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TestPassed = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -69,7 +70,7 @@
             this.testSuiteToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(823, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(934, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -88,7 +89,7 @@
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
             this.saveToolStripMenuItem.Text = "&Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItemClick);
             // 
             // toolStripMenuItem1
             // 
@@ -100,7 +101,7 @@
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItemClick);
             // 
             // testSuiteToolStripMenuItem
             // 
@@ -116,7 +117,7 @@
             this.runTestSuiteToolStripMenuItem.Name = "runTestSuiteToolStripMenuItem";
             this.runTestSuiteToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.runTestSuiteToolStripMenuItem.Text = "Run Test Suite";
-            this.runTestSuiteToolStripMenuItem.Click += new System.EventHandler(this.runTestSuiteToolStripMenuItem_Click);
+            this.runTestSuiteToolStripMenuItem.Click += new System.EventHandler(this.RunTestSuiteToolStripMenuItemClick);
             // 
             // keepResultsToolStripItem
             // 
@@ -131,6 +132,7 @@
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ResultType,
@@ -140,13 +142,77 @@
             this.TestName,
             this.AssertResult,
             this.TestPassed});
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(823, 262);
+            this.dataGridView1.Size = new System.Drawing.Size(934, 556);
             this.dataGridView1.TabIndex = 1;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1CellContentClick);
+            // 
+            // ResultType
+            // 
+            this.ResultType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.ResultType.HeaderText = "Type";
+            this.ResultType.Name = "ResultType";
+            this.ResultType.ReadOnly = true;
+            this.ResultType.Width = 56;
+            // 
+            // ExecutionTime
+            // 
+            this.ExecutionTime.FillWeight = 75F;
+            this.ExecutionTime.HeaderText = "Executed";
+            this.ExecutionTime.Name = "ExecutionTime";
+            this.ExecutionTime.ReadOnly = true;
+            this.ExecutionTime.Width = 120;
+            // 
+            // PackageName
+            // 
+            this.PackageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PackageName.FillWeight = 75F;
+            this.PackageName.HeaderText = "Package Name";
+            this.PackageName.Name = "PackageName";
+            this.PackageName.ReadOnly = true;
+            // 
+            // TaskName
+            // 
+            this.TaskName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.TaskName.FillWeight = 75F;
+            this.TaskName.HeaderText = "Task Name";
+            this.TaskName.Name = "TaskName";
+            this.TaskName.ReadOnly = true;
+            // 
+            // TestName
+            // 
+            this.TestName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.TestName.FillWeight = 75F;
+            this.TestName.HeaderText = "Test Name";
+            this.TestName.Name = "TestName";
+            this.TestName.ReadOnly = true;
+            // 
+            // AssertResult
+            // 
+            this.AssertResult.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.AssertResult.FillWeight = 150F;
+            this.AssertResult.HeaderText = "Result";
+            this.AssertResult.Name = "AssertResult";
+            this.AssertResult.ReadOnly = true;
+            // 
+            // TestPassed
+            // 
+            this.TestPassed.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.TestPassed.HeaderText = "Passed";
+            this.TestPassed.Name = "TestPassed";
+            this.TestPassed.ReadOnly = true;
+            this.TestPassed.Width = 48;
             // 
             // statusStrip1
             // 
@@ -160,7 +226,7 @@
             this.lblAssertsFailed});
             this.statusStrip1.Location = new System.Drawing.Point(0, 0);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(823, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(934, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -211,13 +277,13 @@
             // 
             this.toolStripContainer1.ContentPanel.AutoScroll = true;
             this.toolStripContainer1.ContentPanel.Controls.Add(this.dataGridView1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(823, 262);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(934, 556);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
             this.toolStripContainer1.RightToolStripPanelVisible = false;
-            this.toolStripContainer1.Size = new System.Drawing.Size(823, 308);
+            this.toolStripContainer1.Size = new System.Drawing.Size(934, 602);
             this.toolStripContainer1.TabIndex = 3;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -225,68 +291,16 @@
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
             // 
-            // ResultType
-            // 
-            this.ResultType.HeaderText = "Type";
-            this.ResultType.Name = "ResultType";
-            this.ResultType.ReadOnly = true;
-            this.ResultType.Width = 60;
-            // 
-            // ExecutionTime
-            // 
-            this.ExecutionTime.HeaderText = "Executed";
-            this.ExecutionTime.Name = "ExecutionTime";
-            this.ExecutionTime.ReadOnly = true;
-            this.ExecutionTime.Width = 120;
-            // 
-            // PackageName
-            // 
-            this.PackageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PackageName.FillWeight = 75F;
-            this.PackageName.HeaderText = "Package Name";
-            this.PackageName.Name = "PackageName";
-            this.PackageName.ReadOnly = true;
-            // 
-            // TaskName
-            // 
-            this.TaskName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.TaskName.HeaderText = "Task Name";
-            this.TaskName.Name = "TaskName";
-            this.TaskName.ReadOnly = true;
-            // 
-            // TestName
-            // 
-            this.TestName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.TestName.HeaderText = "Test Name";
-            this.TestName.Name = "TestName";
-            this.TestName.ReadOnly = true;
-            // 
-            // AssertResult
-            // 
-            this.AssertResult.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.AssertResult.FillWeight = 150F;
-            this.AssertResult.HeaderText = "Result";
-            this.AssertResult.Name = "AssertResult";
-            this.AssertResult.ReadOnly = true;
-            this.AssertResult.Width = 194;
-            // 
-            // TestPassed
-            // 
-            this.TestPassed.HeaderText = "Passed";
-            this.TestPassed.Name = "TestPassed";
-            this.TestPassed.ReadOnly = true;
-            this.TestPassed.Width = 50;
-            // 
             // TestResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(823, 308);
+            this.ClientSize = new System.Drawing.Size(934, 602);
             this.Controls.Add(this.toolStripContainer1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "TestResults";
             this.Text = "TestResults";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TestResults_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TestResultsFormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

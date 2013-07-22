@@ -83,15 +83,27 @@ namespace SsisUnit
         public bool Execute(Package package, DtsContainer task)
         {
             _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertCount);
+
             bool returnValue;
             string resultMessage = string.Empty;
+            object validationResult;
+            DataCompareCommand dataCompareCommand = Command as DataCompareCommand;
+            DataCompareCommandResults dataCompareCommandResults;
 
-            object validationResult = _command.Execute(package, task);
+            if (dataCompareCommand != null)
+            {
+                dataCompareCommandResults = dataCompareCommand.Execute(package, task) as DataCompareCommandResults;
+
+                validationResult = dataCompareCommandResults != null && dataCompareCommandResults.IsDatasetsSame;
+            }
+            else
+            {
+                dataCompareCommandResults = null;
+                validationResult = Command.Execute(package, task);
+            }
 
             if (validationResult == null)
-            {
                 throw new ApplicationException(string.Format(CultureInfo.CurrentCulture, "The return value from the {0} was null. This may be because the specified Command does not return a value, or is set to not return a value.", _command.CommandName));
-            }
 
             if (_expression)
             {
@@ -106,9 +118,7 @@ namespace SsisUnit
                 }
             }
             else
-            {
                 returnValue = _expectedResult.ToString() == validationResult.ToString();
-            }
 
             if (returnValue)
             {
@@ -121,7 +131,42 @@ namespace SsisUnit
                 _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
             }
 
-            _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage, returnValue));
+            if (dataCompareCommandResults != null)
+            {
+                resultMessage += Environment.NewLine;
+
+                foreach (string expectedMessage in dataCompareCommandResults.ExpectedDatasetMessages)
+                {
+                    if (string.IsNullOrEmpty(expectedMessage))
+                        continue;
+
+                    resultMessage += expectedMessage + Environment.NewLine;
+                }
+
+                foreach (string actualMessage in dataCompareCommandResults.ExpectedDatasetMessages)
+                {
+                    if (string.IsNullOrEmpty(actualMessage))
+                        continue;
+
+                    resultMessage += actualMessage + Environment.NewLine;
+                }
+
+                resultMessage = resultMessage.Trim() + Environment.NewLine;
+
+                resultMessage += dataCompareCommandResults.ActualDatasetErrorIndices.Count < 1 ?
+                    string.Format("The datasets \"{0}\" and \"{1}\" are the same.", dataCompareCommandResults.ExpectedDataset.Name, dataCompareCommandResults.ActualDataset.Name)
+                    :
+                    string.Format("{0} row{1} differ{2} between the expected \"{3}\" and actual \"{4}\" datasets.",
+                                  dataCompareCommandResults.ActualDatasetErrorIndices.Count.ToString("N0"),
+                                  dataCompareCommandResults.ActualDatasetErrorIndices.Count == 1 ? string.Empty : "s",
+                                  dataCompareCommandResults.ActualDatasetErrorIndices.Count == 1 ? "s" : string.Empty,
+                                  dataCompareCommandResults.ExpectedDataset.Name,
+                                  dataCompareCommandResults.ActualDataset.Name);
+
+                _testSuite.OnRaiseAssertCompleted(new DataCompareAssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage.Trim(), returnValue, dataCompareCommandResults));
+            }
+            else
+                _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage, returnValue));
 
             return returnValue;
         }
@@ -189,8 +234,8 @@ namespace SsisUnit
             {
                 _expression = xmlNode.Value == true.ToString().ToLower();
             }
-            
-            _command = CommandBase.CreateCommand(_testSuite, this, assertXml.ChildNodes[0]);
+
+            _command = assertXml.HasChildNodes ? CommandBase.CreateCommand(_testSuite, this, assertXml.ChildNodes[0]) : null;
         }
 
         public override bool Validate()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -6,38 +7,39 @@ using SsisUnit;
 
 namespace ssisUnitTestRunnerUI
 {
+    [Localizable(false)]
     public partial class TestResults : Form
     {
-        private SsisTestSuite _testSuite;
+        private readonly SsisTestSuite _testSuite;
 
-        private EventHandler<AssertCompletedEventArgs> ehAssertCompleted;
-        private EventHandler<SetupCompletedEventArgs> ehSetupCompleted;
-        private EventHandler<TeardownCompletedEventArgs> ehTeardownCompleted;
-        private EventHandler<TestCompletedEventArgs> ehTestCompleted;
-        private EventHandler<CommandStartedEventArgs> ehCommandStarted;
-        private EventHandler<CommandCompletedEventArgs> ehCommandCompleted;
-        private EventHandler<CommandFailedEventArgs> ehCommandFailed;
+        private readonly EventHandler<AssertCompletedEventArgs> _assertCompleted;
+        private readonly EventHandler<SetupCompletedEventArgs> _setupCompleted;
+        private readonly EventHandler<TeardownCompletedEventArgs> _teardownCompleted;
+        private readonly EventHandler<TestCompletedEventArgs> _testCompleted;
+        private readonly EventHandler<CommandStartedEventArgs> _commandStarted;
+        private readonly EventHandler<CommandCompletedEventArgs> _commandCompleted;
+        private readonly EventHandler<CommandFailedEventArgs> _commandFailed;
 
         public TestResults(SsisTestSuite testSuite)
         {
             InitializeComponent();
             _testSuite = testSuite;
 
-            ehAssertCompleted = _testSuite_AssertCompleted;
-            ehSetupCompleted = _testSuite_SetupCompleted;
-            ehTeardownCompleted = _testSuite_TeardownCompleted;
-            ehTestCompleted = _testSuite_TestCompleted;
-            ehCommandStarted = _testSuite_CommandStarted;
-            ehCommandCompleted = _testSuite_CommandCompleted;
-            ehCommandFailed = _testSuite_CommandFailed;
+            _assertCompleted = TestSuiteAssertCompleted;
+            _setupCompleted = TestSuiteSetupCompleted;
+            _teardownCompleted = TestSuiteTeardownCompleted;
+            _testCompleted = TestSuiteTestCompleted;
+            _commandStarted = _testSuite_CommandStarted;
+            _commandCompleted = TestSuiteCommandCompleted;
+            _commandFailed = TestSuiteCommandFailed;
 
-            _testSuite.AssertCompleted += ehAssertCompleted;
-            _testSuite.SetupCompleted += ehSetupCompleted;
-            _testSuite.TeardownCompleted += ehTeardownCompleted;
-            _testSuite.TestCompleted += ehTestCompleted;
-            _testSuite.CommandStarted += ehCommandStarted;
-            _testSuite.CommandCompleted += ehCommandCompleted;
-            _testSuite.CommandFailed += ehCommandFailed;
+            _testSuite.AssertCompleted += _assertCompleted;
+            _testSuite.SetupCompleted += _setupCompleted;
+            _testSuite.TeardownCompleted += _teardownCompleted;
+            _testSuite.TestCompleted += _testCompleted;
+            _testSuite.CommandStarted += _commandStarted;
+            _testSuite.CommandCompleted += _commandCompleted;
+            _testSuite.CommandFailed += _commandFailed;
         }
 
         public void RunSuite()
@@ -48,12 +50,12 @@ namespace ssisUnitTestRunnerUI
 
                 _testSuite.Execute();
                 
-                lblTestCount.Text = "Test Count: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount).ToString();
-                lblTestPassed.Text = "Tests Passed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount).ToString();
-                lblTestsFailed.Text = "Tests Failed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestFailedCount).ToString();
-                lblAssertCount.Text = "Assert Count: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertCount).ToString();
-                lblAssertPassed.Text = "Asserts Passed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount).ToString();
-                lblAssertsFailed.Text = "Asserts Failed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount).ToString();
+                lblTestCount.Text = "Test Count: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount).ToString("N0");
+                lblTestPassed.Text = "Tests Passed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount).ToString("N0");
+                lblTestsFailed.Text = "Tests Failed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestFailedCount).ToString("N0");
+                lblAssertCount.Text = "Assert Count: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertCount).ToString("N0");
+                lblAssertPassed.Text = "Asserts Passed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount).ToString("N0");
+                lblAssertsFailed.Text = "Asserts Failed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount).ToString("N0");
             }
             catch (Exception ex)
             {
@@ -70,48 +72,66 @@ namespace ssisUnitTestRunnerUI
             test.Execute();
         }
 
-        void _testSuite_TestCompleted(object sender, TestCompletedEventArgs e)
+        void TestSuiteTestCompleted(object sender, TestCompletedEventArgs e)
         {
             dataGridView1.Rows.Add("Test", e.TestExecResult.TestExecutionTime, e.TestExecResult.PackageName, e.TestExecResult.TaskName,
                 e.TestExecResult.TestName, e.TestExecResult.TestResultMsg, e.TestExecResult.TestPassed);
         }
 
-        void _testSuite_TeardownCompleted(object sender, TeardownCompletedEventArgs e)
+        void TestSuiteTeardownCompleted(object sender, TeardownCompletedEventArgs e)
         {
             dataGridView1.Rows.Add("Teardown", e.TeardownExecutionTime, e.Package, e.TaskGuid,
                  e.TestName, e.Results, true);
         }
 
-        void _testSuite_SetupCompleted(object sender, SetupCompletedEventArgs e)
+        void TestSuiteSetupCompleted(object sender, SetupCompletedEventArgs e)
         {
             dataGridView1.Rows.Add("Setup", e.SetupExecutionTime, e.Package, e.TaskGuid,
                  e.TestName, e.Results, true);
         }
 
-        void _testSuite_AssertCompleted(object sender, AssertCompletedEventArgs e)
+        void TestSuiteAssertCompleted(object sender, AssertCompletedEventArgs e)
         {
-            var rowId = dataGridView1.Rows.Add("Assert", e.TestExecResult.TestExecutionTime, e.TestExecResult.PackageName, e.TestExecResult.TaskName,
-                e.TestExecResult.TestName, e.TestExecResult.TestResultMsg, e.TestExecResult.TestPassed);
-            if (!e.TestExecResult.TestPassed)
+            DataCompareAssertCompletedEventArgs dataCompareEventArgs = e as DataCompareAssertCompletedEventArgs;
+
+            if (dataCompareEventArgs != null)
             {
-                dataGridView1.Rows[rowId].Cells[0].Style.BackColor = Color.Red;
+                var rowId = dataGridView1.Rows.Add(
+                    "Assert",
+                    dataCompareEventArgs.TestExecResult.TestExecutionTime,
+                    dataCompareEventArgs.TestExecResult.PackageName,
+                    dataCompareEventArgs.TestExecResult.TaskName,
+                    dataCompareEventArgs.TestExecResult.TestName,
+                    dataCompareEventArgs.TestExecResult.TestResultMsg,
+                    dataCompareEventArgs.DataCompareCommandResults.IsDatasetsSame);
+
+                dataGridView1.Rows[rowId].Cells[0].Style.BackColor = !dataCompareEventArgs.DataCompareCommandResults.IsDatasetsSame ? Color.Red : Color.White;
             }
             else
             {
-                dataGridView1.Rows[rowId].Cells[0].Style.BackColor = Color.White;
+                var rowId = dataGridView1.Rows.Add("Assert", e.TestExecResult.TestExecutionTime, e.TestExecResult.PackageName, e.TestExecResult.TaskName,
+                    e.TestExecResult.TestName, e.TestExecResult.TestResultMsg, e.TestExecResult.TestPassed);
+
+                dataGridView1.Rows[rowId].Cells[0].Style.BackColor = !e.TestExecResult.TestPassed ? Color.Red : Color.White;
             }
         }
 
-        private void _testSuite_CommandFailed(object sender, CommandFailedEventArgs e)
+        private void TestSuiteCommandFailed(object sender, CommandFailedEventArgs e)
         {
             dataGridView1.Rows.Add("Command", e.FailedExecutionTime, e.Package, e.CommandName,
                  null, e.Results, false);
         }
 
-        private void _testSuite_CommandCompleted(object sender, CommandCompletedEventArgs e)
+        private void TestSuiteCommandCompleted(object sender, CommandCompletedEventArgs e)
         {
-            dataGridView1.Rows.Add("Command", e.CompletedExecutionTime, e.Package, e.CommandName,
-                 null, e.Results, true);
+            dataGridView1.Rows.Add(
+                "Command",
+                e.CompletedExecutionTime,
+                e.Package,
+                e.CommandName,
+                null,
+                e.Results,
+                true);
         }
 
         private void _testSuite_CommandStarted(object sender, CommandStartedEventArgs e)
@@ -120,12 +140,11 @@ namespace ssisUnitTestRunnerUI
             //      null, null, true);
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridView1CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveToolStripMenuItemClick(object sender, EventArgs e)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -134,27 +153,23 @@ namespace ssisUnitTestRunnerUI
                 for (int colIndex = 0; colIndex < dataGridView1.Columns.Count; colIndex++)
                 {
                     if (colIndex == (dataGridView1.Columns.Count - 1))
-                    {
-                        sb.Append(dataGridView1[colIndex, rowIndex].Value.ToString() + Environment.NewLine);
-                    }
+                        sb.Append(dataGridView1[colIndex, rowIndex].Value + Environment.NewLine);
                     else
-                    {
-                        sb.Append(dataGridView1[colIndex, rowIndex].Value.ToString() + ",");
-                    }
+                        sb.Append(dataGridView1[colIndex, rowIndex].Value + ",");
                 }
             }
 
             string fileName = string.Empty;
 
             bool retry = true;
+
             while (retry)
             {
                 try
                 {
                     if (UIHelper.ShowSaveAs(ref fileName, UIHelper.FileFilter.CSV, false) == DialogResult.OK)
-                    {
                         System.IO.File.WriteAllText(fileName, sb.ToString());
-                    }
+
                     retry = false;
                 }
                 catch (Exception)
@@ -165,12 +180,12 @@ namespace ssisUnitTestRunnerUI
             }
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExitToolStripMenuItemClick(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void runTestSuiteToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RunTestSuiteToolStripMenuItemClick(object sender, EventArgs e)
         {
             if (!keepResultsToolStripItem.Checked)
             {
@@ -180,15 +195,15 @@ namespace ssisUnitTestRunnerUI
             RunSuite();
         }
 
-        private void TestResults_FormClosing(object sender, FormClosingEventArgs e)
+        private void TestResultsFormClosing(object sender, FormClosingEventArgs e)
         {
-            _testSuite.AssertCompleted -= ehAssertCompleted;
-            _testSuite.SetupCompleted -= ehSetupCompleted;
-            _testSuite.TeardownCompleted -= ehTeardownCompleted;
-            _testSuite.TestCompleted -= ehTestCompleted;
-            _testSuite.CommandStarted -= ehCommandStarted;
-            _testSuite.CommandCompleted -= ehCommandCompleted;
-            _testSuite.CommandFailed -= ehCommandFailed;
+            _testSuite.AssertCompleted -= _assertCompleted;
+            _testSuite.SetupCompleted -= _setupCompleted;
+            _testSuite.TeardownCompleted -= _teardownCompleted;
+            _testSuite.TestCompleted -= _testCompleted;
+            _testSuite.CommandStarted -= _commandStarted;
+            _testSuite.CommandCompleted -= _commandCompleted;
+            _testSuite.CommandFailed -= _commandFailed;
         }
     }
 }

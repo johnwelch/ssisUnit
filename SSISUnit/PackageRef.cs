@@ -19,7 +19,6 @@ namespace SsisUnit
             _packagePath = packagePath;
             _storageType = storageType.ToString();
             _server = server;
-            return;
         }
 
         public PackageRef(string name, string packagePath, PackageStorageType storageType)
@@ -28,15 +27,12 @@ namespace SsisUnit
             _packagePath = packagePath;
             _storageType = storageType.ToString();
             _server = string.Empty;
-            return;
         }
 
         public PackageRef(XmlNode packageRef)
         {
             LoadFromXml(packageRef);
-            return;
         }
-
 
         [Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string PackagePath
@@ -124,9 +120,10 @@ namespace SsisUnit
         public void LoadFromXml(XmlNode packageXml)
         {
             if (packageXml.Name != "Package")
-            {
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Package"));
-            }
+
+            if (packageXml.Attributes == null)
+                throw new ArgumentException("The Xml does not contain any attributes.");
 
             _packagePath = packageXml.Attributes["packagePath"].Value;
             _storageType = packageXml.Attributes["storageType"].Value;

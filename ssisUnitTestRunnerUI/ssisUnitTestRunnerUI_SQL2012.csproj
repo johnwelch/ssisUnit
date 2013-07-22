@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NodeSelectedEventArgs.cs" />
     <Compile Include="TestBuilder.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +122,7 @@
     <Compile Include="TestResults.Designer.cs">
       <DependentUpon>TestResults.cs</DependentUpon>
     </Compile>
+    <Compile Include="TestSuiteSelectedEventArgs.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="UIResources.Designer.cs" />
   </ItemGroup>

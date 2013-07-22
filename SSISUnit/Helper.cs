@@ -2,6 +2,7 @@
 using System.Xml;
 using System.Globalization;
 using Microsoft.SqlServer.Dts.Runtime;
+using System.IO;
 
 namespace SsisUnit
 {
@@ -70,12 +71,22 @@ namespace SsisUnit
 
             try
             {
+                bool isPackagePathFilePath = false;
+
                 if (packagePath.Contains(".dtsx"))
                 {
                     // Assume that it is a file path.
-                    package = ssisApp.LoadPackage(packagePath, null);
+                    FileInfo fileInfo = new FileInfo(packagePath);
+
+                    if (fileInfo.Exists)
+                    {
+                        isPackagePathFilePath = true;
+
+                        package = ssisApp.LoadPackage(packagePath, null);
+                    }
                 }
-                else
+
+                if (!isPackagePathFilePath)
                 {
                     // PackageList Reference
                     PackageRef packageRef = testSuite.PackageRefs[packagePath];

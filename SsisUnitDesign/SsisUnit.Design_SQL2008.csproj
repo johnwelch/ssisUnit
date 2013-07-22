@@ -78,6 +78,7 @@
     <Compile Include="ConnectionStringBuilder.Designer.cs">
       <DependentUpon>ConnectionStringBuilder.cs</DependentUpon>
     </Compile>
+    <Compile Include="DatasetConverter.cs" />
     <Compile Include="TaskConverter.cs" />
     <Compile Include="PackageBrowserEditor.cs" />
     <Compile Include="PackageBrowser.cs">

@@ -3,8 +3,7 @@
     targetNamespace="http://tempuri.org/SsisUnit.xsd"
     elementFormDefault="qualified"
     xmlns="http://tempuri.org/SsisUnit.xsd"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
->
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="TestSuite">
     <xs:complexType>
       <xs:sequence>
@@ -22,10 +21,17 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="DatasetList" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="Dataset" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="TestSuiteSetup" type="CommandSet" minOccurs="0" maxOccurs="1" />
-        <!--Setup Node-->
+        <!-- Setup Node -->
         <xs:element name="Setup" type="CommandSet" minOccurs="0" maxOccurs="1"/>
-        <!--Test Node-->
+        <!-- Test Node -->
         <xs:element name="Tests" minOccurs="1" maxOccurs="1">
           <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -34,25 +40,26 @@
             </xs:choice>
           </xs:complexType>
         </xs:element>
-        <!--Teardown Node-->
+        <!-- Teardown Node -->
         <xs:element name ="Teardown" type="CommandSet" minOccurs="0" maxOccurs="1"/>
         <xs:element name="TestSuiteTeardown" type="CommandSet" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
-
     </xs:complexType>
   </xs:element>
 
-  <!--Define Common SQL Command-->
+  <!-- Define Common SQL Command -->
   <xs:element name="SqlCommand">
     <xs:complexType mixed="true">
+      <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="connectionRef" type="xs:string" use="required"/>
       <xs:attribute name="returnsValue" use="required" type="xs:boolean"/>
     </xs:complexType>
   </xs:element>
 
-  <!--Define Common File Command-->
+  <!-- Define Common File Command -->
   <xs:element name="FileCommand">
     <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="operation" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -69,9 +76,19 @@
     </xs:complexType>
   </xs:element>
 
-  <!--Define Common Directory Command-->
+  <!-- Define Common Data Compare Command -->
+  <xs:element name="DataCompareCommand">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
+      <xs:attribute name="expected" type="xs:string" use="required" />
+      <xs:attribute name="actual" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Define Common Directory Command -->
   <xs:element name="DirectoryCommand">
     <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="operation" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -88,15 +105,16 @@
     </xs:complexType>
   </xs:element>
 
-  <!--Define Common Process Command-->
+  <!-- Define Common Process Command -->
   <xs:element name="ProcessCommand">
     <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="process" type ="xs:string" use="required"/>
       <xs:attribute name="arguments" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
 
-  <!--Define Common Variable Command-->
+  <!-- Define Common Variable Command -->
   <xs:element name="VariableCommand">
     <xs:complexType>
       <xs:attribute name="operation" use="required">
@@ -107,14 +125,15 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="name" type ="xs:string" use="required"/>
+      <xs:attribute name="name" type ="xs:string" use="optional"/>
       <xs:attribute name="value" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
 
-  <!--Define Common Property Command-->
+  <!-- Define Property Command -->
   <xs:element name="PropertyCommand">
     <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="operation" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -134,20 +153,22 @@
       <xs:sequence>
         <xs:element name="inputvalue" type="xs:string" minOccurs="1" maxOccurs="1" />
       </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="component" type="xs:string" use="required"/>
       <xs:attribute name="input" type ="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
 
-  <!--Define Component Output Command-->
+  <!-- Define Component Output Command -->
   <xs:element name="ComponentOutputCommand">
     <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="component" type="xs:string" use="required"/>
       <xs:attribute name="output" type ="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
 
-  <!--Define Test-->
+  <!-- Define Test -->
   <xs:element name="Test">
     <xs:complexType>
       <xs:sequence>
@@ -156,13 +177,13 @@
           <xs:element name="Assert" minOccurs="1" maxOccurs="unbounded">
             <xs:complexType>
               <xs:choice minOccurs="1" maxOccurs="1">
+                <xs:element ref="DataCompareCommand"/>
                 <xs:element ref="ProcessCommand"/>
                 <xs:element ref="SqlCommand"/>
                 <xs:element ref="VariableCommand"/>
                 <xs:element ref="FileCommand"/>
                 <xs:element ref="DirectoryCommand"/>
                 <xs:element ref="PropertyCommand"/>
-
               </xs:choice>
               <xs:attribute name="name" type="xs:string" use="required"/>
               <xs:attribute name="expectedResult" type="xs:string" use="required"/>
@@ -188,7 +209,7 @@
       <xs:attribute name="name" type="xs:string" use="required"/>
       <xs:attribute name="package" type="xs:string" use="required"/>
       <xs:attribute name="task" type="xs:string" use="required"/>
-      <xs:attribute name="taskResult" use="optional" default="Success" >
+      <xs:attribute name="taskResult" use="optional" default="Success">
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:enumeration value="Success" />
@@ -201,17 +222,14 @@
     </xs:complexType>
   </xs:element>
 
-  <!--Define Test Reference-->
+  <!-- Define Test Reference -->
   <xs:element name="TestRef">
     <xs:complexType>
       <xs:attribute name="path" type="xs:string" use="required"/>
-      <!--Why do I need package and task here?-->
-      <!--<xs:attribute name="package" type="xs:string" use="required"/>
-      <xs:attribute name="task" type="xs:string" use="required"/>-->
     </xs:complexType>
   </xs:element>
 
-  <!--Define Connection-->
+  <!-- Define Connection -->
   <xs:element name="Connection">
     <xs:complexType>
       <xs:attribute name="name" type="xs:string" use="required"/>
@@ -221,18 +239,23 @@
           <xs:restriction base="xs:string">
             <xs:enumeration value="ConnectionManager" />
             <xs:enumeration value="ConnectionString" />
+            <xs:enumeration value="AdoNet" />
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
+      <xs:attribute name="invariantType" use="optional" type="xs:string"/>
     </xs:complexType>
   </xs:element>
 
-  <!--Define Package-->
+  <!-- Define Dataset -->
+  <xs:element type="DatasetType" name="Dataset"/>
+
+  <!-- Define Package -->
   <xs:element name="Package">
     <xs:complexType>
       <xs:attribute name="name" type="xs:string" use="required"/>
       <xs:attribute name="server" type="xs:string" use="optional" />
-      <!--Support a connection ref too?-->
+      <!-- Support a connection ref too? -->
       <xs:attribute name="packagePath" type="xs:string" use="required" />
       <xs:attribute name="storageType" use="required">
         <xs:simpleType>
@@ -246,9 +269,10 @@
     </xs:complexType>
   </xs:element>
 
-  <!--Define Command Set-->
+  <!-- Define Command Set -->
   <xs:complexType name="CommandSet">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="DataCompareCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="SqlCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="ProcessCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="VariableCommand" minOccurs="0" maxOccurs="unbounded"/>
@@ -256,6 +280,29 @@
       <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="PropertyCommand" minOccurs="0" maxOccurs="unbounded"/>
     </xs:choice>
+  </xs:complexType>
+
+  <!-- Define Dataset Type-->
+  <xs:complexType name="DatasetType">
+    <xs:sequence>
+      <xs:element name="query" minOccurs="0" maxOccurs="1" default="&lt;![CDATA[]]&gt;">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="2146483647"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="results" maxOccurs="1" minOccurs="0" default="&lt;![CDATA[]]&gt;">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="2146483647"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="connection" type="xs:string" use="required" />
+    <xs:attribute name="isResultsStored" type="xs:boolean" use="required" />
   </xs:complexType>
 
 </xs:schema>

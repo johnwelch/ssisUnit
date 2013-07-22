@@ -178,21 +178,18 @@ namespace SsisUnit
 #if SQL2005
         [Description("The Connection that the SQLCommand will use"),
          TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
-#endif
-#if SQL2008
+#elif SQL2008
         [Description("The Connection that the SQLCommand will use"),
          TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit2008.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+#elif SQL2012
+        [Description("The Connection that the SQLCommand will use"),
+         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
         public ConnectionRef ConnectionReference
         {
             get
             {
-                if (TestSuite.ConnectionRefs.ContainsKey(Properties[PropConnection].Value))
-                {
-                    return TestSuite.ConnectionRefs[Properties[PropConnection].Value];
-                }
-
-                return null;
+                return TestSuite.ConnectionRefs.ContainsKey(Properties[PropConnection].Value) ? TestSuite.ConnectionRefs[Properties[PropConnection].Value] : null;
             }
 
             set

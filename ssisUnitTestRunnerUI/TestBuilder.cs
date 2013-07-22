@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
 using SsisUnit;
-using System.Globalization;
 using Microsoft.SqlServer.Dts.Runtime;
 using SsisUnit.Design;
 using System.IO;
@@ -16,58 +12,52 @@ namespace ssisUnitTestRunnerUI
 {
     public partial class testSuiteUI : Form
     {
+        private readonly Microsoft.SqlServer.Dts.Runtime.Application _ssisApp = new Microsoft.SqlServer.Dts.Runtime.Application();
 
         private string _currentFileName = string.Empty;
-        private Microsoft.SqlServer.Dts.Runtime.Application _ssisApp = new Microsoft.SqlServer.Dts.Runtime.Application();
 
         public testSuiteUI(string testCaseFile)
         {
             InitializeComponent();
 
             LoadCommands();
-            if (testCaseFile!=string.Empty && System.IO.File.Exists(testCaseFile))
-            {
-                _currentFileName = testCaseFile;
-                testBrowser1.AddTestSuite(testCaseFile);
-            }
+
+            if (testCaseFile == string.Empty || !File.Exists(testCaseFile))
+                return;
+
+            _currentFileName = testCaseFile;
+            testBrowser1.AddTestSuite(testCaseFile);
         }
 
         private void LoadCommands()
         {
             foreach (Type t in System.Reflection.Assembly.GetAssembly(typeof(CommandBase)).GetTypes())
             {
-                if (typeof(CommandBase).IsAssignableFrom(t)
-                    && (!object.ReferenceEquals(t, typeof(CommandBase)))
-                    && (!t.IsAbstract))
-                {
-                    ToolStripMenuItem addGenericCommandToolStripMenuItem = new ToolStripMenuItem(t.Name);
-                    addGenericCommandToolStripMenuItem.Name = t.Name;
-                    addGenericCommandToolStripMenuItem.Click += new EventHandler(addGenericCommandToolStripMenuItem_Click);
-                    addCommandToolStripMenuItem.DropDownItems.Add(addGenericCommandToolStripMenuItem);
-                }
+                if (!typeof(CommandBase).IsAssignableFrom(t) || ReferenceEquals(t, typeof(CommandBase)) || t.IsAbstract)
+                    continue;
+
+                ToolStripMenuItem addGenericCommandToolStripMenuItem = new ToolStripMenuItem(t.Name);
+                addGenericCommandToolStripMenuItem.Name = t.Name;
+                addGenericCommandToolStripMenuItem.Click += addGenericCommandToolStripMenuItem_Click;
+                addCommandToolStripMenuItem.DropDownItems.Add(addGenericCommandToolStripMenuItem);
             }
         }
 
-
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
+        private void Form1_Load(object sender, EventArgs e) { }
 
         private void testBrowser1_NodeSelected(object sender, NodeSelectedEventArgs e)
         {
             propertyGrid1.SelectedObject = e.NewItem;
             EnableMenuItems(e.NewItem);
 
-            if (e.NewItem is ISsisUnitPersist)
-            {
-                txtXML.Text = FormatXml(((ISsisUnitPersist)e.NewItem).PersistToXml());
-            }
-            else
-            {
-                txtXML.Text = string.Empty;
-            }
+            ISsisUnitPersist item = e.NewItem as ISsisUnitPersist;
+            
+            txtXML.Text = item != null ? FormatXml(item.PersistToXml()) : string.Empty;
+
+            // ConnectionRef connectionRef = e.NewItem as ConnectionRef;
+
+            // if (connectionRef != null)
+            //     connectionRef.RefreshInvariantTypeAccessiblity();
         }
 
         public static string FormatXml(string xml)
@@ -76,43 +66,31 @@ namespace ssisUnitTestRunnerUI
             XmlDocumentFragment frag = doc.CreateDocumentFragment();
             frag.InnerXml = xml;
 
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.OmitXmlDeclaration = true;
-            settings.ConformanceLevel = ConformanceLevel.Fragment;
-            settings.Indent = true;
-            //settings.NewLineOnAttributes = true;
-
+            XmlWriterSettings settings = new XmlWriterSettings { OmitXmlDeclaration = true, ConformanceLevel = ConformanceLevel.Fragment, Indent = true };
             MemoryStream memoryStream = new MemoryStream();
-
             XmlWriter xw = XmlWriter.Create(memoryStream, settings);
+
             frag.WriteTo(xw);
             xw.Flush();
             xw.Close();
 
             memoryStream.Position = 0;
             StreamReader streamReader = new StreamReader(memoryStream);
+            
             return streamReader.ReadToEnd();
         }
-
 
         private void EnableMenuItems(object p)
         {
             if (p is CommandSet || p is SsisAssert)
-            {
                 addCommandToolStripMenuItem.Enabled = true;
-            }
             else
-            {
                 addCommandToolStripMenuItem.Enabled = false;
-            }
+
             if (p is Test)
-            {
                 addAssertToolStripMenuItem.Enabled = true;
-            }
             else
-            {
                 addAssertToolStripMenuItem.Enabled = false;
-            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -124,11 +102,11 @@ namespace ssisUnitTestRunnerUI
         {
             string fileName = string.Empty;
 
-            if (UIHelper.ShowOpen(ref fileName, UIHelper.FileFilter.SsisUnit, true) == DialogResult.OK)
-            {
-                _currentFileName = fileName;
-                testBrowser1.AddTestSuite(fileName);
-            }
+            if (UIHelper.ShowOpen(ref fileName, UIHelper.FileFilter.SsisUnit, true) != DialogResult.OK)
+                return;
+
+            _currentFileName = fileName;
+            testBrowser1.AddTestSuite(fileName);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -138,22 +116,15 @@ namespace ssisUnitTestRunnerUI
 
         private void SaveTestSuite()
         {
-            if (System.IO.File.Exists(_currentFileName))
-            {
+            if (File.Exists(_currentFileName))
                 testBrowser1.SaveTestSuite(_currentFileName);
-            }
-            else
-            {
-                if (UIHelper.ShowSaveAs(ref _currentFileName, UIHelper.FileFilter.SsisUnit, false) == DialogResult.OK)
-                {
-                    testBrowser1.SaveTestSuite(_currentFileName);
-                }
-            }
+            else if (UIHelper.ShowSaveAs(ref _currentFileName, UIHelper.FileFilter.SsisUnit, false) == DialogResult.OK)
+                testBrowser1.SaveTestSuite(_currentFileName);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -170,15 +141,13 @@ namespace ssisUnitTestRunnerUI
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (UIHelper.ShowSaveAs(ref _currentFileName, UIHelper.FileFilter.SsisUnit, false) == DialogResult.OK)
-            {
                 testBrowser1.SaveTestSuite(_currentFileName);
-            }
         }
 
         private void testBrowser1_TestSuiteSelected(object sender, TestSuiteSelectedEventArgs e)
         {
             _currentFileName = e.CurrentFile;
-            this.Text = "Test Suite Builder - " + _currentFileName;
+            Text = "Test Suite Builder - " + _currentFileName;
         }
 
         private void addTestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -214,16 +183,15 @@ namespace ssisUnitTestRunnerUI
 
         private void newFromPackageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SsisTestSuite ts = null;
             string packageFileName = string.Empty;
-            if (UIHelper.ShowOpen(ref packageFileName, UIHelper.FileFilter.DTSX, true) == DialogResult.OK)
-            {
-                ts = CreateTestFromPackage(packageFileName);
-                if (ts != null)
-                {
-                    testBrowser1.AddTestSuite(ts);
-                }
-            }
+
+            if (UIHelper.ShowOpen(ref packageFileName, UIHelper.FileFilter.DTSX, true) != DialogResult.OK)
+                return;
+
+            SsisTestSuite ts = CreateTestFromPackage(packageFileName);
+
+            if (ts != null)
+                testBrowser1.AddTestSuite(ts);
         }
 
         private SsisTestSuite CreateTestFromPackage(string fileName)
@@ -231,19 +199,21 @@ namespace ssisUnitTestRunnerUI
             SsisTestSuite ts = null;
 
             Package package = _ssisApp.LoadPackage(fileName, null);
-            PackageBrowser pb = new PackageBrowser();
-            pb.MultiSelect = true;
+            PackageBrowser pb = new PackageBrowser { MultiSelect = true };
+
             if (pb.ShowDialog(package) == DialogResult.OK)
             {
                 ts = new SsisTestSuite();
+
                 AddConnectionRefs(ts, package);
                 AddPackageRefs(ts, package, fileName);
                 AddTests(ts, package, pb.SelectedTasks);
             }
+            
             return ts;
         }
 
-        private void AddTests(SsisTestSuite ts, Package package, List<TaskItem> taskItemList)
+        private void AddTests(SsisTestSuite ts, IDTSName package, IEnumerable<TaskItem> taskItemList)
         {
             foreach (TaskItem item in taskItemList)
             {
@@ -252,34 +222,26 @@ namespace ssisUnitTestRunnerUI
 
                 while (ts.Tests.ContainsKey(testName))
                 {
-                    testName = item.Name + counter.ToString();
+                    testName = item.Name + counter.ToString(CultureInfo.InvariantCulture);
                     counter++;
                 }
+
                 ts.Tests.Add(testName, new Test(ts, testName, package.Name, item.ID));
             }
-
         }
 
-        private void AddPackageRefs(SsisTestSuite ts, Package package, string location)
+        private void AddPackageRefs(SsisTestSuite ts, IDTSName package, string location)
         {
             if (!ts.PackageRefs.ContainsKey(package.Name))
-            {
                 ts.PackageRefs.Add(package.Name, new PackageRef(package.Name, location, PackageRef.PackageStorageType.FileSystem));
-            }
         }
 
         private void AddConnectionRefs(SsisTestSuite ts, Package package)
         {
             foreach (ConnectionManager cm in package.Connections)
             {
-                if (cm.CreationName == "OLEDB" || cm.CreationName.StartsWith("ADO.NET"))
-                {
-                    if (!ts.ConnectionRefs.ContainsKey(cm.Name))
-                    {
-                        ts.ConnectionRefs.Add(cm.Name, new ConnectionRef(cm.Name, cm.ConnectionString, ConnectionRef.ConnectionTypeEnum.ConnectionString));
-                    }
-
-                }
+                if ((cm.CreationName == "OLEDB" || cm.CreationName.StartsWith("ADO.NET")) && !ts.ConnectionRefs.ContainsKey(cm.Name))
+                    ts.ConnectionRefs.Add(cm.Name, new ConnectionRef(cm.Name, cm.ConnectionString, ConnectionRef.ConnectionTypeEnum.ConnectionString));
             }
         }
 
@@ -305,28 +267,25 @@ namespace ssisUnitTestRunnerUI
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            if (testBrowser1.SelectedItem is CommandBase)
-            {
-                txtXML.Text = ((CommandBase)testBrowser1.SelectedItem).PersistToXml();
-            }
+            CommandBase commandBase = testBrowser1.SelectedItem as CommandBase;
+
+            if (commandBase != null)
+                txtXML.Text = commandBase.PersistToXml();
         }
 
         private void addTestFromPackageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string packageFileName = string.Empty;
+
             if (UIHelper.ShowOpen(ref packageFileName, UIHelper.FileFilter.DTSX, true) == DialogResult.OK)
-            {
                 AddTestFromPackage(packageFileName);
-            }
         }
-
-
 
         private void AddTestFromPackage(string fileName)
         {
             Package package = _ssisApp.LoadPackage(fileName, null);
-            PackageBrowser pb = new PackageBrowser();
-            pb.MultiSelect = true;
+            PackageBrowser pb = new PackageBrowser { MultiSelect = true };
+
             if (pb.ShowDialog(package) == DialogResult.OK)
             {
                 AddConnectionRefs(testBrowser1.TestSuite, package);
@@ -360,10 +319,13 @@ namespace ssisUnitTestRunnerUI
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("An error occurred when performing this operation. " + ex.Message);
+                MessageBox.Show("An error occurred when performing this operation. " + ex.Message);
             }
         }
 
+        private void addDatasetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            testBrowser1.AddDataset();
+        }
     }
-
 }
