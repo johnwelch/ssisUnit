@@ -4,7 +4,7 @@ using System.Data;
 
 namespace SsisUnit
 {
-    public sealed class DataCompareCommandResults
+    public sealed class DataCompareCommandResults : CommandResultsBase
     {
         internal DataCompareCommandResults(Dataset expectedDataset, Dataset actualDataset, DataTable expectedResults, DataTable actualResults, IDictionary<int, IEnumerable<int>> actualDatasetErrorIndices, bool isSchemasCompatible, bool isDatasetsSame, IEnumerable<string> expectedDatasetMessages, IEnumerable<string> actualDatasetMessages)
         {

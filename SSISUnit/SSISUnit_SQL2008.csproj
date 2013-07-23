@@ -86,6 +86,7 @@
     <Compile Include="CommandCompletedEventArgs.cs" />
     <Compile Include="CommandFailedEventArgs.cs" />
     <Compile Include="CommandProperty.cs" />
+    <Compile Include="CommandResultsBase.cs" />
     <Compile Include="CommandSet.cs" />
     <Compile Include="CommandStartedEventArgs.cs" />
     <Compile Include="ComponentSourceCommand.cs" />

@@ -83,6 +83,7 @@
     <Compile Include="Assert.cs" />
     <Compile Include="CommandCompletedEventArgs.cs" />
     <Compile Include="CommandFailedEventArgs.cs" />
+    <Compile Include="CommandResultsBase.cs" />
     <Compile Include="CommandStartedEventArgs.cs" />
     <Compile Include="ConnectionRef.cs" />
     <Compile Include="AssertCompletedEventArgs.cs" />

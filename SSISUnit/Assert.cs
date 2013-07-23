@@ -163,10 +163,10 @@ namespace SsisUnit
                                   dataCompareCommandResults.ExpectedDataset.Name,
                                   dataCompareCommandResults.ActualDataset.Name);
 
-                _testSuite.OnRaiseAssertCompleted(new DataCompareAssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage.Trim(), returnValue, dataCompareCommandResults));
+                _testSuite.OnRaiseAssertCompleted(new DataCompareAssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage.Trim(), returnValue, dataCompareCommand, dataCompareCommandResults));
             }
             else
-                _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage, returnValue));
+                _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage, returnValue, Command));
 
             return returnValue;
         }

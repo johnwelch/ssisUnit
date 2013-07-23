@@ -397,7 +397,10 @@ namespace SsisUnit
 
             DataCompareCommandCompletedEventArgs completedEventArgs = new DataCompareCommandCompletedEventArgs(DateTime.Now, Name, null, null, resultMessage, results);
 
-            OnCommandCompleted(completedEventArgs);
+            if (isResultsSame)
+                OnCommandCompleted(completedEventArgs);
+            else
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, resultMessage, results));
 
             return results;
         }
