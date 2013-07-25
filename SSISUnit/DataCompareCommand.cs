@@ -192,16 +192,17 @@ namespace SsisUnit
                     expectedDbCommand = GetCommand(ExpectedDataset.ConnectionRef, ExpectedDataset.Query);
                     expectedDbCommand.Connection.Open();
 
-                    IDataReader expectedReader = expectedDbCommand.ExecuteReader();
+                    using (IDataReader expectedReader = expectedDbCommand.ExecuteReader())
+                    {
+                        var ds = new DataSet();
 
-                    var ds = new DataSet();
+                        ds.Load(expectedReader, LoadOption.OverwriteChanges, new[] { "Results" });
 
-                    ds.Load(expectedReader, LoadOption.OverwriteChanges, new[] { "Results" });
+                        if (ds.Tables.Count < 1)
+                            throw new ApplicationException(string.Format(CultureInfo.CurrentCulture, "The expected dataset (\"{0}\") did not retrieve any data.", Properties[PropExpectedDataset].Value));
 
-                    if (ds.Tables.Count < 1)
-                        throw new ApplicationException(string.Format(CultureInfo.CurrentCulture, "The expected dataset (\"{0}\") did not retrieve any data.", Properties[PropExpectedDataset].Value));
-
-                    expectedDataTable = ds.Tables[0];
+                        expectedDataTable = ds.Tables[0];
+                    }
                 }
                 else
                 {
@@ -235,16 +236,17 @@ namespace SsisUnit
                     actualDbCommand = GetCommand(ActualDataset.ConnectionRef, ActualDataset.Query);
                     actualDbCommand.Connection.Open();
 
-                    IDataReader actualReader = actualDbCommand.ExecuteReader();
+                    using (IDataReader actualReader = actualDbCommand.ExecuteReader())
+                    {
+                        var ds = new DataSet();
 
-                    var ds = new DataSet();
+                        ds.Load(actualReader, LoadOption.OverwriteChanges, new[] { "Results" });
 
-                    ds.Load(actualReader, LoadOption.OverwriteChanges, new[] { "Results" });
+                        if (ds.Tables.Count < 1)
+                            throw new ApplicationException(string.Format(CultureInfo.CurrentCulture, "The actual dataset (\"{0}\") did not retrieve any data.", Properties[PropActualDataset].Value));
 
-                    if (ds.Tables.Count < 1)
-                        throw new ApplicationException(string.Format(CultureInfo.CurrentCulture, "The actual dataset (\"{0}\") did not retrieve any data.", Properties[PropActualDataset].Value));
-
-                    actualDataTable = ds.Tables[0];
+                        actualDataTable = ds.Tables[0];
+                    }
                 }
                 else
                 {
