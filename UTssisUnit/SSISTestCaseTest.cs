@@ -120,7 +120,7 @@ namespace UTssisUnit
 
             var ts = new SsisTestSuite();
             ts.PackageRefs.Add("filePkg", new PackageRef("filePkg", packageFile, PackageRef.PackageStorageType.FileSystem));
-            var test = new Test(ts, "Main", "filePkg", "SimplePackage");
+            var test = new Test(ts, "Main", "filePkg", "SimplePackage", "SimplePackage");
             ts.Tests.Add("Main", test);
             var assert = new SsisAssert(ts, "A1", 0, false);
             test.Asserts.Add("A1", assert);
@@ -335,7 +335,7 @@ namespace UTssisUnit
             target.SetupCommands.Commands.Add(new FileCommand(target, "Copy", lineCountFile, lineCount2File));
 
             Assert.AreEqual(0, target.Tests.Count);
-            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
+            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
             Assert.AreEqual(1, target.Tests.Count);

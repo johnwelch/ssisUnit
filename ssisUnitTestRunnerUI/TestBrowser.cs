@@ -508,7 +508,7 @@ namespace ssisUnitTestRunnerUI
             {
                 counter++;
             }
-            Test test = new Test(_testSuite, "Test" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, string.Empty);
+            Test test = new Test(_testSuite, "Test" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, string.Empty, string.Empty);
             _testSuite.Tests.Add(test.Name, test);
             TreeNode tn = CreateTestNode(test);
             prNode.Nodes.Add(tn);

@@ -17,16 +17,27 @@ namespace SsisUnit
         private string _taskName;
 
         public Test(SsisTestSuite testSuite, string name, string package, string task)
-            : this(testSuite, name, package, task, DTSExecResult.Success)
+            : this(testSuite, name, package, task, null, DTSExecResult.Success)
+        {
+        }
+
+        public Test(SsisTestSuite testSuite, string name, string package, string task, string taskName)
+            : this(testSuite, name, package, task, taskName, DTSExecResult.Success)
         {
         }
 
         public Test(SsisTestSuite testSuite, string name, string package, string task, DTSExecResult taskResult)
+            : this(testSuite, name, package, task, null, taskResult)
+        {
+        }
+
+        public Test(SsisTestSuite testSuite, string name, string package, string task, string taskName, DTSExecResult taskResult)
         {
             Asserts = new Dictionary<string, SsisAssert>();
             TestSuite = testSuite;
             Name = name;
             Task = task;
+            TaskName = taskName;
             PackageLocation = package;
             TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite);
             TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite);
@@ -56,6 +67,11 @@ namespace SsisUnit
         [Browsable(false)]
         public SsisTestSuite TestSuite { get; private set; }
 
+        /// <summary>
+        /// The task's GUID ID or Name to execute during the execution of the <see cref="Test"/>.  
+        /// If a task's name is specified, the first encountered task with the specified name will be executed.  
+        /// If there is more than one task with the same name, use the task's GUID instead.
+        /// </summary>
 #if SQL2005
         [Description("The task that this test will run against."),
          TypeConverter("SsisUnit.Design.TaskConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab"),
@@ -70,6 +86,12 @@ namespace SsisUnit
          Editor("SsisUnit.Design.PackageBrowserEditor, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
 #endif
         public string Task { get; set; }
+
+        /// <summary>
+        /// The task's name solely used for display and informational purposes.  The <see cref="Task"/> property determines what gets executed when executing the <see cref="Test"/>.
+        /// </summary>
+        [Browsable(false)]
+        public string TaskName { get; set; }
 
 #if SQL2005
         [Description("The package that this test will run against."),
@@ -311,7 +333,9 @@ namespace SsisUnit
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("package", PackageLocation);
             xmlWriter.WriteAttributeString("task", Task);
+            xmlWriter.WriteAttributeString("taskName", TaskName);
             xmlWriter.WriteAttributeString("taskResult", TaskResult.ToString());
+
             if (TestSetup.Commands.Count > 0)
             {
                 xmlWriter.WriteStartElement("TestSetup");
@@ -348,9 +372,10 @@ namespace SsisUnit
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Test"));
             }
 
-            Name = testXml.Attributes != null ? testXml.Attributes["name"].Value : null;
-            PackageLocation = testXml.Attributes != null ? testXml.Attributes["package"].Value : null;
-            Task = testXml.Attributes != null ? testXml.Attributes["task"].Value : null;
+            Name = testXml.Attributes != null && testXml.Attributes["name"] != null ? testXml.Attributes["name"].Value : null;
+            PackageLocation = testXml.Attributes != null && testXml.Attributes["package"] != null ? testXml.Attributes["package"].Value : null;
+            Task = testXml.Attributes != null && testXml.Attributes["task"] != null ? testXml.Attributes["task"].Value : null;
+            TaskName = testXml.Attributes != null && testXml.Attributes["taskName"] != null ? testXml.Attributes["taskName"].Value : null;
             Asserts = LoadAsserts(testXml);
             TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite, testXml["TestSetup"]);
             TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite, testXml["TestTeardown"]);
