@@ -323,23 +323,12 @@ namespace SsisUnit
             }
             else
                 isSchemasCompatible = false;
-            
+
+            Dictionary<int, IEnumerable<int>> expectedDatasetErrorIndices = new Dictionary<int, IEnumerable<int>>(expectedDataTable != null ? expectedDataTable.Rows.Count : 0);
             Dictionary<int, IEnumerable<int>> actualDatasetErrorIndices = new Dictionary<int, IEnumerable<int>>(actualDataTable != null ? actualDataTable.Rows.Count : 0);
             int rowIndex = 0;
 
-            /* Key to values within the datasetError dictionary:
-             * 
-             * Positive Integer Key = Actual Row Error
-             *      Value == NULL : entire row is not in expected data table
-             *      Value != NULL : columns are different in actual dataset.
-             *          Value Collection
-             *              Positive Integer : actual column value differs from expected column value.
-             *              Negative Integer : expected column is exists in expected data table row but not in the actual data table row.
-             *
-             * Negative Integer Key = Expected Row Error
-             *      Value should be ignored due to expected result not appearing in actual data table.
-             */
-            if (isSchemasCompatible)
+            if (expectedDataTable != null && actualDataTable != null)
             {
                 for (; rowIndex < expectedDataTable.Rows.Count; rowIndex++)
                 {
@@ -348,40 +337,43 @@ namespace SsisUnit
                         DataRow expectedRow = expectedDataTable.Rows[rowIndex];
                         DataRow actualRow = actualDataTable.Rows[rowIndex];
 
-                        List<int> columnsDifferent = new List<int>();
+                        List<int> expectedColumnsDifferent = new List<int>();
+                        List<int> actualColumnsDifferent = new List<int>();
 
                         for (int columnIndex = 0; columnIndex < expectedRow.ItemArray.Length; columnIndex++)
                         {
                             if (columnIndex < actualRow.ItemArray.Length)
                             {
                                 if (!Equals(expectedRow[columnIndex], actualRow[columnIndex]))
-                                    columnsDifferent.Add(columnIndex);
+                                    actualColumnsDifferent.Add(columnIndex);
                             }
                             else
-                                columnsDifferent.Add(columnIndex * -1);
+                                expectedColumnsDifferent.Add(columnIndex);
                         }
 
-                        if (columnsDifferent.Count > 0)
-                            actualDatasetErrorIndices.Add(rowIndex, columnsDifferent.Count >= expectedRow.ItemArray.Length ? null : columnsDifferent);
+                        // If there are rows that aren't found in the actual dataset or there are additional columns in the the expected dataset.
+                        if (expectedColumnsDifferent.Count > 0)
+                            expectedDatasetErrorIndices.Add(rowIndex, expectedColumnsDifferent.Count >= expectedRow.ItemArray.Length ? null : expectedColumnsDifferent);
+
+                        if (actualColumnsDifferent.Count > 0)
+                            actualDatasetErrorIndices.Add(rowIndex, actualColumnsDifferent.Count >= expectedRow.ItemArray.Length ? null : actualColumnsDifferent);
                     }
                     else
-                        actualDatasetErrorIndices.Add(rowIndex * -1, null);
+                        expectedDatasetErrorIndices.Add(rowIndex, null);
                 }
             }
 
-            if (actualDataTable != null && rowIndex < actualDataTable.Rows.Count)
+            if (actualDataTable != null)
             {
-                while (rowIndex < actualDataTable.Rows.Count)
+                for (; rowIndex < actualDataTable.Rows.Count; rowIndex++)
                 {
                     actualDatasetErrorIndices.Add(rowIndex, null);
-
-                    rowIndex++;
                 }
             }
 
             bool isResultsSame = actualDatasetErrorIndices.Count < 1;
 
-            DataCompareCommandResults results = new DataCompareCommandResults(ExpectedDataset, ActualDataset, expectedDataTable, actualDataTable, actualDatasetErrorIndices, isSchemasCompatible, isResultsSame, expectedDatasetMessages, actualDatasetMessages);
+            DataCompareCommandResults results = new DataCompareCommandResults(ExpectedDataset, ActualDataset, expectedDataTable, actualDataTable, expectedDatasetErrorIndices, actualDatasetErrorIndices, isSchemasCompatible, isResultsSame, expectedDatasetMessages, actualDatasetMessages);
 
             string resultMessage = actualDatasetErrorIndices.Count < 1 ?
                 string.Format("The datasets \"{0}\" and \"{1}\" are the same.", ExpectedDataset.Name, ActualDataset.Name)
