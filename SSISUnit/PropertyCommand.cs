@@ -48,20 +48,16 @@ namespace SsisUnit
         }
 
         public PropertyCommand(SsisTestSuite testSuite, string operation, string propertyPath, object value)
-            : base(testSuite)
+            : this(testSuite)
         {
-            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
-
             Properties[PropOperation].Value = operation;
             Properties[PropPath].Value = propertyPath;
             Properties[PropValue].Value = value == null ? string.Empty : value.ToString();
         }
 
         public PropertyCommand(SsisTestSuite testSuite, object parent, string operation, string propertyPath, object value)
-            : base(testSuite, parent)
+            : this(testSuite, parent)
         {
-            InitializeProperties(PropertyOperation.Get.ToString(), string.Empty, string.Empty);
-
             Properties[PropOperation].Value = operation;
             Properties[PropPath].Value = propertyPath;
             Properties[PropValue].Value = value == null ? string.Empty : value.ToString();

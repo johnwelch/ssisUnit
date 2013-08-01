@@ -60,20 +60,16 @@ namespace SsisUnit
         }
 
         public DataCompareCommand(SsisTestSuite testSuite, string name, Dataset expectedDataset, Dataset actualDataset)
-            : base(testSuite)
+            : this(testSuite)
         {
-            InitializeProperties();
-
             Name = name;
             ExpectedDataset = expectedDataset;
             ActualDataset = actualDataset;
         }
 
         public DataCompareCommand(SsisTestSuite testSuite, object parent, string name, Dataset expectedDataset, Dataset actualDataset)
-            : base(testSuite, parent)
+            : this(testSuite, parent)
         {
-            InitializeProperties();
-
             Name = name;
             ExpectedDataset = expectedDataset;
             ActualDataset = actualDataset;

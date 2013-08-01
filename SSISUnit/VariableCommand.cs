@@ -48,19 +48,19 @@ namespace SsisUnit
         }
 
         public VariableCommand(SsisTestSuite testSuite, VariableOperation operation, string name, string value)
-            : base(testSuite)
+            : this(testSuite)
         {
-            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation.ToString()));
-            Properties.Add(PropName, new CommandProperty(PropName, name));
-            Properties.Add(PropValue, new CommandProperty(PropValue, value));
+            Properties[PropOperation] = new CommandProperty(PropOperation, operation.ToString());
+            Properties[PropName] = new CommandProperty(PropName, name);
+            Properties[PropValue] = new CommandProperty(PropValue, value);
         }
 
         public VariableCommand(SsisTestSuite testSuite, object parent, VariableOperation operation, string name, string value)
-            : base(testSuite, parent)
+            : this(testSuite, parent)
         {
-            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation.ToString()));
-            Properties.Add(PropName, new CommandProperty(PropName, name));
-            Properties.Add(PropValue, new CommandProperty(PropValue, value));
+            Properties[PropOperation] = new CommandProperty(PropOperation, operation.ToString());
+            Properties[PropName] = new CommandProperty(PropName, name);
+            Properties[PropValue] = new CommandProperty(PropValue, value);
         }
 
         public override object Execute(Package package, DtsContainer container)

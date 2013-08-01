@@ -49,19 +49,19 @@ namespace SsisUnit
         }
 
         public FileCommand(SsisTestSuite testSuite, string operation, string sourcePath, string targetPath)
-            : base(testSuite)
+            : this(testSuite)
         {
-            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
-            Properties.Add(PropSourcePath, new CommandProperty(PropSourcePath, sourcePath));
-            Properties.Add(PropTargetPath, new CommandProperty(PropTargetPath, targetPath));
+            Properties[PropOperation] = new CommandProperty(PropOperation, operation);
+            Properties[PropSourcePath] = new CommandProperty(PropSourcePath, sourcePath);
+            Properties[PropTargetPath] = new CommandProperty(PropTargetPath, targetPath);
         }
 
         public FileCommand(SsisTestSuite testSuite, object parent, string operation, string sourcePath, string targetPath)
-            : base(testSuite, parent)
+            : this(testSuite, parent)
         {
-            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
-            Properties.Add(PropSourcePath, new CommandProperty(PropSourcePath, sourcePath));
-            Properties.Add(PropTargetPath, new CommandProperty(PropTargetPath, targetPath));
+            Properties[PropOperation] = new CommandProperty(PropOperation, operation);
+            Properties[PropSourcePath] = new CommandProperty(PropSourcePath, sourcePath);
+            Properties[PropTargetPath] = new CommandProperty(PropTargetPath, targetPath);
         }
 
         public override object Execute()

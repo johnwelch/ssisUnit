@@ -49,19 +49,19 @@ namespace SsisUnit
         }
 
         public DirectoryCommand(SsisTestSuite testSuite, string operation, string argument1, string argument2)
-            : base(testSuite)
+            : this(testSuite)
         {
-            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
-            Properties.Add(PropArgument1, new CommandProperty(PropArgument1, argument1));
-            Properties.Add(PropArgument2, new CommandProperty(PropArgument2, argument2));
+            Properties[PropOperation] = new CommandProperty(PropOperation, operation);
+            Properties[PropArgument1] = new CommandProperty(PropArgument1, argument1);
+            Properties[PropArgument2] = new CommandProperty(PropArgument2, argument2);
         }
 
         public DirectoryCommand(SsisTestSuite testSuite, object parent, string operation, string argument1, string argument2)
-            : base(testSuite, parent)
+            : this(testSuite, parent)
         {
-            Properties.Add(PropOperation, new CommandProperty(PropOperation, operation));
-            Properties.Add(PropArgument1, new CommandProperty(PropArgument1, argument1));
-            Properties.Add(PropArgument2, new CommandProperty(PropArgument2, argument2));
+            Properties[PropOperation] = new CommandProperty(PropOperation, operation);
+            Properties[PropArgument1] = new CommandProperty(PropArgument1, argument1);
+            Properties[PropArgument2] = new CommandProperty(PropArgument2, argument2);
         }
 
         public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)

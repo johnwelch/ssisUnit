@@ -54,18 +54,18 @@ namespace SsisUnit
         }
 
         public SqlCommand(SsisTestSuite testSuite, string connectionRef, bool returnsValue, string command)
-            : base(testSuite)
+            : this(testSuite)
         {
-            Properties.Add(PropConnection, new CommandProperty(PropConnection, connectionRef));
-            Properties.Add(PropReturnsValue, new CommandProperty(PropReturnsValue, returnsValue.ToString().ToLower()));
+            Properties[PropConnection] = new CommandProperty(PropConnection, connectionRef);
+            Properties[PropReturnsValue] = new CommandProperty(PropReturnsValue, returnsValue.ToString().ToLower());
             Body = command;
         }
 
         public SqlCommand(SsisTestSuite testSuite, object parent, string connectionRef, bool returnsValue, string command)
-            : base(testSuite, parent)
+            : this(testSuite, parent)
         {
-            Properties.Add(PropConnection, new CommandProperty(PropConnection, connectionRef));
-            Properties.Add(PropReturnsValue, new CommandProperty(PropReturnsValue, returnsValue.ToString().ToLower()));
+            Properties[PropConnection] = new CommandProperty(PropConnection, connectionRef);
+            Properties[PropReturnsValue] = new CommandProperty(PropReturnsValue, returnsValue.ToString().ToLower());
             Body = command;
         }
 

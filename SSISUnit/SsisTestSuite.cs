@@ -333,7 +333,10 @@ namespace SsisUnit
                 {
                     test.Execute();
                 }
-                catch(Exception) { }
+                catch (Exception ex)
+                {
+                    OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.PackageLocation, test.TaskName, test.Name, ex.Message, false));
+                }
             }
 
             foreach (TestRef testRef in TestRefs.Values)
