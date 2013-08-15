@@ -21,7 +21,7 @@ namespace UTssisUnit
         {
             var testSuite = new SsisTestSuite();
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
-            assertXml += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
+            assertXml += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
@@ -35,7 +35,7 @@ namespace UTssisUnit
         public void LoadFromXmlTest()
         {
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
-            assertXml += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
+            assertXml += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
@@ -67,7 +67,7 @@ namespace UTssisUnit
         public void PersistToXmlTest()
         {
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
-            assertXml += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
+            assertXml += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
@@ -83,7 +83,7 @@ namespace UTssisUnit
         {
             var testSuite = new SsisTestSuite();
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
-            assertXml += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
+            assertXml += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
@@ -100,7 +100,7 @@ namespace UTssisUnit
         {
             var testSuite = new SsisTestSuite();
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
-            assertXml += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
+            assertXml += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";

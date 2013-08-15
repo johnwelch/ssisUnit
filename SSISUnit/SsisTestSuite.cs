@@ -335,7 +335,7 @@ namespace SsisUnit
                 }
                 catch (Exception ex)
                 {
-                    OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.PackageLocation, test.TaskName, test.Name, ex.Message, false));
+                    OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.PackageLocation, test.Task, test.Name, ex.Message, false));
                 }
             }
 

@@ -21,7 +21,7 @@ namespace UTssisUnit
         {
             _xmlTest = "<Test name=\"Test\" package=\"C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx\" task=\"SELECT COUNT\" taskResult=\"Success\">";
             _xmlTest += "<Assert name=\"Test\" expectedResult=\"100\" testBefore=\"false\" expression=\"false\">";
-            _xmlTest += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
+            _xmlTest += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             _xmlTest += "SELECT COUNT(*) FROM Production.Product";
             _xmlTest += "</SqlCommand>";
             _xmlTest += "</Assert>";
@@ -29,17 +29,17 @@ namespace UTssisUnit
 
             _xmlTestFull = "<Test name=\"Test\" package=\"C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx\" task=\"SELECT COUNT\" taskResult=\"Success\">";
             _xmlTestFull += "<TestSetup>";
-            _xmlTestFull += "<SqlCommand connectionRef=\"Sandbox\" returnsValue=\"false\">";
+            _xmlTestFull += "<SqlCommand name=\"\" connectionRef=\"Sandbox\" returnsValue=\"false\">";
             _xmlTestFull += "INSERT INTO UTTable VALUES('Test')";
             _xmlTestFull += "</SqlCommand>";
             _xmlTestFull += "</TestSetup>";
             _xmlTestFull += "<Assert name=\"Test\" expectedResult=\"100\" testBefore=\"false\" expression=\"false\">";
-            _xmlTestFull += "<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
+            _xmlTestFull += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             _xmlTestFull += "SELECT COUNT(*) FROM Production.Product";
             _xmlTestFull += "</SqlCommand>";
             _xmlTestFull += "</Assert>";
             _xmlTestFull += "<TestTeardown>";
-            _xmlTestFull += "<SqlCommand connectionRef=\"Sandbox\" returnsValue=\"false\">";
+            _xmlTestFull += "<SqlCommand name=\"\" connectionRef=\"Sandbox\" returnsValue=\"false\">";
             _xmlTestFull += "DELETE FROM UTTable";
             _xmlTestFull += "</SqlCommand>";
             _xmlTestFull += "</TestTeardown>";

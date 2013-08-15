@@ -17,8 +17,8 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>SsisUnit.pfx</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>SsisUnit.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -86,6 +86,7 @@
     <Compile Include="SSISTestCaseTest.cs" />
     <Compile Include="ssisUnit_UTHelper.cs" />
     <Compile Include="TestTest.cs" />
+    <Compile Include="HelperTests.cs" />
     <Compile Include="VariableCommandTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -96,9 +97,14 @@
     <None Include="SsisUnit.pfx" />
     <EmbeddedResource Include="TestPackages\PropertyTest.dtsx" />
     <EmbeddedResource Include="TestPackages\PropertyTest2012.dtsx" />
-    <EmbeddedResource Include="TestPackages\UTBasicScenario2012.dtsx" />
-    <EmbeddedResource Include="TestPackages\TestDataFlowExpression2012.dtsx" />
+    <EmbeddedResource Include="TestPackages\UTBasicScenario2012.dtsx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestPackages\TestDataFlowExpression2012.dtsx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="TestPackages\SimplePackage.dtsx" />
+    <None Include="SsisUnit.snk" />
     <None Include="UT_BadTestFile.ssisUnit" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTssisUnit_Package.xml" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTSsisUnit_BadData.ssisUnit" />

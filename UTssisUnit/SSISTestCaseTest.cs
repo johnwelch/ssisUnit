@@ -352,7 +352,7 @@ namespace UTssisUnit
             Assert.AreEqual("Test Count", ssisTest.Asserts["Test Count"].Name);
             Assert.AreEqual(2, ssisTest.Asserts["Test Count"].ExpectedResult);
             Assert.AreEqual(false, ssisTest.Asserts["Test Count"].TestBefore);
-            Assert.AreEqual("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"true\">SELECT COUNT(*) FROM dbo.Test</SqlCommand>", ssisTest.Asserts["Test Count"].Command.PersistToXml());
+            Assert.AreEqual("<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">SELECT COUNT(*) FROM dbo.Test</SqlCommand>", ssisTest.Asserts["Test Count"].Command.PersistToXml());
 
             ssisAssert = new SsisAssert(target, "Test File", true, false) { Command = new FileCommand(target, "Exists", lineCount2File, string.Empty) };
             ssisTest.Asserts.Add("Test File", ssisAssert);

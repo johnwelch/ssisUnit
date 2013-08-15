@@ -37,7 +37,7 @@ namespace SsisUnit
             TestSuite = testSuite;
             Name = name;
             Task = task;
-            TaskName = taskName;
+            //TaskName = taskName;
             PackageLocation = package;
             TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite);
             TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite);
@@ -87,11 +87,11 @@ namespace SsisUnit
 #endif
         public string Task { get; set; }
 
-        /// <summary>
-        /// The task's name solely used for display and informational purposes.  The <see cref="Task"/> property determines what gets executed when executing the <see cref="Test"/>.
-        /// </summary>
-        [Browsable(false)]
-        public string TaskName { get; set; }
+        ///// <summary>
+        ///// The task's name is solely used for display and informational purposes.  The <see cref="Task"/> property determines what gets executed when executing the <see cref="Test"/>.
+        ///// </summary>
+        //[Browsable(false)]
+        //public string TaskName { get; set; }
 
 #if SQL2005
         [Description("The package that this test will run against."),
@@ -333,7 +333,7 @@ namespace SsisUnit
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("package", PackageLocation);
             xmlWriter.WriteAttributeString("task", Task);
-            xmlWriter.WriteAttributeString("taskName", TaskName);
+            //xmlWriter.WriteAttributeString("taskName", TaskName);
             xmlWriter.WriteAttributeString("taskResult", TaskResult.ToString());
 
             if (TestSetup.Commands.Count > 0)
@@ -375,7 +375,7 @@ namespace SsisUnit
             Name = testXml.Attributes != null && testXml.Attributes["name"] != null ? testXml.Attributes["name"].Value : null;
             PackageLocation = testXml.Attributes != null && testXml.Attributes["package"] != null ? testXml.Attributes["package"].Value : null;
             Task = testXml.Attributes != null && testXml.Attributes["task"] != null ? testXml.Attributes["task"].Value : null;
-            TaskName = testXml.Attributes != null && testXml.Attributes["taskName"] != null ? testXml.Attributes["taskName"].Value : null;
+            //TaskName = testXml.Attributes != null && testXml.Attributes["taskName"] != null ? testXml.Attributes["taskName"].Value : null;
             Asserts = LoadAsserts(testXml);
             TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite, testXml["TestSetup"]);
             TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite, testXml["TestTeardown"]);

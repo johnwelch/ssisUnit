@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using System.Globalization;
 using Microsoft.SqlServer.Dts.Runtime;
@@ -20,6 +21,11 @@ namespace SsisUnit
 
         public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
         {
+            if (taskId.Contains("\\") || taskId.Equals("Package", StringComparison.OrdinalIgnoreCase))
+            {
+                return NavigateReferencePath(parentExecutable, taskId);
+            }
+
             // TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
 
             DtsContainer matchingExecutable;
@@ -62,6 +68,46 @@ namespace SsisUnit
             }
 
             return null;
+        }
+
+        private static DtsContainer NavigateReferencePath(IDTSSequence parentExecutable, string taskId)
+        {
+            // This is a 2012 format path to the task / component.
+            var pathParts = new Queue<string>(taskId.Split(new[] { "\\" }, StringSplitOptions.None));
+            if (pathParts.Count == 0)
+            {
+                throw new ArgumentException(
+                    "TaskId included a backslash (\\) but was not a valid SSIS reference path.", "taskId");
+            }
+
+            var currentSequence = parentExecutable;
+            var currentExecutable = parentExecutable as DtsContainer;
+            do
+            {
+                if (currentSequence == null)
+                {
+                    return null;
+                }
+
+                var pathPart = pathParts.Dequeue();
+                if (pathPart.Equals("Package", StringComparison.OrdinalIgnoreCase) && currentSequence is Package)
+                {
+                    currentExecutable = currentSequence as DtsContainer;
+                    continue;
+                }
+
+                if (!currentSequence.Executables.Contains(pathPart))
+                {
+                    // Not found
+                    return null;
+                }
+
+                currentExecutable = currentSequence.Executables[pathPart] as DtsContainer;
+                currentSequence = currentExecutable as IDTSSequence;
+            }
+            while (pathParts.Count > 0);
+
+            return currentExecutable;
         }
 
         public static Package LoadPackage(SsisTestSuite testSuite, string packagePath)

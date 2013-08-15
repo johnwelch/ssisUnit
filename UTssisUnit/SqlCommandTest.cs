@@ -101,7 +101,7 @@ namespace UTssisUnit
                     SQLStatement = "DROP TABLE dbo.TestTable"
                 };
             string result = target.PersistToXml();
-            Assert.AreEqual("<SqlCommand connectionRef=\"AdventureWorks\" returnsValue=\"false\">DROP TABLE dbo.TestTable</SqlCommand>", result);
+            Assert.AreEqual("<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"false\">DROP TABLE dbo.TestTable</SqlCommand>", result);
         }
 
         [TestMethod]

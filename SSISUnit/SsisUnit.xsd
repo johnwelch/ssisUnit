@@ -209,7 +209,7 @@
       <xs:attribute name="name" type="xs:string" use="required"/>
       <xs:attribute name="package" type="xs:string" use="required"/>
       <xs:attribute name="task" type="xs:string" use="required"/>
-      <xs:attribute name="taskName" type="xs:string" use="optional"/>
+      <!--<xs:attribute name="taskName" type="xs:string" use="optional"/>-->
       <xs:attribute name="taskResult" use="optional" default="Success">
         <xs:simpleType>
           <xs:restriction base="xs:string">
