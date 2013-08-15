@@ -21,7 +21,7 @@ namespace UTssisUnit
         [TestInitialize]
         public void Initialize()
         {
-            var packageFile = this.UnpackToFile(TestPackageResource);
+            var packageFile = UnpackToFile(TestPackageResource);
             _testPackageFile = CreateTempFile(GetTempPath("Test", true), "TestPackage.dtsx");
             File.Copy(packageFile, _testPackageFile, true);
         }
@@ -82,7 +82,8 @@ namespace UTssisUnit
             target.ConnectionRefs["AdventureWorks"].ConnectionString =
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
             Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-            DtsContainer task = SsisUnit.Helper.FindExecutable(packageToTest, "SELECT COUNT");
+            string remainingPath;
+            DtsContainer task = SsisUnit.Helper.FindExecutable(packageToTest, "SELECT COUNT", out remainingPath);
 
             int result = target.SetupCommands.Execute(packageToTest, task);
             Assert.AreEqual(4, result);
@@ -96,7 +97,8 @@ namespace UTssisUnit
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
             var ssisApp = new Application();
             Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-            DtsContainer task = SsisUnit.Helper.FindExecutable(packageToTest, "SELECT COUNT");
+            string remainingPath;
+            DtsContainer task = SsisUnit.Helper.FindExecutable(packageToTest, "SELECT COUNT", out remainingPath);
 
             int result = target.TeardownCommands.Execute(packageToTest, task);
             Assert.AreEqual(2, result);
@@ -116,11 +118,11 @@ namespace UTssisUnit
         [TestMethod]
         public void RunPackageFromFileTest()
         {
-            var packageFile = this.UnpackToFile("UTssisUnit.TestPackages.SimplePackage.dtsx");
+            var packageFile = UnpackToFile("UTssisUnit.TestPackages.SimplePackage.dtsx");
 
             var ts = new SsisTestSuite();
             ts.PackageRefs.Add("filePkg", new PackageRef("filePkg", packageFile, PackageRef.PackageStorageType.FileSystem));
-            var test = new Test(ts, "Main", "filePkg", "SimplePackage", "SimplePackage");
+            var test = new Test(ts, "Main", "filePkg", "SimplePackage");
             ts.Tests.Add("Main", test);
             var assert = new SsisAssert(ts, "A1", 0, false);
             test.Asserts.Add("A1", assert);
@@ -274,13 +276,13 @@ namespace UTssisUnit
 
             string path = GetTempPath("FileTest", true);
             string lineCountFile = CreateTempFile(path, "SourceFile.tst", sb.ToString());
-            var lineCount2File = this.GetTemporaryFileName();
-            var lineCount3File = this.GetTemporaryFileName();
+            var lineCount2File = GetTemporaryFileName();
+            var lineCount3File = GetTemporaryFileName();
 
             target.SetupCommands.Commands.Add(new FileCommand(target, "Copy", lineCountFile, lineCount2File));
 
             Assert.AreEqual(0, target.Tests.Count);
-            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT", "SELECT COUNT");
+            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
             Assert.AreEqual(1, target.Tests.Count);
@@ -313,7 +315,7 @@ namespace UTssisUnit
 
             target.TestSuiteTeardown.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "DROP TABLE dbo.Test"));
 
-            var saveFile = this.GetTemporaryFileName();
+            var saveFile = GetTemporaryFileName();
             target.Save(saveFile);
             Assert.IsTrue(File.Exists(saveFile));
 

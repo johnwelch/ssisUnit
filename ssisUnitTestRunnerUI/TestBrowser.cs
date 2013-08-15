@@ -68,7 +68,7 @@ namespace ssisUnitTestRunnerUI
 
         public void CreateTest()
         {
-            SsisTestSuite newTs = new SsisTestSuite();
+            var newTs = new SsisTestSuite();
 
             LoadTest(newTs, GetUnusedName());
         }
@@ -105,9 +105,9 @@ namespace ssisUnitTestRunnerUI
         {
             CommandBase cb = CommandBase.CreateCommand(_testSuite, commandType);
 
-            TreeNode commandNode = new TreeNode(cb.CommandName) { Tag = cb };
+            var commandNode = new TreeNode(cb.CommandName) { Tag = cb };
 
-            CommandSet commandSet = treeTest.SelectedNode.Tag as CommandSet;
+            var commandSet = treeTest.SelectedNode.Tag as CommandSet;
 
             if (commandSet != null)
             {
@@ -117,7 +117,7 @@ namespace ssisUnitTestRunnerUI
             }
             else
             {
-                SsisAssert ssisAssert = treeTest.SelectedNode.Tag as SsisAssert;
+                var ssisAssert = treeTest.SelectedNode.Tag as SsisAssert;
                 if (ssisAssert != null)
                 {
                     if (ssisAssert.Command != null)
@@ -141,9 +141,9 @@ namespace ssisUnitTestRunnerUI
                 counter++;
             }
             
-            ConnectionRef cr = new ConnectionRef("ConnectionRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, ConnectionRef.ConnectionTypeEnum.ConnectionString);
+            var cr = new ConnectionRef("ConnectionRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, ConnectionRef.ConnectionTypeEnum.ConnectionString);
             _testSuite.ConnectionRefs.Add(cr.ReferenceName, cr);
-            TreeNode tn = new TreeNode(cr.ReferenceName) { Tag = cr };
+            var tn = new TreeNode(cr.ReferenceName) { Tag = cr };
             crNode.Nodes.Add(tn);
             tn.EnsureVisible();
             treeTest.SelectedNode = tn;
@@ -157,9 +157,9 @@ namespace ssisUnitTestRunnerUI
             {
                 counter++;
             }
-            PackageRef pr = new PackageRef("PackageRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, PackageRef.PackageStorageType.FileSystem);
+            var pr = new PackageRef("PackageRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, PackageRef.PackageStorageType.FileSystem);
             _testSuite.PackageRefs.Add(pr.Name, pr);
-            TreeNode tn = new TreeNode(pr.Name) { Tag = pr };
+            var tn = new TreeNode(pr.Name) { Tag = pr };
             prNode.Nodes.Add(tn);
             tn.EnsureVisible();
             treeTest.SelectedNode = tn;
@@ -508,7 +508,7 @@ namespace ssisUnitTestRunnerUI
             {
                 counter++;
             }
-            Test test = new Test(_testSuite, "Test" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, string.Empty, string.Empty);
+            Test test = new Test(_testSuite, "Test" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, string.Empty);
             _testSuite.Tests.Add(test.Name, test);
             TreeNode tn = CreateTestNode(test);
             prNode.Nodes.Add(tn);

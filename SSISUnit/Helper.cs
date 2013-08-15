@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Globalization;
 
@@ -13,7 +14,7 @@ namespace SsisUnit
     {
         public static XmlNode GetXmlNodeFromString(string xmlFragment)
         {
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
 
             XmlDocumentFragment frag = doc.CreateDocumentFragment();
             frag.InnerXml = xmlFragment;
@@ -21,17 +22,83 @@ namespace SsisUnit
             return frag.ChildNodes[0];
         }
 
-        public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
+        /// <summary>
+        /// Locate a component in the data flow by it's path.
+        /// </summary>
+        /// <param name="task">The Data Flow Task to search.</param>
+        /// <param name="path">The path to the component.</param>
+        /// <returns>The component that matches the path. If no component is found, returns null.</returns>
+        public static IDTSComponentMetaData100 FindComponent(DtsContainer task, string path)
         {
-            if (taskId.Contains("\\") || taskId.Equals("Package", StringComparison.OrdinalIgnoreCase))
+            var taskHost = task as TaskHost;
+            if (taskHost == null)
             {
-                return NavigateReferencePath(parentExecutable, taskId);
+                throw new ArgumentException("Task must be a Data Flow task.", "task");
             }
 
-            // TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
+            var mainPipe = taskHost.InnerObject as MainPipe;
+            if (mainPipe == null)
+            {
+                throw new ArgumentException("Task must be a Data Flow task.", "task");
+            }
+
+            return FindComponent(mainPipe, path);
+        }
+
+        /// <summary>
+        /// Locate a component in the data flow by it's path.
+        /// </summary>
+        /// <param name="mainPipe">The Data Flow pipeline object to search.</param>
+        /// <param name="path">The path to the component.</param>
+        /// <returns>The component that matches the path. If no component is found, returns null.</returns>
+        public static IDTSComponentMetaData100 FindComponent(MainPipe mainPipe, string path)
+        {
+            if (mainPipe == null)
+            {
+                throw new ArgumentNullException("mainPipe");
+            }
+
+            foreach (IDTSComponentMetaData100 component in mainPipe.ComponentMetaDataCollection)
+            {
+                if (component.Name.Equals(path, StringComparison.Ordinal))
+                {
+                    return component;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Find an executable in a package.
+        /// </summary>
+        /// <param name="parentExecutable">The parent sequence to search</param>
+        /// <param name="taskId">The task to find. This can be a task name, a GUID, or a 2012-format RefId.</param>
+        /// <returns>The task or container if found, null if it was not found.</returns>
+        public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
+        {
+            string remainingPath;
+            return FindExecutable(parentExecutable, taskId, out remainingPath);
+        }
+
+        /// <summary>
+        /// Find an executable in a package.
+        /// </summary>
+        /// <param name="parentExecutable">The parent sequence to search</param>
+        /// <param name="taskId">The task to find. This can be a task name, a GUID, or a 2012-format RefId.</param>
+        /// <param name="remainingPath">Outputs the remaining path. This is used with RefIds which contain data flow components. The remaining path will include the portion of the path after the data flow task.</param>
+        /// <returns>The task or container if found, null if it was not found.</returns>
+        public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId, out string remainingPath)
+        {
+            if (taskId.Contains("\\") || taskId.Equals("Package", StringComparison.Ordinal))
+            {
+                return NavigateReferencePath(parentExecutable, taskId, out remainingPath);
+            }
+
+            remainingPath = string.Empty;
 
             DtsContainer matchingExecutable;
-            DtsContainer parent = (DtsContainer)parentExecutable;
+            var parent = (DtsContainer)parentExecutable;
 
             if (parent.ID == taskId || parent.Name == taskId)
             {
@@ -44,7 +111,7 @@ namespace SsisUnit
             {
                 foreach (DtsEventHandler eh in provider.EventHandlers)
                 {
-                    matchingExecutable = FindExecutable(eh, taskId);
+                    matchingExecutable = FindExecutable(eh, taskId, out remainingPath);
 
                     if (matchingExecutable != null)
                         return matchingExecutable;
@@ -63,7 +130,7 @@ namespace SsisUnit
                 if (sequence == null)
                     continue;
 
-                matchingExecutable = FindExecutable(sequence, taskId);
+                matchingExecutable = FindExecutable(sequence, taskId, out remainingPath);
 
                 if (matchingExecutable != null)
                     return matchingExecutable;
@@ -72,7 +139,7 @@ namespace SsisUnit
             return null;
         }
 
-        private static DtsContainer NavigateReferencePath(IDTSSequence parentExecutable, string taskId)
+        private static DtsContainer NavigateReferencePath(IDTSSequence parentExecutable, string taskId, out string remainingPath)
         {
             // This is a 2012 format path to the task / component.
             var pathParts = new Queue<string>(taskId.Split(new[] { "\\" }, StringSplitOptions.None));
@@ -82,8 +149,10 @@ namespace SsisUnit
                     "TaskId included a backslash (\\) but was not a valid SSIS reference path.", "taskId");
             }
 
+            remainingPath = string.Empty;
+
             var currentSequence = parentExecutable;
-            var currentExecutable = parentExecutable as DtsContainer;
+            DtsContainer currentExecutable;
             do
             {
                 if (currentSequence == null)
@@ -92,7 +161,7 @@ namespace SsisUnit
                 }
 
                 var pathPart = pathParts.Dequeue();
-                if (pathPart.Equals("Package", StringComparison.OrdinalIgnoreCase) && currentSequence is Package)
+                if (pathPart.Equals("Package", StringComparison.Ordinal) && currentSequence is Package)
                 {
                     currentExecutable = currentSequence as DtsContainer;
                     continue;
@@ -110,6 +179,7 @@ namespace SsisUnit
                 if (taskHost != null && taskHost.InnerObject is MainPipe)
                 {
                     // This method shouldn't search past the Data Flow Task
+                    remainingPath = pathParts.Aggregate(string.Empty, (fullPath, next) => fullPath == string.Empty ? next : fullPath + @"\" + next);
                     return currentExecutable;
                 }
             }
@@ -120,7 +190,7 @@ namespace SsisUnit
 
         public static Package LoadPackage(SsisTestSuite testSuite, string packagePath)
         {
-            Application ssisApp = new Application();
+            var ssisApp = new Application();
             Package package = null;
 
             try
@@ -130,7 +200,7 @@ namespace SsisUnit
                 if (packagePath.Contains(".dtsx"))
                 {
                     // Assume that it is a file path.
-                    FileInfo fileInfo = new FileInfo(packagePath);
+                    var fileInfo = new FileInfo(packagePath);
 
                     if (fileInfo.Exists)
                     {
@@ -167,10 +237,10 @@ namespace SsisUnit
             return package;
         }
 
-        public static object GetPropertyValue(Package pkg, string propertyPath)
-        {
-            return null;
-        }
+        //public static object GetPropertyValue(Package pkg, string propertyPath)
+        //{
+        //    return null;
+        //}
         // \package.variables[myvariable].Value
         // \Package\Sequence Container\Script Task.Properties[Description]
     }

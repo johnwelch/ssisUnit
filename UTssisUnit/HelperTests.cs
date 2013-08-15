@@ -48,8 +48,25 @@ namespace UTssisUnit
             result = SsisUnit.Helper.FindExecutable(packageToTest, "Package");
             Assert.AreEqual("UT Basic Scenario", result.Name);
 
-            result = SsisUnit.Helper.FindExecutable(packageToTest, @"Package\Data Flow Task\OLE DB Source");
+            string remainingPath;
+            result = SsisUnit.Helper.FindExecutable(packageToTest, @"Package\Data Flow Task\OLE DB Source", out remainingPath);
             Assert.AreEqual("Data Flow Task", result.Name);
+            Assert.AreEqual("OLE DB Source", remainingPath);
+        }
+
+        [TestMethod]
+        public void FindComponentByPathTest()
+        {
+            var ssisApp = new Application();
+
+            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
+
+            string remainingPath;
+            var result = SsisUnit.Helper.FindExecutable(packageToTest, @"Package\Data Flow Task\OLE DB Source", out remainingPath);
+            Assert.AreEqual("Data Flow Task", result.Name);
+            Assert.AreEqual("OLE DB Source", remainingPath);
+            var result2 = SsisUnit.Helper.FindComponent(result, remainingPath);
+            Assert.AreEqual("OLE DB Source", result2.Name);
         }
 
         [TestMethod]

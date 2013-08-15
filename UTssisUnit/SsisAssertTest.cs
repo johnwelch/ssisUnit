@@ -53,7 +53,7 @@ namespace UTssisUnit
             const string Name = "Test";
             object expectedResult = 100;
 
-            var ssisTest = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT", "SELECT COUNT");
+            var ssisTest = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
             testSuite.Tests.Add("Test", ssisTest);
             var target = new SsisAssert(testSuite, Name, expectedResult, false);
             ssisTest.Asserts.Add("Test", target);
@@ -125,7 +125,7 @@ namespace UTssisUnit
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (2)"));
 
-            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT", "SELECT COUNT");
+            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
             var ssisAssert = new SsisAssert(target, "Test Count", "(int)result==2", false, true);
@@ -181,7 +181,7 @@ namespace UTssisUnit
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (2)"));
 
-            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT", "SELECT COUNT");
+            var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
             var ssisAssert = new SsisAssert(target, "Test Count", "result==2", false);

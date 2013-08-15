@@ -76,7 +76,7 @@ namespace UTssisUnit
             // Added to verify work item #7188 - multiple periods in object names
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[test.multple.periods.in.path].Properties[Description]", "Test Descr"));
 
-            ts.Tests.Add("Test", new Test(ts, "Test", "PackageA", "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}", null));
+            ts.Tests.Add("Test", new Test(ts, "Test", "PackageA", "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}"));
             ts.Tests["Test"].Asserts.Add("TestA", AddNewAssert(ts, "TestA", "Test Descr", "\\Package\\Sequence Container\\Script Task.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestB", AddNewAssert(ts, "TestB", "Test Descr", "\\Package\\Sequence Container.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestC", AddNewAssert(ts, "TestC", "Test Descr", "\\Package\\Execute SQL Task.Properties[Description]"));

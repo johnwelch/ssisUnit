@@ -88,6 +88,8 @@
     <Compile Include="CommandFailedEventArgs.cs" />
     <Compile Include="CommandResultsBase.cs" />
     <Compile Include="CommandStartedEventArgs.cs" />
+    <Compile Include="Commands\ComponentInputCommand.cs" />
+    <Compile Include="Commands\ComponentOutputCommand.cs" />
     <Compile Include="ConnectionRef.cs" />
     <Compile Include="AssertCompletedEventArgs.cs" />
     <Compile Include="CommandBase.cs" />

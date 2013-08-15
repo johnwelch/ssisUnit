@@ -17,21 +17,16 @@ namespace SsisUnit
         private string _taskName;
 
         public Test(SsisTestSuite testSuite, string name, string package, string task)
-            : this(testSuite, name, package, task, null, DTSExecResult.Success)
+            : this(testSuite, name, package, task, DTSExecResult.Success)
         {
         }
 
-        public Test(SsisTestSuite testSuite, string name, string package, string task, string taskName)
-            : this(testSuite, name, package, task, taskName, DTSExecResult.Success)
-        {
-        }
+        //public Test(SsisTestSuite testSuite, string name, string package, string task, string taskName)
+        //    : this(testSuite, name, package, task, taskName, DTSExecResult.Success)
+        //{
+        //}
 
         public Test(SsisTestSuite testSuite, string name, string package, string task, DTSExecResult taskResult)
-            : this(testSuite, name, package, task, null, taskResult)
-        {
-        }
-
-        public Test(SsisTestSuite testSuite, string name, string package, string task, string taskName, DTSExecResult taskResult)
         {
             Asserts = new Dictionary<string, SsisAssert>();
             TestSuite = testSuite;
@@ -43,6 +38,19 @@ namespace SsisUnit
             TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite);
             TaskResult = taskResult;
         }
+
+        //public Test(SsisTestSuite testSuite, string name, string package, string task, string taskName, DTSExecResult taskResult)
+        //{
+        //    Asserts = new Dictionary<string, SsisAssert>();
+        //    TestSuite = testSuite;
+        //    Name = name;
+        //    Task = task;
+        //    //TaskName = taskName;
+        //    PackageLocation = package;
+        //    TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite);
+        //    TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite);
+        //    TaskResult = taskResult;
+        //}
 
         public Test(SsisTestSuite testSuite, XmlNode testXml)
         {
@@ -306,8 +314,8 @@ namespace SsisUnit
             try
             {
                 package = Helper.LoadPackage(TestSuite, packagePath);
-
-                taskHost = Helper.FindExecutable(package, taskId);
+                string remainingPath;
+                taskHost = Helper.FindExecutable(package, taskId, out remainingPath);
                 if (taskHost == null)
                 {
                     throw new Exception("The task host was not found.");
