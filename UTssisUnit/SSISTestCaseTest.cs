@@ -82,7 +82,7 @@ namespace UTssisUnit
             target.ConnectionRefs["AdventureWorks"].ConnectionString =
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
             Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-            DtsContainer task = Helper.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer task = SsisUnit.Helper.FindExecutable(packageToTest, "SELECT COUNT");
 
             int result = target.SetupCommands.Execute(packageToTest, task);
             Assert.AreEqual(4, result);
@@ -96,7 +96,7 @@ namespace UTssisUnit
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
             var ssisApp = new Application();
             Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-            DtsContainer task = Helper.FindExecutable(packageToTest, "SELECT COUNT");
+            DtsContainer task = SsisUnit.Helper.FindExecutable(packageToTest, "SELECT COUNT");
 
             int result = target.TeardownCommands.Execute(packageToTest, task);
             Assert.AreEqual(2, result);
@@ -222,61 +222,6 @@ namespace UTssisUnit
         ////        Assert.Fail(ex.Message);
         ////    }
         ////}
-
-        [TestMethod]
-        public void RunFindExecutableByNameTest()
-        {
-            var ssisApp = new Application();
-
-            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-
-            DtsContainer result = Helper.FindExecutable(packageToTest, "SELECT COUNT");
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void RunFindExecutableByIdTest()
-        {
-            var ssisApp = new Application();
-
-            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-
-            DtsContainer result = Helper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void RunFindExecutable2ByIdTest()
-        {
-            var ssisApp = new Application();
-
-            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-
-            DtsContainer result = Helper.FindExecutable(packageToTest, "{64E40F9C-FC42-4AE8-AEDF-C99909861EED}");
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void FindExecutable2ByPackageIdTest()
-        {
-            var ssisApp = new Application();
-
-            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-
-            DtsContainer result = Helper.FindExecutable(packageToTest, "{D2D9295A-45D0-4681-B021-F5077CB2EC22}");
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void FindExecutable2DoesNotExistTest()
-        {
-            var ssisApp = new Application();
-
-            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
-
-            DtsContainer result = Helper.FindExecutable(packageToTest, "Does Not Exist");
-            Assert.IsNull(result);
-        }
 
         [TestMethod]
         public void TestSetupAndTeardownTest()

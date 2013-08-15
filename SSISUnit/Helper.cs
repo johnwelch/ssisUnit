@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Globalization;
+
+using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.IO;
 
@@ -104,6 +106,12 @@ namespace SsisUnit
 
                 currentExecutable = currentSequence.Executables[pathPart] as DtsContainer;
                 currentSequence = currentExecutable as IDTSSequence;
+                var taskHost = currentExecutable as TaskHost;
+                if (taskHost != null && taskHost.InnerObject is MainPipe)
+                {
+                    // This method shouldn't search past the Data Flow Task
+                    return currentExecutable;
+                }
             }
             while (pathParts.Count > 0);
 

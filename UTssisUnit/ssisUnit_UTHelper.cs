@@ -60,35 +60,6 @@ namespace UTssisUnit
             TempFiles.Clear();
         }
 
-        public static DtsContainer FindExecutable(IDTSSequence parentExecutable, string taskId)
-        {
-            // TODO: Determine what to do when name is used in mutiple containers, think it just finds the first one now
-
-            DtsContainer matchingExecutable = null;
-            var parent = (DtsContainer)parentExecutable;
-
-            if (parent.ID == taskId || parent.Name == taskId)
-            {
-                matchingExecutable = parent;
-            }
-            else
-            {
-                if (parentExecutable.Executables.Contains(taskId))
-                {
-                    matchingExecutable = (TaskHost)parentExecutable.Executables[taskId];
-                }
-                else
-                {
-                    foreach (var dtsSequence in parentExecutable.Executables.OfType<IDTSSequence>())
-                    {
-                        matchingExecutable = FindExecutable(dtsSequence, taskId);
-                    }
-                }
-            }
-
-            return matchingExecutable;
-        }
-
         #region IDisposable Members
 
         public void Dispose()
