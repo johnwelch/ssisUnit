@@ -151,8 +151,9 @@ namespace SsisUnit.TestComponents
 
         private DataTable LoadDataTable(string dataTableXml)
         {
-            var dataTable = new DataTable("SsisUnit");
-
+            //var dataSet = new DataSet();
+            var dataTable = new DataTable();
+            
             try
             {
                 var reader = new StringReader(dataTableXml);

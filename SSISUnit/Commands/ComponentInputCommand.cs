@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -106,12 +108,21 @@ namespace SsisUnit.Commands
             CManagedComponentWrapper wrapper = placeholderSource.Instantiate();
             wrapper.ProvideComponentProperties();
             wrapper.SetComponentProperty("TestData", GetDataSet(dataset));
-            wrapper.ReinitializeMetaData();
+
+#if DEBUG
+            for (int i = 0; i < placeholderSource.OutputCollection[0].OutputColumnCollection.Count; i++)
+            {
+                Debug.Print(placeholderSource.OutputCollection[0].OutputColumnCollection[i].Name);
+            }
+#endif
 
             var path = Helper.FindPath(mainPipe, input);
             mainPipe.PathCollection.RemoveObjectByID(path.ID);
             path = mainPipe.PathCollection.New();
             path.AttachPathAndPropagateNotifications(placeholderSource.OutputCollection[0], input);
+
+            // TODO: Remap IDs? - Failing downstream because of invalid column references.
+            // Could remap ids, or clone the output column ids from the original source - that will mean changing the source component.
         }
 
         private string GetDataSet(Dataset dataset)
@@ -119,7 +130,7 @@ namespace SsisUnit.Commands
             var result = dataset.RetrieveDataTable();
             using (var writer = new StringWriter())
             {
-                result.WriteXml(writer);
+                result.WriteXml(writer, XmlWriteMode.WriteSchema);
                 return writer.ToString();
             }
         }
