@@ -53,7 +53,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.DTSPipelineWrap, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.PipelineHost, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -74,6 +76,8 @@
     <Compile Include="CommandResultsBase.cs" />
     <Compile Include="CommandSet.cs" />
     <Compile Include="CommandStartedEventArgs.cs" />
+    <Compile Include="Commands\ComponentInputCommand.cs" />
+    <Compile Include="Commands\ComponentOutputCommand.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="ConnectionRef.cs" />
     <Compile Include="DataCompareAssertCompletedEventArgs.cs" />
@@ -122,6 +126,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BaseTest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.csproj">
+      <Project>{6C8078E0-99DD-40D0-94DA-E17B3FC50679}</Project>
+      <Name>SsisUnit.TestComponents</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

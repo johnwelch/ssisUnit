@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using Microsoft.SqlServer.Dts.Pipeline;
 using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
-using Microsoft.SqlServer.Dts.Runtime.Wrapper;
+
+#if SQL2008 || SQL2012
+using IDTSInputColumn = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSInputColumn100;
+using IDTSVariables = Microsoft.SqlServer.Dts.Runtime.Wrapper.IDTSVariables100;
+using IDTSVirtualInput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSVirtualInput100;
+using IDTSVirtualInputColumn = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSVirtualInputColumn100;
+#elif SQL2005
+using IDTSInputColumn = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSInputColumn90;
+using IDTSVariables = Microsoft.SqlServer.Dts.Runtime.Wrapper.IDTSVariables90;
+using IDTSVirtualInput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSVirtualInput90;
+using IDTSVirtualInputColumn = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSVirtualInputColumn90;
+#endif
 
 namespace SsisUnit.TestComponents
 {
@@ -64,10 +74,10 @@ namespace SsisUnit.TestComponents
             CreateInputColumns(virtualInput);
         }
 
-        private void CreateInputColumns(IDTSVirtualInput100 virtualInput)
+        private void CreateInputColumns(IDTSVirtualInput virtualInput)
         {
             ComponentMetaData.InputCollection[0].InputColumnCollection.RemoveAll();
-            foreach (IDTSVirtualInputColumn100 virtualInputColumn in virtualInput.VirtualInputColumnCollection)
+            foreach (IDTSVirtualInputColumn virtualInputColumn in virtualInput.VirtualInputColumnCollection)
             {
                 var inputColumn = ComponentMetaData.InputCollection[0].InputColumnCollection.New();
                 inputColumn.LineageID = virtualInputColumn.LineageID;
@@ -91,7 +101,7 @@ namespace SsisUnit.TestComponents
                 _bufferColumnMapping.Clear();
             }
 
-            foreach (IDTSInputColumn100 column in ComponentMetaData.InputCollection[0].InputColumnCollection)
+            foreach (IDTSInputColumn column in ComponentMetaData.InputCollection[0].InputColumnCollection)
             {
                 bool isLong = false;
                 _bufferColumnMapping.Add(column.Name, BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, column.LineageID));
@@ -148,7 +158,7 @@ namespace SsisUnit.TestComponents
                 string variableName = ComponentMetaData.CustomPropertyCollection[VariablePropertyName].Value.ToString();
                 if (!string.IsNullOrEmpty(variableName))
                 {
-                    IDTSVariables100 variables = null;
+                    IDTSVariables variables = null;
                     VariableDispenser.LockOneForWrite(variableName, ref variables);
                     variables[variableName].Value = xml;
                     variables.Unlock();                    

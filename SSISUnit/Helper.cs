@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 using System.Xml;
 using System.Globalization;
 
@@ -18,7 +17,7 @@ using IDTSPath = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSPath100;
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
 using IDTSInput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSInput90;
 using IDTSOutput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSOutput90;
-using IDTSPath = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSPath100;
+using IDTSPath = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSPath90;
 #endif
 
 namespace SsisUnit
@@ -46,7 +45,7 @@ namespace SsisUnit
         /// <param name="task">The Data Flow Task to search.</param>
         /// <param name="path">The path to the component.</param>
         /// <returns>The component that matches the path. If no component is found, returns null.</returns>
-        public static IDTSComponentMetaData100 FindComponent(DtsContainer task, string path)
+        public static IDTSComponentMetaData FindComponent(DtsContainer task, string path)
         {
             var taskHost = task as TaskHost;
             if (taskHost == null)
@@ -69,14 +68,14 @@ namespace SsisUnit
         /// <param name="mainPipe">The Data Flow pipeline object to search.</param>
         /// <param name="path">The path to the component.</param>
         /// <returns>The component that matches the path. If no component is found, returns null.</returns>
-        public static IDTSComponentMetaData100 FindComponent(MainPipe mainPipe, string path)
+        public static IDTSComponentMetaData FindComponent(MainPipe mainPipe, string path)
         {
             if (mainPipe == null)
             {
                 throw new ArgumentNullException("mainPipe");
             }
 
-            foreach (IDTSComponentMetaData100 component in mainPipe.ComponentMetaDataCollection)
+            foreach (IDTSComponentMetaData component in mainPipe.ComponentMetaDataCollection)
             {
                 if (component.Name.Equals(path, StringComparison.Ordinal))
                 {
@@ -145,7 +144,7 @@ namespace SsisUnit
                 return NavigateReferencePath(parentExecutable, taskId, out remainingPath);
             }
 
-            remainingPath = String.Empty;
+            remainingPath = string.Empty;
 
             DtsContainer matchingExecutable;
             var parent = (DtsContainer)parentExecutable;
@@ -229,7 +228,23 @@ namespace SsisUnit
                 if (taskHost != null && taskHost.InnerObject is MainPipe)
                 {
                     // This method shouldn't search past the Data Flow Task
-                    remainingPath = pathParts.Aggregate(String.Empty, (fullPath, next) => fullPath == String.Empty ? next : fullPath + @"\" + next);
+
+                    string fullPath = string.Empty;
+
+                    foreach (string nextPart in pathParts)
+                    {
+                        if (fullPath == string.Empty)
+                        {
+                            fullPath = nextPart;
+
+                            continue;
+                        }
+
+                        fullPath += @"\" + nextPart;
+                    }
+
+                    remainingPath = fullPath;
+
                     return currentExecutable;
                 }
             }
@@ -301,7 +316,7 @@ namespace SsisUnit
         // \package.variables[myvariable].Value
         // \Package\Sequence Container\Script Task.Properties[Description]
 
-        public static IDTSPath FindPath(MainPipe mainPipe, IDTSInput100 input)
+        public static IDTSPath FindPath(MainPipe mainPipe, IDTSInput input)
         {
             foreach (IDTSPath path in mainPipe.PathCollection)
             {
@@ -391,7 +406,7 @@ namespace SsisUnit
             return dbCommand;
         }
 
-        public static IDTSOutput100 FindComponentOutput(MainPipe mainPipe, string path)
+        public static IDTSOutput FindComponentOutput(MainPipe mainPipe, string path)
         {
             if (mainPipe == null)
             {

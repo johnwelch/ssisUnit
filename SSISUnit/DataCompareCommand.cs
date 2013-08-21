@@ -375,15 +375,15 @@ namespace SsisUnit
                 }
             }
 
-            bool isResultsSame = actualDatasetErrorIndices.Count < 1;
+            bool isResultsSame = actualDatasetErrorIndices.Count < 1 && expectedDatasetErrorIndices.Count < 1;
 
             var results = new DataCompareCommandResults(ExpectedDataset, ActualDataset, expectedDataTable, actualDataTable, expectedDatasetErrorIndices, actualDatasetErrorIndices, isSchemasCompatible, isResultsSame, expectedDatasetMessages, actualDatasetMessages);
 
-            string resultMessage = actualDatasetErrorIndices.Count < 1 ?
+            string resultMessage = isResultsSame ?
                 string.Format("The datasets \"{0}\" and \"{1}\" are the same.", ExpectedDataset.Name, ActualDataset.Name)
                 :
                 string.Format("{0} row{1} differ{2} between the expected \"{3}\" and actual \"{4}\" datasets.",
-                              actualDatasetErrorIndices.Count.ToString("N0"),
+                              (expectedDatasetErrorIndices.Count + actualDatasetErrorIndices.Count).ToString("N0"),
                               actualDatasetErrorIndices.Count == 1 ? string.Empty : "s",
                               actualDatasetErrorIndices.Count == 1 ? "s" : string.Empty,
                               ExpectedDataset.Name,

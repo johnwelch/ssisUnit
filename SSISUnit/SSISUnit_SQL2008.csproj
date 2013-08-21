@@ -60,6 +60,10 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.DTSPipelineWrap, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.PipelineHost, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -89,6 +93,8 @@
     <Compile Include="CommandResultsBase.cs" />
     <Compile Include="CommandSet.cs" />
     <Compile Include="CommandStartedEventArgs.cs" />
+    <Compile Include="Commands\ComponentInputCommand.cs" />
+    <Compile Include="Commands\ComponentOutputCommand.cs" />
     <Compile Include="ComponentSourceCommand.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="ConnectionRef.cs" />
@@ -165,6 +171,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.2008.csproj">
+      <Project>{2CAB4A02-40F5-47DA-AF07-F35A35A1402C}</Project>
+      <Name>SsisUnit.TestComponents.2008</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -85,7 +85,7 @@ namespace SsisUnit.Design
             this.cboProvider.Name = "cboProvider";
             this.cboProvider.Size = new System.Drawing.Size(224, 21);
             this.cboProvider.TabIndex = 6;
-            this.cboProvider.SelectedIndexChanged += new System.EventHandler(this.cboProvider_SelectedIndexChanged);
+            this.cboProvider.SelectedIndexChanged += new System.EventHandler(this.CboProviderSelectedIndexChanged);
             // 
             // ConnectionStringBuilder
             // 
@@ -99,7 +99,7 @@ namespace SsisUnit.Design
             this.Controls.Add(this.propConnection);
             this.Name = "ConnectionStringBuilder";
             this.Text = "Connection String";
-            this.Load += new System.EventHandler(this.ConnectionStringBuilder_Load);
+            this.Load += new System.EventHandler(this.ConnectionStringBuilderLoad);
             this.ResumeLayout(false);
             this.PerformLayout();
 

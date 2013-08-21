@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.ComponentModel;
@@ -8,25 +7,22 @@ namespace SsisUnit
 {
     public class PackageRef
     {
-        private string _name;
-        private string _packagePath;
         private string _storageType;
-        private string _server;
 
         public PackageRef(string name, string packagePath, PackageStorageType storageType, string server)
         {
-            _name = name;
-            _packagePath = packagePath;
+            Name = name;
+            PackagePath = packagePath;
             _storageType = storageType.ToString();
-            _server = server;
+            Server = server;
         }
 
         public PackageRef(string name, string packagePath, PackageStorageType storageType)
         {
-            _name = name;
-            _packagePath = packagePath;
+            Name = name;
+            PackagePath = packagePath;
             _storageType = storageType.ToString();
-            _server = string.Empty;
+            Server = string.Empty;
         }
 
         public PackageRef(XmlNode packageRef)
@@ -35,80 +31,61 @@ namespace SsisUnit
         }
 
         [Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
-        public string PackagePath
-        {
-            get { return _packagePath; }
-            set { _packagePath = value; }
-        }
+        public string PackagePath { get; set; }
 
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+        public string Name { get; set; }
 
         public PackageStorageType StorageType
         {
             get { return ConvertStorageTypeString(_storageType); }
-            set { value.ToString(); }
+            set
+            {
+                _storageType = value.ToString();
+            }
         }
 
-        [Browsable(false)]
-        public string Server
-        {
-            get { return _server; }
-        }
+        [Description("The server where the package resides.  Only Windows Authentication is supported at this time."),
+         ReadOnly(false)]
+        public string Server { get; set; }
 
         private static PackageStorageType ConvertStorageTypeString(string type)
         {
-            if (type == "FileSystem")
-            {
+            if (string.IsNullOrEmpty(type))
                 return PackageStorageType.FileSystem;
-            }
-            else if (type == "MSDB")
+
+            string typeToUpper = type.ToUpperInvariant();
+
+            switch (typeToUpper)
             {
-                return PackageStorageType.MSDB;
-            }
-            else if (type == "PackageStore")
-            {
-                return PackageStorageType.PackageStore;
-            }
-            else
-            {
-                throw new ArgumentException(String.Format("The provided storage type ({0}) is not recognized.", type));
+                case "FILESYSTEM":
+                    return PackageStorageType.FileSystem;
+                case "MSDB":
+                    return PackageStorageType.MSDB;
+                case "PACKAGESTORE":
+                    return PackageStorageType.PackageStore;
+                default:
+                    throw new ArgumentException(string.Format("The provided storage type ({0}) is not recognized.", type));
             }
         }
 
         public string PersistToXml()
         {
-            //StringBuilder xml = new StringBuilder();
-            //xml.Append("<Package ");
-            //xml.Append("name=\"" + _name + "\" ");
-            //xml.Append("packagePath=\"" + _packagePath + "\" ");
-            //if (_server != string.Empty)
-            //{
-            //    xml.Append("server=\"" + _server + "\" ");
-            //}
-            //xml.Append("storageType=\"" + this.StorageType.ToString() + "\"");
-            //xml.Append("/>");
-            //return xml.ToString();
-
             StringBuilder xml = new StringBuilder();
-            XmlWriterSettings writerSettings = new XmlWriterSettings();
-            writerSettings.ConformanceLevel = ConformanceLevel.Fragment;
-            writerSettings.OmitXmlDeclaration = true;
+            XmlWriterSettings writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
 
-            XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings);
-            xmlWriter.WriteStartElement("Package");
-            xmlWriter.WriteAttributeString("name", this.Name);
-            xmlWriter.WriteAttributeString("packagePath", this.PackagePath);
-            if (_server != string.Empty)
+            using (XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings))
             {
-                xmlWriter.WriteAttributeString("server", this.Server);
+                xmlWriter.WriteStartElement("Package");
+                xmlWriter.WriteAttributeString("name", Name);
+                xmlWriter.WriteAttributeString("packagePath", PackagePath);
+
+                if (Server != string.Empty)
+                    xmlWriter.WriteAttributeString("server", Server);
+
+                xmlWriter.WriteAttributeString("storageType", StorageType.ToString());
+                xmlWriter.WriteEndElement();
             }
-            xmlWriter.WriteAttributeString("storageType", this.StorageType.ToString());
-            xmlWriter.WriteEndElement();
-            xmlWriter.Close();
+
             return xml.ToString();
         }
 
@@ -125,17 +102,17 @@ namespace SsisUnit
             if (packageXml.Attributes == null)
                 throw new ArgumentException("The Xml does not contain any attributes.");
 
-            _packagePath = packageXml.Attributes["packagePath"].Value;
+            PackagePath = packageXml.Attributes["packagePath"].Value;
             _storageType = packageXml.Attributes["storageType"].Value;
-            _name = packageXml.Attributes["name"].Value;
+            Name = packageXml.Attributes["name"].Value;
 
             if (packageXml.Attributes["server"] != null)
             {
-                _server = packageXml.Attributes["server"].Value;
+                Server = packageXml.Attributes["server"].Value;
             }
         }
 
-        public enum PackageStorageType : int
+        public enum PackageStorageType
         {
             FileSystem = 0,
             MSDB = 1,

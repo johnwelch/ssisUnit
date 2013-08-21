@@ -159,11 +159,11 @@ namespace SsisUnit
 
                 resultMessage = resultMessage.Trim() + Environment.NewLine;
 
-                resultMessage += dataCompareCommandResults.ActualDatasetErrorIndices.Count < 1 ?
+                resultMessage += dataCompareCommandResults.ActualDatasetErrorIndices.Count < 1 && dataCompareCommandResults.ExpectedDatasetErrorIndices.Count < 1 ?
                     string.Format("The datasets \"{0}\" and \"{1}\" are the same.", dataCompareCommandResults.ExpectedDataset.Name, dataCompareCommandResults.ActualDataset.Name)
                     :
                     string.Format("{0} row{1} differ{2} between the expected \"{3}\" and actual \"{4}\" datasets.",
-                                  dataCompareCommandResults.ActualDatasetErrorIndices.Count.ToString("N0"),
+                                  (dataCompareCommandResults.ExpectedDatasetErrorIndices.Count + dataCompareCommandResults.ActualDatasetErrorIndices.Count).ToString("N0"),
                                   dataCompareCommandResults.ActualDatasetErrorIndices.Count == 1 ? string.Empty : "s",
                                   dataCompareCommandResults.ActualDatasetErrorIndices.Count == 1 ? "s" : string.Empty,
                                   dataCompareCommandResults.ExpectedDataset.Name,

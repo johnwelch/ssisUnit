@@ -6,6 +6,14 @@ using Microsoft.SqlServer.Dts.Pipeline;
 using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 
+#if SQL2008 || SQL2012
+using IDTSCustomProperty = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSCustomProperty100;
+using IDTSOutputColumn = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSOutputColumn100;
+#elif SQL2005
+using IDTSCustomProperty = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSCustomProperty90;
+using IDTSOutputColumn = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSOutputColumn90;
+#endif
+
 namespace SsisUnit.TestComponents
 {
     [DtsPipelineComponent(
@@ -46,7 +54,7 @@ namespace SsisUnit.TestComponents
         private const string DataTablePropertyName = "TestData";
         private Dictionary<string, int> _bufferColumnMapping;
 
-        public override IDTSCustomProperty100 SetComponentProperty(string propertyName, object propertyValue)
+        public override IDTSCustomProperty SetComponentProperty(string propertyName, object propertyValue)
         {
             if (propertyName == DataTablePropertyName)
             {
@@ -92,7 +100,7 @@ namespace SsisUnit.TestComponents
             // ComponentMetaData.OutputCollection[0].OutputColumnCollection.RemoveAll();
 
             var existingColumns = new List<string>();
-            foreach (IDTSOutputColumn100 outputColumn in ComponentMetaData.OutputCollection[0].OutputColumnCollection)
+            foreach (IDTSOutputColumn outputColumn in ComponentMetaData.OutputCollection[0].OutputColumnCollection)
             {
                 if (!dataTable.Columns.Contains(outputColumn.Name))
                 {
@@ -188,7 +196,7 @@ namespace SsisUnit.TestComponents
                 _bufferColumnMapping.Clear();
             }
 
-            foreach (IDTSOutputColumn100 column in ComponentMetaData.OutputCollection[0].OutputColumnCollection)
+            foreach (IDTSOutputColumn column in ComponentMetaData.OutputCollection[0].OutputColumnCollection)
             {
                 _bufferColumnMapping.Add(column.Name, BufferManager.FindColumnByLineageID(ComponentMetaData.OutputCollection[0].Buffer, column.LineageID));
             }

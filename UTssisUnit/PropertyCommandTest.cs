@@ -54,8 +54,9 @@ namespace UTssisUnit
         public void CheckVariousPathsTest()
         {
             string packageFilepath;
-
-#if SQL2008
+#if SQL2005
+            packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+#elif SQL2008
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
 #elif SQL2012
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2012.dtsx");

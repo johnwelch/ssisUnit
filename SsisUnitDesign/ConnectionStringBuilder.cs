@@ -1,17 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace SsisUnit.Design
 {
     public partial class ConnectionStringBuilder : Form
     {
-        private DataTable _providerList = DbProviderFactories.GetFactoryClasses();
+        private readonly DataTable _providerList = DbProviderFactories.GetFactoryClasses();
 
         private DbConnectionStringBuilder _connBuilder = new DbConnectionStringBuilder();
         
@@ -21,7 +17,7 @@ namespace SsisUnit.Design
             set
             {
                 _connBuilder.ConnectionString = value;
-                if (value.ToUpper().Contains("PROVIDER"))
+                if (value != null && value.ToUpper().Contains("PROVIDER"))
                 {
                     cboProvider.SelectedIndex = _providerList.Rows.IndexOf(_providerList.Rows.Find("System.Data.OleDb"));
                 }
@@ -43,16 +39,21 @@ namespace SsisUnit.Design
             }
         }
 
-        private void ConnectionStringBuilder_Load(object sender, EventArgs e)
+        private void ConnectionStringBuilderLoad(object sender, EventArgs e)
         {
         }
 
-        private void cboProvider_SelectedIndexChanged(object sender, EventArgs e)
+        private void CboProviderSelectedIndexChanged(object sender, EventArgs e)
         {
             string connectionString = _connBuilder.ConnectionString;
             DbProviderFactory factory = DbProviderFactories.GetFactory(_providerList.Rows[cboProvider.SelectedIndex]);
             _connBuilder = factory.CreateConnectionStringBuilder();
+
+            if (_connBuilder == null)
+                return;
+
             _connBuilder.ConnectionString = connectionString;
+            
             propConnection.SelectedObject = _connBuilder;
         }
     }
