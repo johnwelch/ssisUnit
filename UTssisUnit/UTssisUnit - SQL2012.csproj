@@ -90,6 +90,7 @@
     <Compile Include="ssisUnit_UTHelper.cs" />
     <Compile Include="TestTest.cs" />
     <Compile Include="HelperTests.cs" />
+    <Compile Include="DatasetTest.cs" />
     <Compile Include="VariableCommandTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +109,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TestPackages\SimplePackage.dtsx" />
     <None Include="SsisUnit.snk" />
+    <EmbeddedResource Include="TestPackages\DataFlowComponent.dtsx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="UT_BadTestFile.ssisUnit" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTssisUnit_Package.xml" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTSsisUnit_BadData.ssisUnit" />

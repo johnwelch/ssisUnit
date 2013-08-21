@@ -6,17 +6,19 @@ using System.Data.Common;
 using System.Globalization;
 using System.Xml;
 
+#if SQL2012 || SQL2008
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
+#elif SQL2005
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
+#endif
+
 namespace SsisUnit
 {
     public class DataCompareCommand : CommandBase
     {
-        private const string FactoryOledb = "System.Data.OleDb";
-        private const string FactorySql = "System.Data.SqlClient";
         private const string PropName = "name";
         private const string PropExpectedDataset = "expected";
         private const string PropActualDataset = "actual";
-        private const string TagOledb = "Provider";
-        private const string TagSql = "SqlClient";
 
         private Dataset _actualDataset;
         private Dataset _expectedDataset;
@@ -33,12 +35,14 @@ namespace SsisUnit
             InitializeProperties();
         }
 
-        public DataCompareCommand(SsisTestSuite testSuite, string commandXml) : base(testSuite, commandXml)
+        public DataCompareCommand(SsisTestSuite testSuite, string commandXml)
+            : base(testSuite, commandXml)
         {
             InitializeProperties();
         }
 
-        public DataCompareCommand(SsisTestSuite testSuite, object parent, string commandXml) : base(testSuite, parent, commandXml)
+        public DataCompareCommand(SsisTestSuite testSuite, object parent, string commandXml)
+            : base(testSuite, parent, commandXml)
         {
             InitializeProperties();
         }
@@ -185,7 +189,7 @@ namespace SsisUnit
 
                 if (!ExpectedDataset.IsResultsStored)
                 {
-                    expectedDbCommand = GetCommand(ExpectedDataset.ConnectionRef, ExpectedDataset.Query);
+                    expectedDbCommand = Helper.GetCommand(ExpectedDataset.ConnectionRef, ExpectedDataset.Query);
                     expectedDbCommand.Connection.Open();
 
                     using (IDataReader expectedReader = expectedDbCommand.ExecuteReader())
@@ -229,7 +233,7 @@ namespace SsisUnit
             {
                 if (!ActualDataset.IsResultsStored)
                 {
-                    actualDbCommand = GetCommand(ActualDataset.ConnectionRef, ActualDataset.Query);
+                    actualDbCommand = Helper.GetCommand(ActualDataset.ConnectionRef, ActualDataset.Query);
                     actualDbCommand.Connection.Open();
 
                     using (IDataReader actualReader = actualDbCommand.ExecuteReader())
@@ -270,8 +274,8 @@ namespace SsisUnit
             }
 
             bool isComparisonPossible = true;
-            List<string> expectedDatasetMessages = new List<string>();
-            List<string> actualDatasetMessages = new List<string>();
+            var expectedDatasetMessages = new List<string>();
+            var actualDatasetMessages = new List<string>();
 
             if (expectedDataTable == null || expectedDataTable.Columns.Count < 1)
             {
@@ -324,8 +328,8 @@ namespace SsisUnit
             else
                 isSchemasCompatible = false;
 
-            Dictionary<int, IEnumerable<int>> expectedDatasetErrorIndices = new Dictionary<int, IEnumerable<int>>(expectedDataTable != null ? expectedDataTable.Rows.Count : 0);
-            Dictionary<int, IEnumerable<int>> actualDatasetErrorIndices = new Dictionary<int, IEnumerable<int>>(actualDataTable != null ? actualDataTable.Rows.Count : 0);
+            var expectedDatasetErrorIndices = new Dictionary<int, IEnumerable<int>>(expectedDataTable != null ? expectedDataTable.Rows.Count : 0);
+            var actualDatasetErrorIndices = new Dictionary<int, IEnumerable<int>>(actualDataTable != null ? actualDataTable.Rows.Count : 0);
             int rowIndex = 0;
 
             if (expectedDataTable != null && actualDataTable != null)
@@ -337,8 +341,8 @@ namespace SsisUnit
                         DataRow expectedRow = expectedDataTable.Rows[rowIndex];
                         DataRow actualRow = actualDataTable.Rows[rowIndex];
 
-                        List<int> expectedColumnsDifferent = new List<int>();
-                        List<int> actualColumnsDifferent = new List<int>();
+                        var expectedColumnsDifferent = new List<int>();
+                        var actualColumnsDifferent = new List<int>();
 
                         for (int columnIndex = 0; columnIndex < expectedRow.ItemArray.Length; columnIndex++)
                         {
@@ -373,7 +377,7 @@ namespace SsisUnit
 
             bool isResultsSame = actualDatasetErrorIndices.Count < 1;
 
-            DataCompareCommandResults results = new DataCompareCommandResults(ExpectedDataset, ActualDataset, expectedDataTable, actualDataTable, expectedDatasetErrorIndices, actualDatasetErrorIndices, isSchemasCompatible, isResultsSame, expectedDatasetMessages, actualDatasetMessages);
+            var results = new DataCompareCommandResults(ExpectedDataset, ActualDataset, expectedDataTable, actualDataTable, expectedDatasetErrorIndices, actualDatasetErrorIndices, isSchemasCompatible, isResultsSame, expectedDatasetMessages, actualDatasetMessages);
 
             string resultMessage = actualDatasetErrorIndices.Count < 1 ?
                 string.Format("The datasets \"{0}\" and \"{1}\" are the same.", ExpectedDataset.Name, ActualDataset.Name)
@@ -385,7 +389,7 @@ namespace SsisUnit
                               ExpectedDataset.Name,
                               ActualDataset.Name);
 
-            DataCompareCommandCompletedEventArgs completedEventArgs = new DataCompareCommandCompletedEventArgs(DateTime.Now, Name, null, null, resultMessage, results);
+            var completedEventArgs = new DataCompareCommandCompletedEventArgs(DateTime.Now, Name, null, null, resultMessage, results);
 
             if (isResultsSame)
                 OnCommandCompleted(completedEventArgs);
@@ -393,83 +397,6 @@ namespace SsisUnit
                 OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, resultMessage, results));
 
             return results;
-        }
-
-        private DbCommand GetCommand(ConnectionRef connectionRef, string commandText)
-        {
-            DbProviderFactory dbFactory = connectionRef.ConnectionType != ConnectionRef.ConnectionTypeEnum.AdoNet ? GetReservedFactory(connectionRef.ConnectionString) : GetFactory(connectionRef.InvariantType);
-
-            DbConnection conn = dbFactory.CreateConnection();
-
-            if (conn == null)
-                return null;
-
-            conn.ConnectionString = connectionRef.ConnectionString;
-
-            DbCommand dbCommand = dbFactory.CreateCommand();
-
-            if (dbCommand == null)
-                return null;
-
-            dbCommand.Connection = conn;
-            dbCommand.CommandText = commandText;
-
-            return dbCommand;
-        }
-
-        /// <summary>
-        /// Tries to return the appropriate Provider Factory based on the value passed in. Creating the 
-        /// factory depends on having the appropriate provider invariant name.
-        /// Common invariant names:
-        /// - SQL Server = System.Data.SqlClient
-        /// - SQL Server CE = System.Data.SqlServerCe
-        /// - My SQL = MySql.Data.MySqlClient
-        /// - Ole DB = System.Data.OleDb
-        /// - ODBC = System.Data.Odbc
-        /// - Oracle = System.Data.OracleClient
-        /// - PostgreSQL = Devart.Data.PostgreSql
-        /// - DB2 = IBM.Data.DB2
-        /// </summary>
-        /// <param name="factoryInvariantName">Value that identifies the connection type.</param>
-        /// <returns>A generic provider factory based on the provider invariant name passed in.</returns>
-        private DbProviderFactory GetFactory(string factoryInvariantName)
-        {
-            return DbProviderFactories.GetFactory(factoryInvariantName);
-        }
-
-        /// <summary>
-        /// Tries to return the appropriate Provider Factory based on the value passed in. Creating the 
-        /// factory depends on having the appropriate provider invariant name.
-        /// Common invariant names:
-        /// - SQL Server = System.Data.SqlClient
-        /// - SQL Server CE = System.Data.SqlServerCe
-        /// - My SQL = MySql.Data.MySqlClient
-        /// - Ole DB = System.Data.OleDb
-        /// - ODBC = System.Data.Odbc
-        /// - Oracle = System.Data.OracleClient
-        /// - PostgreSQL = Devart.Data.PostgreSql
-        /// - DB2 = IBM.Data.DB2
-        /// </summary>
-        /// <param name="providerType">Value that identifies the connection type.</param>
-        /// <returns>A generic provider factory based on the provider invariant name passed in.</returns>
-        private DbProviderFactory GetReservedFactory(string providerType)
-        {
-            string factoryInvariantName;
-
-            if (providerType.Contains(TagOledb))
-            {
-                factoryInvariantName = FactoryOledb;
-            }
-            else if (providerType.Contains(TagSql))
-            {
-                factoryInvariantName = FactorySql;
-            }
-            else
-            {
-                throw new ArgumentException("Connection type not supported");
-            }
-
-            return DbProviderFactories.GetFactory(factoryInvariantName);
         }
     }
 }

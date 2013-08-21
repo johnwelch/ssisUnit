@@ -53,7 +53,7 @@ namespace UTssisUnit
         [TestMethod]
         public void CheckVariousPathsTest()
         {
-            string packageFilepath = string.Empty;
+            string packageFilepath;
 
 #if SQL2008
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
@@ -94,8 +94,7 @@ namespace UTssisUnit
 
         private SsisAssert AddNewAssert(SsisTestSuite ts, string assertName, object result, string propertyPath)
         {
-            var assert = new SsisAssert(ts, assertName, result, false)
-                { Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty) };
+            var assert = new SsisAssert(ts, assertName, result, false) { Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty) };
             return assert;
         }
     }

@@ -64,6 +64,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.PipelineHost, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -95,7 +96,6 @@
     <Compile Include="CommandBase.cs" />
     <Compile Include="CommandProperty.cs" />
     <Compile Include="CommandSet.cs" />
-    <Compile Include="ComponentSourceCommand.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="DataCompareAssertCompletedEventArgs.cs" />
     <Compile Include="DataCompareCommand.cs" />
@@ -174,7 +174,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.2012.csproj">
+      <Project>{6c8078e0-99dd-40d0-94da-e17b3fc50679}</Project>
+      <Name>SsisUnit.TestComponents.2012</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -174,11 +175,11 @@ namespace SsisUnit
          TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
         public ConnectionRef ConnectionRef { get; set; }
-        
+
         public string Name { get; set; }
-        
+
         public bool IsResultsStored { get; set; }
-        
+
         [Browsable(false)]
         public DataTable Results { get; internal set; }
 
@@ -196,5 +197,43 @@ namespace SsisUnit
 
         [Browsable(false)]
         public SsisTestSuite TestSuite { get; private set; }
+
+        internal DataTable RetrieveDataTable()
+        {
+            if (!IsResultsStored)
+            {
+                using (var command = Helper.GetCommand(ConnectionRef, Query))
+                {
+                    command.Connection.Open();
+                    using (IDataReader expectedReader = command.ExecuteReader())
+                    {
+                        var ds = new DataSet();
+
+                        ds.Load(expectedReader, LoadOption.OverwriteChanges, new[] { "Results" });
+
+                        if (ds.Tables.Count < 1)
+                        {
+                            throw new ApplicationException(
+                                string.Format(
+                                    CultureInfo.CurrentCulture, "The dataset (\"{0}\") did not retrieve any data.", Name));
+                        }
+
+
+                        return ds.Tables[0];
+                    }
+                }
+            }
+
+            if (Results == null || Results.Columns.Count < 1)
+            {
+                throw new ApplicationException(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        "The expected dataset's (\"{0}\") stored results does not contain data. Populate the Results data table before executing.",
+                        Name));
+            }
+
+            return Results;
+        }
     }
 }

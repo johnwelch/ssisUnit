@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -68,6 +69,50 @@ namespace UTssisUnit
             var result2 = SsisUnit.Helper.FindComponent(result, remainingPath);
             Assert.AreEqual("OLE DB Source", result2.Name);
         }
+
+        [TestMethod]
+        public void FindInputByPathTest()
+        {
+            var ssisApp = new Application();
+
+            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
+
+            string remainingPath;
+            var result = SsisUnit.Helper.FindExecutable(packageToTest, @"Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]", out remainingPath) as TaskHost;
+            Assert.AreEqual("Data Flow Task", result.Name);
+            var result2 = SsisUnit.Helper.FindComponentInput(result.InnerObject as MainPipe, remainingPath);
+            Assert.AreEqual("Derived Column Input", result2.Name);
+        }
+
+        [TestMethod]
+        public void FindOutputByPathTest()
+        {
+            var ssisApp = new Application();
+
+            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
+
+            string remainingPath;
+            var result = SsisUnit.Helper.FindExecutable(packageToTest, @"Package\Data Flow Task\Derived Column.Outputs[Derived Column Output]", out remainingPath) as TaskHost;
+            Assert.AreEqual("Data Flow Task", result.Name);
+            var result2 = SsisUnit.Helper.FindComponentOutput(result.InnerObject as MainPipe, remainingPath);
+            Assert.AreEqual("Derived Column Output", result2.Name);
+        }
+
+        [TestMethod]
+        public void FindPathTest()
+        {
+            var ssisApp = new Application();
+
+            Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
+
+            string remainingPath;
+            var result = SsisUnit.Helper.FindExecutable(packageToTest, @"Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]", out remainingPath) as TaskHost;
+            var mainPipe = result.InnerObject as MainPipe;
+            var result2 = SsisUnit.Helper.FindComponentInput(mainPipe, remainingPath);
+            var result3 = SsisUnit.Helper.FindPath(mainPipe, result2);
+            Assert.IsNotNull(result3);
+        }
+
 
         [TestMethod]
         public void FindExecutableDoesNotExistTest()

@@ -5,6 +5,12 @@ using Microsoft.SqlServer.Dts.Runtime;
 using System.Globalization;
 using System.ComponentModel;
 
+#if SQL2012 || SQL2008
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
+#elif SQL2005
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
+#endif
+
 namespace SsisUnit
 {
     public class SsisAssert : SsisUnitBaseObject
@@ -87,7 +93,7 @@ namespace SsisUnit
             bool returnValue;
             string resultMessage = string.Empty;
             object validationResult;
-            DataCompareCommand dataCompareCommand = Command as DataCompareCommand;
+            var dataCompareCommand = Command as DataCompareCommand;
             DataCompareCommandResults dataCompareCommandResults;
 
             if (dataCompareCommand != null)
@@ -173,9 +179,9 @@ namespace SsisUnit
 
         public override string PersistToXml()
         {
-            StringBuilder xml = new StringBuilder();
+            var xml = new StringBuilder();
 
-            XmlWriterSettings settings = new XmlWriterSettings { OmitXmlDeclaration = true, ConformanceLevel = ConformanceLevel.Fragment, NewLineHandling = NewLineHandling.None, Indent = false };
+            var settings = new XmlWriterSettings { OmitXmlDeclaration = true, ConformanceLevel = ConformanceLevel.Fragment, NewLineHandling = NewLineHandling.None, Indent = false };
 
             XmlWriter xw = XmlWriter.Create(xml, settings);
 

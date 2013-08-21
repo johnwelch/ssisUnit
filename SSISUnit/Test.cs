@@ -2,9 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Globalization;
 using System.ComponentModel;
+
+#if SQL2012 || SQL2008
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
+#elif SQL2005
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
+#endif
 
 namespace SsisUnit
 {
@@ -127,6 +134,10 @@ namespace SsisUnit
 
         #endregion
 
+        /// <summary>
+        /// Execute the setup, asserts, and teardown associated with this test.
+        /// </summary>
+        /// <returns>True if the test was executed with no errors, false if it encountered errors.</returns>
         public bool Execute()
         {
             TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestCount);
@@ -144,12 +155,6 @@ namespace SsisUnit
 
             try
             {
-                // TODO: Decide if this behavior is correct - not sure if we really need to run the parent setups
-                // if (_testSuite.ParentTestSuite != null)
-                // {
-                //     _testSuite.ParentTestSuite.SetupCommands.Execute(packageToTest, taskHost);
-                // }
-
                 ExecuteCommandSet(TestSuite.SetupCommands, packageToTest, taskHost);
                 ExecuteCommandSet(TestSetup, packageToTest, taskHost);
 
@@ -181,7 +186,8 @@ namespace SsisUnit
                     assert.Execute(packageToTest, taskHost);
                 }
 
-                taskHost.Execute(packageToTest.Connections, taskHost.Variables, null, null, null);
+                var events = new SsisEvents();
+                taskHost.Execute(packageToTest.Connections, taskHost.Variables, events, null, null);
 
                 DTSExecResult result = taskHost.ExecutionResult;
 
@@ -333,15 +339,14 @@ namespace SsisUnit
 
         public override string PersistToXml()
         {
-            StringBuilder xml = new StringBuilder();
-            XmlWriterSettings writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
+            var xml = new StringBuilder();
+            var writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
 
             XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings);
             xmlWriter.WriteStartElement("Test");
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("package", PackageLocation);
             xmlWriter.WriteAttributeString("task", Task);
-            //xmlWriter.WriteAttributeString("taskName", TaskName);
             xmlWriter.WriteAttributeString("taskResult", TaskResult.ToString());
 
             if (TestSetup.Commands.Count > 0)
@@ -419,7 +424,7 @@ namespace SsisUnit
                 return new Dictionary<string, SsisAssert>();
             }
 
-            Dictionary<string, SsisAssert> returnValue = new Dictionary<string, SsisAssert>(asserts.ChildNodes.Count);
+            var returnValue = new Dictionary<string, SsisAssert>(asserts.ChildNodes.Count);
 
             foreach (XmlNode assert in asserts)
             {
@@ -433,6 +438,14 @@ namespace SsisUnit
             }
 
             return returnValue;
+        }
+
+        private class SsisEvents : DefaultEvents
+        {
+            public override bool OnError(DtsObject source, int errorCode, string subComponent, string description, string helpFile, int helpContext, string idofInterfaceWithError)
+            {
+                return base.OnError(source, errorCode, subComponent, description, helpFile, helpContext, idofInterfaceWithError);
+            }
         }
     }
 }

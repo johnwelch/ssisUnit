@@ -188,7 +188,8 @@ namespace SsisUnit
 
         public void Setup()
         {
-            Setup(null, null);
+            throw new NotImplementedException();
+            //Setup(null, null);
         }
 
         public void Test()
@@ -198,7 +199,8 @@ namespace SsisUnit
 
         public void Teardown()
         {
-            Teardown(null, null);
+            throw new NotImplementedException();
+            //Teardown(null, null);
         }
 
         #endregion
@@ -551,15 +553,15 @@ namespace SsisUnit
             }
         }
 
-        internal int Setup(XmlNode setup, Package pkg, DtsContainer task)
-        {
-            return SetupCommands.Execute(pkg, task);
-        }
+        //internal int Setup(XmlNode setup, Package pkg, DtsContainer task)
+        //{
+        //    return SetupCommands.Execute(pkg, task);
+        //}
 
-        internal int Setup(Package pkg, DtsContainer task)
-        {
-            return SetupCommands.Execute(pkg, task);
-        }
+        //internal int Setup(Package pkg, DtsContainer task)
+        //{
+        //    return SetupCommands.Execute(pkg, task, null);
+        //}
 
         internal void RunTestSuite(SsisTestSuite ts)
         {
@@ -613,15 +615,15 @@ namespace SsisUnit
 
         #endregion
 
-        internal int Teardown(XmlNode teardown, Package pkg, DtsContainer task)
-        {
-            return TeardownCommands.Execute(pkg, task);
-        }
+        //internal int Teardown(XmlNode teardown, Package pkg, DtsContainer task)
+        //{
+        //    return TeardownCommands.Execute(pkg, task);
+        //}
 
-        internal int Teardown(Package pkg, DtsContainer task)
-        {
-            return TeardownCommands.Execute(pkg, task);
-        }
+        //internal int Teardown(Package pkg, DtsContainer task)
+        //{
+        //    return TeardownCommands.Execute(pkg, task);
+        //}
 
         #endregion
     }

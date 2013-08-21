@@ -3,6 +3,7 @@ using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SsisUnit;
+using SsisUnit.Commands;
 
 namespace UTssisUnit
 {
@@ -45,7 +46,7 @@ namespace UTssisUnit
             _xmlTestFull += "</TestTeardown>";
             _xmlTestFull += "</Test>";
         }
-        
+
         [TestMethod]
         public void NewTestTest()
         {
@@ -141,11 +142,37 @@ namespace UTssisUnit
             var assert = new SsisAssert(ts, "Test Anything", "true==true", false, true);
             target.Asserts.Add("Test Row Count", assert);
             assert.Command = new PropertyCommand(ts, "Get", "\\Package.Properties[Description]", null);
-            
+
             ts.Execute();
 
             // TODO: Think this might be missing something - asserts were originally 1 passed, 1 failed
             // See if I can find original test package
+
+            Assert.AreEqual(2, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+        }
+
+        [TestMethod]
+        public void DataFlowComponentTest()
+        {
+            var packageFile = UnpackToFile("UTssisUnit.TestPackages.DataFlowComponent.dtsx");
+            var newFileName = CreateTempFile(GetTempPath("Test", true), "TestDataFlowExpression2012.dtsx");
+            File.Copy(packageFile, newFileName, true);
+            var ts = new SsisTestSuite();
+            ts.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient"));
+            ts.Datasets.Add("testInput", new Dataset(ts, "testInput", ts.ConnectionRefs["AdventureWorks"], false, "SELECT "
+                                                                                               + "CAST(1 AS INT) AS ColInt, "
+                                                                                               + "CAST('Test' AS VARCHAR(50)) AS ColVarChar, "
+                                                                                               + "CAST(N'Test' AS NVARCHAR(50)) AS ColNVarChar, "
+                                                                                               + "CAST('1900-01-01' AS DATETIME) AS ColDateTime"));
+            var target = new Test(ts, "DataFlowComponent", newFileName, @"Package\Data Flow Task\Derived Column");
+            ts.Tests.Add("Test Data Flow Derived Column", target);
+            target.TestSetup.Commands.Add(new ComponentInputCommand(ts, "ComponentInput", "testInput", @"Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]"));
+            var assert = new SsisAssert(ts, "Test Output", true, false);
+            target.Asserts.Add("Test Output", assert);
+            assert.Command = new ComponentOutputCommand(ts, "ComponentOutput", string.Empty, string.Empty);
+
+            ts.Execute();
 
             Assert.AreEqual(2, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual(0, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));

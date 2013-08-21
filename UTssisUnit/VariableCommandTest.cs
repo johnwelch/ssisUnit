@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-using SsisUnit;
+﻿using SsisUnit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.SqlServer.Dts.Runtime;
 
@@ -14,7 +12,7 @@ namespace UTssisUnit
         [TestInitialize]
         public void Initialize()
         {
-            _dtsxFilePath = this.UnpackToFile("UTssisUnit.TestPackages.SimplePackage.dtsx");
+            _dtsxFilePath = UnpackToFile("UTssisUnit.TestPackages.SimplePackage.dtsx");
         }
 
         [TestMethod]

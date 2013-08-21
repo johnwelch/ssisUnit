@@ -8,6 +8,12 @@ using System.Xml;
 
 using Microsoft.SqlServer.Dts.Runtime;
 
+#if SQL2012 || SQL2008
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
+#elif SQL2005
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
+#endif
+
 namespace SsisUnit
 {
     public abstract class CommandBase : SsisUnitBaseObject
@@ -233,10 +239,10 @@ namespace SsisUnit
 
         public abstract object Execute(Package package, DtsContainer container);
 
-        public virtual object Execute(Package package)
-        {
-            return Execute(package, null);
-        }
+        //public virtual object Execute(Package package)
+        //{
+        //    return Execute(package, null, null);
+        //}
 
         public virtual object Execute()
         {
@@ -323,5 +329,13 @@ namespace SsisUnit
         }
 
         #endregion
+
+        protected void AddProperty(string propertyName, string initialValue)
+        {
+            if (!Properties.ContainsKey(propertyName))
+            {
+                Properties.Add(propertyName, new CommandProperty(propertyName, initialValue));
+            }
+        }
     }
 }

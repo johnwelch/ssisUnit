@@ -4,6 +4,12 @@ using System.IO;
 using System.Globalization;
 using System.ComponentModel;
 
+#if SQL2012 || SQL2008
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
+#elif SQL2005
+using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
+#endif
+
 namespace SsisUnit
 {
     public class FileCommand : CommandBase
@@ -118,10 +124,10 @@ namespace SsisUnit
             return returnValue;
         }
 
-        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package)
-        {
-            return Execute();
-        }
+        //public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package)
+        //{
+        //    return Execute();
+        //}
 
         public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
         {

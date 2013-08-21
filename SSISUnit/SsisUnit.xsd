@@ -150,12 +150,9 @@
   <!--Define Component Input Command-->
   <xs:element name="ComponentInputCommand">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element name="inputvalue" type="xs:string" minOccurs="1" maxOccurs="1" />
-      </xs:sequence>
       <xs:attribute name="name" type="xs:string" use="optional"/>
-      <xs:attribute name="component" type="xs:string" use="required"/>
-      <xs:attribute name="input" type ="xs:string" use="optional"/>
+      <xs:attribute name="dataset" type="xs:string" use="required"/>
+      <xs:attribute name="input" type ="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
 
@@ -163,8 +160,8 @@
   <xs:element name="ComponentOutputCommand">
     <xs:complexType>
       <xs:attribute name="name" type="xs:string" use="optional"/>
-      <xs:attribute name="component" type="xs:string" use="required"/>
-      <xs:attribute name="output" type ="xs:string" use="optional"/>
+      <xs:attribute name="dataset" type="xs:string" use="required"/>
+      <xs:attribute name="output" type ="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
 
@@ -184,6 +181,7 @@
                 <xs:element ref="FileCommand"/>
                 <xs:element ref="DirectoryCommand"/>
                 <xs:element ref="PropertyCommand"/>
+                <xs:element ref="ComponentOutputCommand"/>
               </xs:choice>
               <xs:attribute name="name" type="xs:string" use="required"/>
               <xs:attribute name="expectedResult" type="xs:string" use="required"/>
@@ -280,6 +278,7 @@
       <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="PropertyCommand" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ComponentInputCommand" minOccurs="0" maxOccurs="unbounded"/>
     </xs:choice>
   </xs:complexType>
 
