@@ -140,7 +140,7 @@ namespace ssisUnitTestRunnerUI
             {
                 counter++;
             }
-            
+
             var cr = new ConnectionRef("ConnectionRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, ConnectionRef.ConnectionTypeEnum.ConnectionString);
             _testSuite.ConnectionRefs.Add(cr.ReferenceName, cr);
             var tn = new TreeNode(cr.ReferenceName) { Tag = cr };
@@ -174,7 +174,7 @@ namespace ssisUnitTestRunnerUI
             {
                 counter++;
             }
-            
+
             Dataset dataset = new Dataset(_testSuite, "Dataset" + counter.ToString(CultureInfo.InvariantCulture), null, false, string.Empty);
             _testSuite.Datasets.Add(dataset.Name, dataset);
             TreeNode tn = new TreeNode(dataset.Name) { Tag = dataset };
@@ -207,7 +207,7 @@ namespace ssisUnitTestRunnerUI
             }
 
             ConnectionRef connectionRef = treeTest.SelectedNode.Tag as ConnectionRef;
-            
+
             if (connectionRef != null)
             {
                 ConnectionRef cref = connectionRef;
@@ -244,7 +244,7 @@ namespace ssisUnitTestRunnerUI
             }
 
             SsisAssert ssisAssert = treeTest.SelectedNode.Tag as SsisAssert;
-            
+
             if (ssisAssert != null)
             {
                 if (treeTest.SelectedNode.Parent == null)
@@ -306,7 +306,7 @@ namespace ssisUnitTestRunnerUI
                 _testSuites.Remove(name);
 
             _testSuites.Add(name, testSuite);
-            
+
             UpdateTestSelection(name);
         }
 
@@ -522,14 +522,36 @@ namespace ssisUnitTestRunnerUI
             {
                 throw new ApplicationException("No Test Suite is selected.");
             }
-            TestResults ts = new TestResults(_testSuite);
+
+            string filename = string.Empty;
+            foreach (var ssisTestSuite in _testSuites)
+            {
+                if (_testSuite == ssisTestSuite.Value)
+                {
+                    filename = ssisTestSuite.Key;
+                    break;
+                }
+            }
+
+            TestResults ts = new TestResults(_testSuite, filename);
             ts.RunSuite();
         }
 
         public void RunSelectedTest()
         {
             if (!(treeTest.SelectedNode.Tag is Test)) return;
-            TestResults ts = new TestResults(_testSuite);
+
+            string filename = string.Empty;
+            foreach (var ssisTestSuite in _testSuites)
+            {
+                if (_testSuite == ssisTestSuite.Value)
+                {
+                    filename = ssisTestSuite.Key;
+                    break;
+                }
+            }
+
+            TestResults ts = new TestResults(_testSuite, filename);
             ts.RunTest(((Test)treeTest.SelectedNode.Tag).Name);
         }
 

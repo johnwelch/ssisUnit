@@ -10,7 +10,7 @@ namespace ssisUnitTestRunnerUI
     [Localizable(false)]
     public partial class TestResults : Form
     {
-        private readonly SsisTestSuite _testSuite;
+        private SsisTestSuite _testSuite;
 
         private readonly EventHandler<AssertCompletedEventArgs> _assertCompleted;
         private readonly EventHandler<SetupCompletedEventArgs> _setupCompleted;
@@ -20,11 +20,13 @@ namespace ssisUnitTestRunnerUI
         private readonly EventHandler<CommandCompletedEventArgs> _commandCompleted;
         private readonly EventHandler<CommandFailedEventArgs> _commandFailed;
 
-        public TestResults(SsisTestSuite testSuite)
+        private readonly string _fileName;
+
+        public TestResults(SsisTestSuite testSuite, string fileName)
         {
             InitializeComponent();
             _testSuite = testSuite;
-
+            _fileName = fileName;
             _assertCompleted = TestSuiteAssertCompleted;
             _setupCompleted = TestSuiteSetupCompleted;
             _teardownCompleted = TestSuiteTeardownCompleted;
@@ -204,6 +206,34 @@ namespace ssisUnitTestRunnerUI
             _testSuite.CommandStarted -= _commandStarted;
             _testSuite.CommandCompleted -= _commandCompleted;
             _testSuite.CommandFailed -= _commandFailed;
+        }
+
+        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _testSuite.AssertCompleted -= _assertCompleted;
+            _testSuite.SetupCompleted -= _setupCompleted;
+            _testSuite.TeardownCompleted -= _teardownCompleted;
+            _testSuite.TestCompleted -= _testCompleted;
+            _testSuite.CommandStarted -= _commandStarted;
+            _testSuite.CommandCompleted -= _commandCompleted;
+            _testSuite.CommandFailed -= _commandFailed;
+
+            _testSuite = new SsisTestSuite(_fileName);
+
+            _testSuite.AssertCompleted += _assertCompleted;
+            _testSuite.SetupCompleted += _setupCompleted;
+            _testSuite.TeardownCompleted += _teardownCompleted;
+            _testSuite.TestCompleted += _testCompleted;
+            _testSuite.CommandStarted += _commandStarted;
+            _testSuite.CommandCompleted += _commandCompleted;
+            _testSuite.CommandFailed += _commandFailed;
+
+            if (!keepResultsToolStripItem.Checked)
+            {
+                dataGridView1.Rows.Clear();
+            }
+
+            RunSuite();
         }
     }
 }

@@ -37,6 +37,7 @@
             this.testSuiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runTestSuiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.keepResultsToolStripItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.ResultType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ExecutionTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -107,7 +108,8 @@
             // 
             this.testSuiteToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.runTestSuiteToolStripMenuItem,
-            this.keepResultsToolStripItem});
+            this.keepResultsToolStripItem,
+            this.refreshToolStripMenuItem});
             this.testSuiteToolStripMenuItem.Name = "testSuiteToolStripMenuItem";
             this.testSuiteToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.testSuiteToolStripMenuItem.Text = "Test Suite";
@@ -127,6 +129,14 @@
             this.keepResultsToolStripItem.Name = "keepResultsToolStripItem";
             this.keepResultsToolStripItem.Size = new System.Drawing.Size(188, 22);
             this.keepResultsToolStripItem.Text = "Keep Previous Results";
+            // 
+            // refreshToolStripMenuItem
+            // 
+            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+            this.refreshToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.refreshToolStripMenuItem.Text = "Refresh Test Case";
+            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
             // dataGridView1
             // 
@@ -343,5 +353,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn TestName;
         private System.Windows.Forms.DataGridViewTextBoxColumn AssertResult;
         private System.Windows.Forms.DataGridViewCheckBoxColumn TestPassed;
+        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
     }
 }
