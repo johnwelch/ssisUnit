@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.SqlServer.Dts.Runtime;
 
+using SsisUnit.Enums;
+
 namespace UTssisUnit
 {
     [TestClass]
@@ -63,7 +65,7 @@ namespace UTssisUnit
 #endif
 
             var ts = new SsisTestSuite();
-            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageRef.PackageStorageType.FileSystem));
+            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageStorageType.FileSystem));
 
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Sequence Container\Script Task.Properties[Description]", "Test Descr"));
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Sequence Container.Properties[Description]", "Test Descr"));
@@ -77,26 +79,28 @@ namespace UTssisUnit
             // Added to verify work item #7188 - multiple periods in object names
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[test.multple.periods.in.path].Properties[Description]", "Test Descr"));
 
-            ts.Tests.Add("Test", new Test(ts, "Test", "PackageA", "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}"));
-            ts.Tests["Test"].Asserts.Add("TestA", AddNewAssert(ts, "TestA", "Test Descr", "\\Package\\Sequence Container\\Script Task.Properties[Description]"));
-            ts.Tests["Test"].Asserts.Add("TestB", AddNewAssert(ts, "TestB", "Test Descr", "\\Package\\Sequence Container.Properties[Description]"));
-            ts.Tests["Test"].Asserts.Add("TestC", AddNewAssert(ts, "TestC", "Test Descr", "\\Package\\Execute SQL Task.Properties[Description]"));
-            ts.Tests["Test"].Asserts.Add("TestD", AddNewAssert(ts, "TestD", "1/1/2000 12:00:00 AM", "\\Package.Properties[CreationDate]"));
-            ts.Tests["Test"].Asserts.Add("TestE", AddNewAssert(ts, "TestE", "Test Descr", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]"));
-            ts.Tests["Test"].Asserts.Add("TestF", AddNewAssert(ts, "TestF", false, "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]"));
-            ts.Tests["Test"].Asserts.Add("TestG", AddNewAssert(ts, "TestG", "Test Descr", "\\Package.EventHandlers[OnError].Properties[Description]"));
-            ts.Tests["Test"].Asserts.Add("TestH", AddNewAssert(ts, "TestH", "Test Descr", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]"));
-            ts.Tests["Test"].Asserts.Add("TestI", AddNewAssert(ts, "TestI", "Test Descr", "\\Package.Connections[test.multple.periods.in.path].Properties[Description]"));
+            Test ssisTest = new Test(ts, "Test", "PackageA", "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}");
+
+            ts.Tests.Add("Test", ssisTest);
+
+            ts.Tests["Test"].Asserts.Add("TestA", AddNewAssert(ts, ssisTest, "TestA", "Test Descr", "\\Package\\Sequence Container\\Script Task.Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestB", AddNewAssert(ts, ssisTest, "TestB", "Test Descr", "\\Package\\Sequence Container.Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestC", AddNewAssert(ts, ssisTest, "TestC", "Test Descr", "\\Package\\Execute SQL Task.Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestD", AddNewAssert(ts, ssisTest, "TestD", "1/1/2000 12:00:00 AM", "\\Package.Properties[CreationDate]"));
+            ts.Tests["Test"].Asserts.Add("TestE", AddNewAssert(ts, ssisTest, "TestE", "Test Descr", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestF", AddNewAssert(ts, ssisTest, "TestF", false, "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]"));
+            ts.Tests["Test"].Asserts.Add("TestG", AddNewAssert(ts, ssisTest, "TestG", "Test Descr", "\\Package.EventHandlers[OnError].Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestH", AddNewAssert(ts, ssisTest, "TestH", "Test Descr", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]"));
+            ts.Tests["Test"].Asserts.Add("TestI", AddNewAssert(ts, ssisTest, "TestI", "Test Descr", "\\Package.Connections[test.multple.periods.in.path].Properties[Description]"));
 
             ts.Execute();
             Assert.AreEqual(10, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
             Assert.AreEqual(0, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
         }
 
-        private SsisAssert AddNewAssert(SsisTestSuite ts, string assertName, object result, string propertyPath)
+        private SsisAssert AddNewAssert(SsisTestSuite ts, Test test, string assertName, object result, string propertyPath)
         {
-            var assert = new SsisAssert(ts, assertName, result, false) { Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty) };
-            return assert;
+            return new SsisAssert(ts, test, assertName, result, false) { Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty) };
         }
     }
 }

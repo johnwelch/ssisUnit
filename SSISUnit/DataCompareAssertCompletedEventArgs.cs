@@ -4,8 +4,8 @@ namespace SsisUnit
 {
     public sealed class DataCompareAssertCompletedEventArgs : AssertCompletedEventArgs
     {
-        public DataCompareAssertCompletedEventArgs(DateTime testExecutionTime, string packageName, string taskName, string testName, string testResultMsg, bool testPassed, CommandBase assertCommand, DataCompareCommandResults dataCompareCommandResults)
-            : base(testExecutionTime, packageName, taskName, testName, testResultMsg, testPassed, assertCommand)
+        public DataCompareAssertCompletedEventArgs(DateTime testExecutionTime, string packageName, string taskName, string testName, string assertName, string testResultMsg, bool testPassed, CommandBase assertCommand, DataCompareCommandResults dataCompareCommandResults)
+            : base(testExecutionTime, packageName, taskName, testName, assertName, testResultMsg, testPassed, assertCommand)
         {
             if (dataCompareCommandResults == null)
                 throw new ArgumentNullException("dataCompareCommandResults");
@@ -13,8 +13,8 @@ namespace SsisUnit
             DataCompareCommandResults = dataCompareCommandResults;
         }
 
-        public DataCompareAssertCompletedEventArgs(TestResult testResult, CommandBase assertCommand, DataCompareCommandResults dataCompareCommandResults)
-            : base(testResult, assertCommand)
+        public DataCompareAssertCompletedEventArgs(string assertName, TestResult testResult, CommandBase assertCommand, DataCompareCommandResults dataCompareCommandResults)
+            : base(assertName, testResult, assertCommand)
         {
             if (dataCompareCommandResults == null)
                 throw new ArgumentNullException("dataCompareCommandResults");

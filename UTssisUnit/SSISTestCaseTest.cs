@@ -7,6 +7,8 @@ using SsisUnit;
 using System;
 using System.IO;
 
+using SsisUnit.Enums;
+
 namespace UTssisUnit
 {
     [TestClass]
@@ -121,10 +123,10 @@ namespace UTssisUnit
             var packageFile = UnpackToFile("UTssisUnit.TestPackages.SimplePackage.dtsx");
 
             var ts = new SsisTestSuite();
-            ts.PackageRefs.Add("filePkg", new PackageRef("filePkg", packageFile, PackageRef.PackageStorageType.FileSystem));
+            ts.PackageRefs.Add("filePkg", new PackageRef("filePkg", packageFile, PackageStorageType.FileSystem));
             var test = new Test(ts, "Main", "filePkg", "SimplePackage");
             ts.Tests.Add("Main", test);
-            var assert = new SsisAssert(ts, "A1", 0, false);
+            var assert = new SsisAssert(ts, test, "A1", 0, false);
             test.Asserts.Add("A1", assert);
             assert.Command = new VariableCommand(ts, VariableCommand.VariableOperation.Get, "RowCount", "0");
             ts.Execute();
@@ -263,7 +265,7 @@ namespace UTssisUnit
             Assert.AreEqual("Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb", target.ConnectionRefs["AdventureWorks"].ConnectionString);
             Assert.AreEqual(ConnectionRef.ConnectionTypeEnum.ConnectionString, target.ConnectionRefs["AdventureWorks"].ConnectionType);
 
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", packageFile, PackageRef.PackageStorageType.FileSystem));
+            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", packageFile, PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
@@ -292,7 +294,7 @@ namespace UTssisUnit
 
             target.Tests["Test"].TestSetup.Commands.Add(new FileCommand(target, "Copy", lineCountFile, lineCount3File));
 
-            var ssisAssert = new SsisAssert(target, "Test Count", 2, false) { Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test") };
+            var ssisAssert = new SsisAssert(target, ssisTest, "Test Count", 2, false) { Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test") };
 
             ssisTest.Asserts.Add("Test Count", ssisAssert);
             Assert.AreEqual(1, ssisTest.Asserts.Count);
@@ -301,10 +303,10 @@ namespace UTssisUnit
             Assert.AreEqual(false, ssisTest.Asserts["Test Count"].TestBefore);
             Assert.AreEqual("<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">SELECT COUNT(*) FROM dbo.Test</SqlCommand>", ssisTest.Asserts["Test Count"].Command.PersistToXml());
 
-            ssisAssert = new SsisAssert(target, "Test File", true, false) { Command = new FileCommand(target, "Exists", lineCount2File, string.Empty) };
+            ssisAssert = new SsisAssert(target, ssisTest, "Test File", true, false) { Command = new FileCommand(target, "Exists", lineCount2File, string.Empty) };
             ssisTest.Asserts.Add("Test File", ssisAssert);
 
-            ssisAssert = new SsisAssert(target, "Test File 2", true, false) { Command = new FileCommand(target, "Exists", lineCount3File, string.Empty) };
+            ssisAssert = new SsisAssert(target, ssisTest, "Test File 2", true, false) { Command = new FileCommand(target, "Exists", lineCount3File, string.Empty) };
             ssisTest.Asserts.Add("Test File 2", ssisAssert);
 
             target.Tests["Test"].TestTeardown.Commands.Add(new FileCommand(target, "Delete", lineCount3File, string.Empty));

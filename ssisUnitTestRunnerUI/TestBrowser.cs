@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using SsisUnit;
+using SsisUnit.Enums;
 
 namespace ssisUnitTestRunnerUI
 {
@@ -157,7 +158,7 @@ namespace ssisUnitTestRunnerUI
             {
                 counter++;
             }
-            var pr = new PackageRef("PackageRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, PackageRef.PackageStorageType.FileSystem);
+            var pr = new PackageRef("PackageRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, PackageStorageType.FileSystem);
             _testSuite.PackageRefs.Add(pr.Name, pr);
             var tn = new TreeNode(pr.Name) { Tag = pr };
             prNode.Nodes.Add(tn);
@@ -492,7 +493,7 @@ namespace ssisUnitTestRunnerUI
             {
                 counter++;
             }
-            SsisAssert assert = new SsisAssert(_testSuite, "Assert" + counter.ToString(CultureInfo.InvariantCulture), null, false);
+            SsisAssert assert = new SsisAssert(_testSuite, test, "Assert" + counter.ToString(CultureInfo.InvariantCulture), null, false);
             test.Asserts.Add(assert.Name, assert);
             TreeNode tn = new TreeNode(assert.Name) { Tag = assert };
             treeTest.SelectedNode.Nodes.Add(tn);

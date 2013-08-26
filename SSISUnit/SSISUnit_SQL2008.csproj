@@ -95,7 +95,6 @@
     <Compile Include="CommandStartedEventArgs.cs" />
     <Compile Include="Commands\ComponentInputCommand.cs" />
     <Compile Include="Commands\ComponentOutputCommand.cs" />
-    <Compile Include="ComponentSourceCommand.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="ConnectionRef.cs" />
     <Compile Include="DataCompareAssertCompletedEventArgs.cs" />
@@ -104,6 +103,8 @@
     <Compile Include="DataCompareCommandResults.cs" />
     <Compile Include="Dataset.cs" />
     <Compile Include="DirectoryCommand.cs" />
+    <Compile Include="DtsPackageStoreException.cs" />
+    <Compile Include="Enums\PackageStorageType.cs" />
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="IssisTestCase.cs" />
@@ -132,6 +133,8 @@
     <Compile Include="TestCompletedEventArgs.cs" />
     <Compile Include="TestRef.cs" />
     <Compile Include="TestResult.cs" />
+    <Compile Include="TestSuiteCompletedEventArgs.cs" />
+    <Compile Include="TestSuiteFailedEventArgs.cs" />
     <Compile Include="TestSuiteResults.cs" />
     <Compile Include="VariableCommand.cs" />
     <Compile Include="XmlHelper.cs" />
@@ -176,6 +179,7 @@
     <ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.2008.csproj">
       <Project>{2CAB4A02-40F5-47DA-AF07-F35A35A1402C}</Project>
       <Name>SsisUnit.TestComponents.2008</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using System;
 
+using SsisUnit.Enums;
+
 namespace UTssisUnit
 {
     [TestClass]
@@ -13,20 +15,21 @@ namespace UTssisUnit
         [TestInitialize]
         public void Initialize()
         {
-            _dtsxFilePath = this.UnpackToFile("UTssisUnit.TestPackages.UTBasicScenario2012.dtsx");
+            _dtsxFilePath = UnpackToFile("UTssisUnit.TestPackages.UTBasicScenario2012.dtsx");
         }
 
         [TestMethod]
         public void LoadFromXmlTest1()
         {
             var testSuite = new SsisTestSuite();
+            var ssisTest = new Test(testSuite, "Test", _dtsxFilePath, "SELECT COUNT");
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
             assertXml += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
             XmlNode assertXml1 = Helper.GetXmlNodeFromString(assertXml);
-            var target = new SsisAssert(testSuite, string.Empty, null, true);
+            var target = new SsisAssert(testSuite, ssisTest, string.Empty, null, true);
             target.LoadFromXml(assertXml1);
             Assert.AreEqual(assertXml, target.PersistToXml());
         }
@@ -41,7 +44,8 @@ namespace UTssisUnit
             assertXml += "</Assert>";
 
             var testSuite = new SsisTestSuite();
-            var target = new SsisAssert(testSuite, string.Empty, null, true);
+            var ssisTest = new Test(testSuite, "Test", _dtsxFilePath, "SELECT COUNT");
+            var target = new SsisAssert(testSuite, ssisTest, string.Empty, null, true);
             target.LoadFromXml(assertXml);
             Assert.AreEqual(assertXml, target.PersistToXml());
         }
@@ -55,7 +59,7 @@ namespace UTssisUnit
 
             var ssisTest = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
             testSuite.Tests.Add("Test", ssisTest);
-            var target = new SsisAssert(testSuite, Name, expectedResult, false);
+            var target = new SsisAssert(testSuite, ssisTest, Name, expectedResult, false);
             ssisTest.Asserts.Add("Test", target);
             Assert.AreEqual(1, ssisTest.Asserts.Count);
             Assert.AreEqual("Test", ssisTest.Asserts["Test"].Name);
@@ -73,7 +77,8 @@ namespace UTssisUnit
             assertXml += "</Assert>";
 
             var testSuite = new SsisTestSuite();
-            var target = new SsisAssert(testSuite, assertXml);
+            var ssisTest = new Test(testSuite, "Test", _dtsxFilePath, "SELECT COUNT");
+            var target = new SsisAssert(testSuite, ssisTest, assertXml);
 
             Assert.AreEqual(assertXml, target.PersistToXml());
         }
@@ -82,13 +87,14 @@ namespace UTssisUnit
         public void SsisAssertConstructorTest1()
         {
             var testSuite = new SsisTestSuite();
+            var ssisTest = new Test(testSuite, "Test", _dtsxFilePath, "SELECT COUNT");
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
             assertXml += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
             XmlNode assertXml1 = Helper.GetXmlNodeFromString(assertXml);
-            var target = new SsisAssert(testSuite, assertXml1);
+            var target = new SsisAssert(testSuite, ssisTest, assertXml1);
             Assert.AreEqual("Test", target.Name);
             Assert.AreEqual("1", target.ExpectedResult.ToString());
             Assert.AreEqual(false, target.TestBefore);
@@ -99,12 +105,13 @@ namespace UTssisUnit
         public void SsisAssertConstructorTest2()
         {
             var testSuite = new SsisTestSuite();
+            var ssisTest = new Test(testSuite, "Test", _dtsxFilePath, "SELECT COUNT");
             string assertXml = "<Assert name=\"Test\" expectedResult=\"1\" testBefore=\"false\" expression=\"false\">";
             assertXml += "<SqlCommand name=\"\" connectionRef=\"AdventureWorks\" returnsValue=\"true\">";
             assertXml += "SELECT COUNT(*) FROM Production.Product";
             assertXml += "</SqlCommand>";
             assertXml += "</Assert>";
-            var target = new SsisAssert(testSuite, assertXml);
+            var target = new SsisAssert(testSuite, ssisTest, assertXml);
             Assert.AreEqual("Test", target.Name);
             Assert.AreEqual("1", target.ExpectedResult.ToString());
             Assert.AreEqual(false, target.TestBefore);
@@ -119,7 +126,7 @@ namespace UTssisUnit
             target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageRef.PackageStorageType.FileSystem));
+            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
@@ -128,22 +135,22 @@ namespace UTssisUnit
             var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
-            var ssisAssert = new SsisAssert(target, "Test Count", "(int)result==2", false, true);
+            var ssisAssert = new SsisAssert(target, ssisTest, "Test Count", "(int)result==2", false, true);
             ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test");
 
             ssisTest.Asserts.Add("Test Count", ssisAssert);
 
-            ssisAssert = new SsisAssert(target, "Test Count 2", "(int)result<=2", false, true);
+            ssisAssert = new SsisAssert(target, ssisTest, "Test Count 2", "(int)result<=2", false, true);
             ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test");
 
             ssisTest.Asserts.Add("Test Count 2", ssisAssert);
 
-            ssisAssert = new SsisAssert(target, "Test Count 3", "\"test\"==\"test\"", false, true);
+            ssisAssert = new SsisAssert(target, ssisTest, "Test Count 3", "\"test\"==\"test\"", false, true);
             ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test");
 
             ssisTest.Asserts.Add("Test Count 3", ssisAssert);
 
-            ssisAssert = new SsisAssert(target, "Test Count 4", "DateTime.Now.Date==((DateTime)result).Date", false, true);
+            ssisAssert = new SsisAssert(target, ssisTest, "Test Count 4", "DateTime.Now.Date==((DateTime)result).Date", false, true);
             ssisAssert.Command = new VariableCommand(target, VariableCommand.VariableOperation.Get, "System::StartTime", string.Empty);
 
             ssisTest.Asserts.Add("Test Count 4", ssisAssert);
@@ -175,7 +182,7 @@ namespace UTssisUnit
             target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageRef.PackageStorageType.FileSystem));
+            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
@@ -184,7 +191,7 @@ namespace UTssisUnit
             var ssisTest = new Test(target, "Test", "UT Basic Scenario", "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
-            var ssisAssert = new SsisAssert(target, "Test Count", "result==2", false);
+            var ssisAssert = new SsisAssert(target, ssisTest, "Test Count", "result==2", false);
             ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM dbo.Test");
 
             ssisTest.Asserts.Add("Test Count", ssisAssert);
@@ -215,7 +222,8 @@ namespace UTssisUnit
             assertXml += "/>";
 
             var testSuite = new SsisTestSuite();
-            var ssisAssert = new SsisAssert(testSuite, "Test", null, false, false);
+            var ssisTest = new Test(testSuite, "Test", _dtsxFilePath, "SELECT COUNT");
+            var ssisAssert = new SsisAssert(testSuite, ssisTest, "Test", null, false, false);
 
             Assert.AreEqual(assertXml, ssisAssert.PersistToXml());
         }

@@ -3,6 +3,8 @@ using System.Text;
 using System.Xml;
 using System.ComponentModel;
 
+using SsisUnit.Enums;
+
 namespace SsisUnit
 {
     public class PackageRef
@@ -110,13 +112,6 @@ namespace SsisUnit
             {
                 Server = packageXml.Attributes["server"].Value;
             }
-        }
-
-        public enum PackageStorageType
-        {
-            FileSystem = 0,
-            MSDB = 1,
-            PackageStore = 2
         }
     }
 }

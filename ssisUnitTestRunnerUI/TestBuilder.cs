@@ -8,6 +8,8 @@ using SsisUnit.Design;
 using System.IO;
 using System.Xml;
 
+using SsisUnit.Enums;
+
 namespace ssisUnitTestRunnerUI
 {
     public partial class testSuiteUI : Form
@@ -43,7 +45,20 @@ namespace ssisUnitTestRunnerUI
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e) { }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            string titleText = "Test Suite Builder";
+
+#if SQL2012
+            titleText += " (SSIS 2012)";
+#elif SQL2008
+            titleText += " (SSIS 2008)";
+#elif SQL2005
+            titleText += " (SSIS 2005)";
+#endif
+
+            Text = titleText;
+        }
 
         private void testBrowser1_NodeSelected(object sender, NodeSelectedEventArgs e)
         {
@@ -147,7 +162,18 @@ namespace ssisUnitTestRunnerUI
         private void testBrowser1_TestSuiteSelected(object sender, TestSuiteSelectedEventArgs e)
         {
             _currentFileName = e.CurrentFile;
-            Text = "Test Suite Builder - " + _currentFileName;
+
+            string titleText = "Test Suite Builder";
+
+#if SQL2012
+            titleText += " (SSIS 2012)";
+#elif SQL2008
+            titleText += " (SSIS 2008)";
+#elif SQL2005
+            titleText += " (SSIS 2005)";
+#endif
+
+            Text = titleText + " - " + _currentFileName;
         }
 
         private void addTestToolStripMenuItem_Click(object sender, EventArgs e)
@@ -233,7 +259,7 @@ namespace ssisUnitTestRunnerUI
         private void AddPackageRefs(SsisTestSuite ts, IDTSName package, string location)
         {
             if (!ts.PackageRefs.ContainsKey(package.Name))
-                ts.PackageRefs.Add(package.Name, new PackageRef(package.Name, location, PackageRef.PackageStorageType.FileSystem));
+                ts.PackageRefs.Add(package.Name, new PackageRef(package.Name, location, PackageStorageType.FileSystem));
         }
 
         private void AddConnectionRefs(SsisTestSuite ts, Package package)

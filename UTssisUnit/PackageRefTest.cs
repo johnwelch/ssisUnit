@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 
+using SsisUnit.Enums;
+
 namespace UTssisUnit
 {
     /// <summary>
@@ -19,21 +21,21 @@ namespace UTssisUnit
         [TestMethod]
         public void PackageRefConstructorTest1()
         {
-            var target = new PackageRef("Test", "C:\\Temp\\Package.dtsx", PackageRef.PackageStorageType.FileSystem);
+            var target = new PackageRef("Test", "C:\\Temp\\Package.dtsx", PackageStorageType.FileSystem);
             Assert.AreEqual("Test", target.Name);
             Assert.AreEqual("C:\\Temp\\Package.dtsx", target.PackagePath);
             Assert.AreEqual(string.Empty, target.Server);
-            Assert.AreEqual(PackageRef.PackageStorageType.FileSystem, target.StorageType);
+            Assert.AreEqual(PackageStorageType.FileSystem, target.StorageType);
         }
 
         [TestMethod]
         public void PackageRefConstructorTest2()
         {
-            var target = new PackageRef("Test", "C:\\Temp\\Package.dtsx", PackageRef.PackageStorageType.MSDB, "localhost");
+            var target = new PackageRef("Test", "C:\\Temp\\Package.dtsx", PackageStorageType.MSDB, "localhost");
             Assert.AreEqual("Test", target.Name);
             Assert.AreEqual("C:\\Temp\\Package.dtsx", target.PackagePath);
             Assert.AreEqual("localhost", target.Server);
-            Assert.AreEqual(PackageRef.PackageStorageType.MSDB, target.StorageType);
+            Assert.AreEqual(PackageStorageType.MSDB, target.StorageType);
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace UTssisUnit
         public void LoadFromXmlTest1()
         {
             XmlNode packageRef = Helper.GetXmlNodeFromString(Xml);
-            var target = new PackageRef(string.Empty, string.Empty, PackageRef.PackageStorageType.FileSystem);
+            var target = new PackageRef(string.Empty, string.Empty, PackageStorageType.FileSystem);
             target.LoadFromXml(packageRef);
             Assert.AreEqual(Xml, target.PersistToXml());
         }
@@ -77,7 +79,7 @@ namespace UTssisUnit
         [TestMethod]
         public void LoadFromXmlTest()
         {
-            var target = new PackageRef(string.Empty, string.Empty, PackageRef.PackageStorageType.FileSystem);
+            var target = new PackageRef(string.Empty, string.Empty, PackageStorageType.FileSystem);
             target.LoadFromXml(Xml);
             Assert.AreEqual(Xml, target.PersistToXml());
         }

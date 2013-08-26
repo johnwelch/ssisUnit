@@ -8,6 +8,8 @@ using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.IO;
 
+using SsisUnit.Enums;
+
 #if SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 using IDTSInput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSInput100;
@@ -253,50 +255,89 @@ namespace SsisUnit
             return currentExecutable;
         }
 
-        public static Package LoadPackage(SsisTestSuite testSuite, string packagePath)
+        public static Package LoadPackage(SsisTestSuite testSuite, string packageName)
         {
             var ssisApp = new Application();
             Package package = null;
+            PackageRef packageRef = null;
 
             try
             {
                 bool isPackagePathFilePath = false;
 
-                if (packagePath.Contains(".dtsx"))
+                if (packageName.Contains(".dtsx"))
                 {
                     // Assume that it is a file path.
-                    var fileInfo = new FileInfo(packagePath);
+                    var fileInfo = new FileInfo(packageName);
 
                     if (fileInfo.Exists)
                     {
                         isPackagePathFilePath = true;
 
-                        package = ssisApp.LoadPackage(packagePath, null);
+                        package = ssisApp.LoadPackage(fileInfo.FullName, null);
                     }
                 }
 
                 if (!isPackagePathFilePath)
                 {
-                    // PackageList Reference
-                    PackageRef packageRef = testSuite.PackageRefs[packagePath];
+                    if (testSuite.PackageRefs.ContainsKey(packageName))
+                        packageRef = testSuite.PackageRefs[packageName];
+                    else
+                    {
+                        foreach (PackageRef packageReference in testSuite.PackageRefs.Values)
+                        {
+                            if ((packageReference.Name != null && string.Compare(packageReference.Name, packageName, StringComparison.OrdinalIgnoreCase) == 0) || (packageReference.PackagePath != null && string.Compare(packageReference.PackagePath, packageName, StringComparison.OrdinalIgnoreCase) == 0))
+                            {
+                                packageRef = packageReference;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if (packageRef == null)
+                        throw new KeyNotFoundException();
 
                     switch (packageRef.StorageType)
                     {
-                        case PackageRef.PackageStorageType.FileSystem:
+                        case PackageStorageType.FileSystem:
                             package = ssisApp.LoadPackage(packageRef.PackagePath, null);
                             break;
-                        case PackageRef.PackageStorageType.MSDB:
+                        case PackageStorageType.MSDB:
                             package = ssisApp.LoadFromSqlServer(packageRef.PackagePath, packageRef.Server, null, null, null);
                             break;
-                        case PackageRef.PackageStorageType.PackageStore:
+                        case PackageStorageType.PackageStore:
                             package = ssisApp.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
                             break;
                     }
                 }
             }
+            catch (DtsRuntimeException dtsEx)
+            {
+                string ssisPackageStoreVersion = "UNKNOWN";
+
+#if SQL2005
+                ssisPackageStoreVersion = "2005";
+#elif SQL2008
+                ssisPackageStoreVersion = "2008";
+#elif SQL2012
+                ssisPackageStoreVersion = "2012";
+#endif
+
+                if (packageRef != null && packageRef.StorageType == PackageStorageType.PackageStore && dtsEx.ErrorCode == HResults.DTS_E_PACKAGENOTFOUND)
+                    throw new DtsPackageStoreException(string.Format("The package \"{0}\" couldn't be found in the SSIS {1} Package Store.  Please ensure that the correct unit test engine is used when accessing the SSIS {1} Package Store.", packageName, ssisPackageStoreVersion));
+
+                if (dtsEx.ErrorCode == HResults.DTS_E_LOADFROMSQLSERVER)
+                    throw new DtsPackageStoreException(string.Format("There was an error while attempting to load the package \"{0}\" from MSDB.  Please ensure the package path is valid and the correct unit test engine is used to execute the package.  The current unit test engine is SSIS {1}.", packageName, ssisPackageStoreVersion));
+
+                if (dtsEx.ErrorCode == HResults.DTS_E_LOADFROMXML)
+                    throw new DtsPackageStoreException(string.Format("There was an error while attempting to load the package \"{0}\" from the file system.  Please ensure the package path is valid and the correct unit test engine is used to execute the package.  The current unit test engine is SSIS {1}.", packageName, ssisPackageStoreVersion));
+
+                throw;
+            }
             catch (KeyNotFoundException)
             {
-                throw new KeyNotFoundException(String.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
+                throw new KeyNotFoundException(string.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packageName));
             }
 
             return package;

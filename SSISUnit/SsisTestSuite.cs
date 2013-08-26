@@ -110,6 +110,8 @@ namespace SsisUnit
         public event EventHandler<SetupCompletedEventArgs> SetupCompleted;
         public event EventHandler<TeardownCompletedEventArgs> TeardownCompleted;
         public event EventHandler<TestCompletedEventArgs> TestCompleted;
+        public event EventHandler<TestSuiteCompletedEventArgs> TestSuiteCompleted;
+        public event EventHandler<TestSuiteFailedEventArgs> TestSuiteFailed;
 
         internal virtual void OnRaiseCommandCompleted(object sender, CommandCompletedEventArgs e)
         {
@@ -149,6 +151,28 @@ namespace SsisUnit
         internal virtual void OnRaiseTestCompleted(TestCompletedEventArgs e)
         {
             EventHandler<TestCompletedEventArgs> handler = TestCompleted;
+
+            // Event will be null if there are no subscribers
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private void OnRaiseTestSuiteCompleted(TestSuiteCompletedEventArgs e)
+        {
+            EventHandler<TestSuiteCompletedEventArgs> handler = TestSuiteCompleted;
+
+            // Event will be null if there are no subscribers
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private void OnRaiseTestSuiteFailed(TestSuiteFailedEventArgs e)
+        {
+            EventHandler<TestSuiteFailedEventArgs> handler = TestSuiteFailed;
 
             // Event will be null if there are no subscribers
             if (handler != null)
@@ -327,7 +351,16 @@ namespace SsisUnit
                 Statistics.Reset();
             }
 
-            ExecuteCommandSet(TestSuiteSetup);
+            try
+            {
+                ExecuteCommandSet(TestSuiteSetup);
+            }
+            catch (Exception)
+            {
+                OnRaiseTestSuiteFailed(new TestSuiteFailedEventArgs(DateTime.Now, "The test suite setup failed."));
+
+                throw;
+            }
 
             foreach (Test test in Tests.Values)
             {
@@ -346,7 +379,29 @@ namespace SsisUnit
                 testRef.Execute();
             }
 
-            ExecuteCommandSet(TestSuiteTeardown);
+            try
+            {
+                ExecuteCommandSet(TestSuiteTeardown);
+            }
+            catch (Exception)
+            {
+                OnRaiseTestSuiteFailed(new TestSuiteFailedEventArgs(DateTime.Now, "The test suite teardown failed."));
+
+                throw;
+            }
+
+            int totalTests = Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount);
+            int failedTests = Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
+            int passedTests = Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount);
+
+            string completionMessage;
+
+            if (failedTests < 1)
+                completionMessage = "The test suite has completed successfully, " + (totalTests == 1 ? "1 unit test has passed." : string.Format("{0} unit tests have passed.", totalTests.ToString("N0")));
+            else
+                completionMessage = string.Format("The test suite has completed with {0} unit test failure{1} and {2} unit test success{3}.", failedTests.ToString("N0"), failedTests == 1 ? string.Empty : "s", passedTests.ToString("N0"), passedTests == 1 ? string.Empty : "es");
+
+            OnRaiseTestSuiteCompleted(new TestSuiteCompletedEventArgs(DateTime.Now, totalTests, failedTests, passedTests, completionMessage, failedTests < 1));
 
             return Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount);
         }
@@ -553,27 +608,33 @@ namespace SsisUnit
             }
         }
 
-        //internal int Setup(XmlNode setup, Package pkg, DtsContainer task)
-        //{
-        //    return SetupCommands.Execute(pkg, task);
-        //}
-
-        //internal int Setup(Package pkg, DtsContainer task)
-        //{
-        //    return SetupCommands.Execute(pkg, task, null);
-        //}
-
         internal void RunTestSuite(SsisTestSuite ts)
         {
-            ts.CommandStarted += TestCaseCommandStarted;
-            ts.CommandCompleted += TestCaseCommandCompleted;
-            ts.CommandFailed += TestCaseCommandFailed;
-            ts.SetupCompleted += TestCaseSetupCompleted;
-            ts.TestCompleted += TestCaseTestCompleted;
-            ts.TeardownCompleted += TestCaseTeardownCompleted;
-            ts.AssertCompleted += TestCaseAssertCompleted;
+            if (ts == null)
+                throw new ArgumentNullException("ts");
 
-            ts.Execute(this);
+            try
+            {
+                ts.CommandStarted += TestCaseCommandStarted;
+                ts.CommandCompleted += TestCaseCommandCompleted;
+                ts.CommandFailed += TestCaseCommandFailed;
+                ts.SetupCompleted += TestCaseSetupCompleted;
+                ts.TestCompleted += TestCaseTestCompleted;
+                ts.TeardownCompleted += TestCaseTeardownCompleted;
+                ts.AssertCompleted += TestCaseAssertCompleted;
+
+                ts.Execute(this);
+            }
+            finally
+            {
+                ts.CommandStarted -= TestCaseCommandStarted;
+                ts.CommandCompleted -= TestCaseCommandCompleted;
+                ts.CommandFailed -= TestCaseCommandFailed;
+                ts.SetupCompleted -= TestCaseSetupCompleted;
+                ts.TestCompleted -= TestCaseTestCompleted;
+                ts.TeardownCompleted -= TestCaseTeardownCompleted;
+                ts.AssertCompleted -= TestCaseAssertCompleted;
+            }
         }
 
         #region Event Handlers

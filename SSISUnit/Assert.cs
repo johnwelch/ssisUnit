@@ -16,40 +16,44 @@ namespace SsisUnit
     public class SsisAssert : SsisUnitBaseObject
     {
         private readonly SsisTestSuite _testSuite;
+        private readonly Test _test;
 
         private object _expectedResult;
         private bool _testBefore;
         private CommandBase _command;
-        
         private bool _expression;
 
-        public SsisAssert(SsisTestSuite testSuite, string name, object expectedResult, bool testBefore)
+        public SsisAssert(SsisTestSuite testSuite, Test test, string name, object expectedResult, bool testBefore)
         {
             _testSuite = testSuite;
+            _test = test;
             Name = name;
             _expectedResult = expectedResult;
             _testBefore = testBefore;
         }
 
-        public SsisAssert(SsisTestSuite testSuite, string name, object expectedResult, bool testBefore, bool expression)
+        public SsisAssert(SsisTestSuite testSuite, Test test, string name, object expectedResult, bool testBefore, bool expression)
         {
             _testSuite = testSuite;
+            _test = test;
             Name = name;
             _expectedResult = expectedResult;
             _testBefore = testBefore;
             _expression = expression;
         }
 
-        public SsisAssert(SsisTestSuite testSuite, XmlNode assertXml)
+        public SsisAssert(SsisTestSuite testSuite, Test test, XmlNode assertXml)
         {
             _testSuite = testSuite;
+            _test = test;
 
             LoadFromXml(assertXml);
         }
 
-        public SsisAssert(SsisTestSuite testSuite, string assertXml)
+        public SsisAssert(SsisTestSuite testSuite, Test test, string assertXml)
         {
             _testSuite = testSuite;
+            _test = test;
 
             LoadFromXml(assertXml);
         }
@@ -169,10 +173,10 @@ namespace SsisUnit
                                   dataCompareCommandResults.ExpectedDataset.Name,
                                   dataCompareCommandResults.ActualDataset.Name);
 
-                _testSuite.OnRaiseAssertCompleted(new DataCompareAssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage.Trim(), returnValue, dataCompareCommand, dataCompareCommandResults));
+                _testSuite.OnRaiseAssertCompleted(new DataCompareAssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, _test.Name, Name, resultMessage.Trim(), returnValue, dataCompareCommand, dataCompareCommandResults));
             }
             else
-                _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, Name, resultMessage, returnValue, Command));
+                _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, _test.Name, Name, resultMessage, returnValue, Command));
 
             return returnValue;
         }

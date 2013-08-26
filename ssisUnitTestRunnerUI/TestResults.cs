@@ -16,9 +16,10 @@ namespace ssisUnitTestRunnerUI
         private readonly EventHandler<SetupCompletedEventArgs> _setupCompleted;
         private readonly EventHandler<TeardownCompletedEventArgs> _teardownCompleted;
         private readonly EventHandler<TestCompletedEventArgs> _testCompleted;
-        private readonly EventHandler<CommandStartedEventArgs> _commandStarted;
         private readonly EventHandler<CommandCompletedEventArgs> _commandCompleted;
         private readonly EventHandler<CommandFailedEventArgs> _commandFailed;
+        private readonly EventHandler<TestSuiteCompletedEventArgs> _testSuiteCompleted;
+        private readonly EventHandler<TestSuiteFailedEventArgs> _testSuiteFailed;
 
         private readonly string _fileName;
 
@@ -31,17 +32,19 @@ namespace ssisUnitTestRunnerUI
             _setupCompleted = TestSuiteSetupCompleted;
             _teardownCompleted = TestSuiteTeardownCompleted;
             _testCompleted = TestSuiteTestCompleted;
-            _commandStarted = _testSuite_CommandStarted;
             _commandCompleted = TestSuiteCommandCompleted;
             _commandFailed = TestSuiteCommandFailed;
+            _testSuiteCompleted = TestSuiteCompleted;
+            _testSuiteFailed = TestSuiteFailed;
 
             _testSuite.AssertCompleted += _assertCompleted;
             _testSuite.SetupCompleted += _setupCompleted;
             _testSuite.TeardownCompleted += _teardownCompleted;
             _testSuite.TestCompleted += _testCompleted;
-            _testSuite.CommandStarted += _commandStarted;
             _testSuite.CommandCompleted += _commandCompleted;
             _testSuite.CommandFailed += _commandFailed;
+            _testSuite.TestSuiteCompleted += _testSuiteCompleted;
+            _testSuite.TestSuiteFailed += _testSuiteFailed;
         }
 
         public void RunSuite()
@@ -136,14 +139,34 @@ namespace ssisUnitTestRunnerUI
                 true);
         }
 
-        private void _testSuite_CommandStarted(object sender, CommandStartedEventArgs e)
+        private void TestSuiteCompleted(object sender, TestSuiteCompletedEventArgs e)
         {
-            // dataGridView1.Rows.Add("Command", e.StartedExecutionTime, e.Package, e.CommandName,
-            //      null, null, true);
+            if (e == null || e.TestExecResult == null)
+                return;
+
+            dataGridView1.Rows.Add(
+                "Test Suite",
+                e.TestExecResult.TestExecutionTime,
+                e.TestExecResult.PackageName,
+                e.TestExecResult.TaskName,
+                e.TestExecResult.TestName,
+                e.TestExecResult.TestResultMsg,
+                e.TestExecResult.TestPassed);
         }
 
-        private void DataGridView1CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void TestSuiteFailed(object sender, TestSuiteFailedEventArgs e)
         {
+            if (e == null || e.TestExecResult == null)
+                return;
+
+            dataGridView1.Rows.Add(
+                "Test Suite",
+                e.TestExecResult.TestExecutionTime,
+                e.TestExecResult.PackageName,
+                e.TestExecResult.TaskName,
+                e.TestExecResult.TestName,
+                e.TestExecResult.TestResultMsg,
+                e.TestExecResult.TestPassed);
         }
 
         private void SaveToolStripMenuItemClick(object sender, EventArgs e)
@@ -203,7 +226,6 @@ namespace ssisUnitTestRunnerUI
             _testSuite.SetupCompleted -= _setupCompleted;
             _testSuite.TeardownCompleted -= _teardownCompleted;
             _testSuite.TestCompleted -= _testCompleted;
-            _testSuite.CommandStarted -= _commandStarted;
             _testSuite.CommandCompleted -= _commandCompleted;
             _testSuite.CommandFailed -= _commandFailed;
         }

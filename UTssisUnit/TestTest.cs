@@ -65,7 +65,7 @@ namespace UTssisUnit
         {
             var testSuite = new SsisTestSuite();
             var target = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
-            target.Asserts.Add("Test", new SsisAssert(testSuite, "Test", 100, false));
+            target.Asserts.Add("Test", new SsisAssert(testSuite, target, "Test", 100, false));
             target.Asserts["Test"].Command = new SqlCommand(testSuite, "AdventureWorks", true, "SELECT COUNT(*) FROM Production.Product");
 
             string actual = target.PersistToXml();
@@ -122,7 +122,7 @@ namespace UTssisUnit
             var target = new Test(ts, "Test Task That Fails", "C:\\Projects\\SSISUnit\\UTssis2008packages\\UT Basic Scenario.dtsx", "SELECT COUNT", DTSExecResult.Failure);
             target.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\SELECT COUNT.Properties[SqlStatementSource]", "SELECT ''"));
             ts.Tests.Add("Test Task That Fails", target);
-            var assert = new SsisAssert(ts, "Test Row Count", 504, false, false);
+            var assert = new SsisAssert(ts, target, "Test Row Count", 504, false, false);
             target.Asserts.Add("Test Row Count", assert);
             assert.Command = new VariableCommand(ts, VariableCommand.VariableOperation.Get, "User::ProductRowCount", null);
             ts.Execute();
@@ -139,7 +139,7 @@ namespace UTssisUnit
             var ts = new SsisTestSuite();
             var target = new Test(ts, "DataFlowExpression", newFileName, "Data Flow Task");
             ts.Tests.Add("Test Task That Fails", target);
-            var assert = new SsisAssert(ts, "Test Anything", "true==true", false, true);
+            var assert = new SsisAssert(ts, target, "Test Anything", "true==true", false, true);
             target.Asserts.Add("Test Row Count", assert);
             assert.Command = new PropertyCommand(ts, "Get", "\\Package.Properties[Description]", null);
 
@@ -168,7 +168,7 @@ namespace UTssisUnit
             var target = new Test(ts, "DataFlowComponent", newFileName, @"Package\Data Flow Task\Derived Column");
             ts.Tests.Add("Test Data Flow Derived Column", target);
             target.TestSetup.Commands.Add(new ComponentInputCommand(ts, "ComponentInput", "testInput", @"Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]"));
-            var assert = new SsisAssert(ts, "Test Output", true, false);
+            var assert = new SsisAssert(ts, target, "Test Output", true, false);
             target.Asserts.Add("Test Output", assert);
             assert.Command = new ComponentOutputCommand(ts, "ComponentOutput", string.Empty, string.Empty);
 

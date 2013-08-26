@@ -118,7 +118,7 @@ namespace SsisUnit
             {
                 OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
 
-                returnValue = -1;
+                throw;
             }
 
             return returnValue;

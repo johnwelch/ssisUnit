@@ -28,36 +28,17 @@ namespace SsisUnit
         {
         }
 
-        //public Test(SsisTestSuite testSuite, string name, string package, string task, string taskName)
-        //    : this(testSuite, name, package, task, taskName, DTSExecResult.Success)
-        //{
-        //}
-
         public Test(SsisTestSuite testSuite, string name, string package, string task, DTSExecResult taskResult)
         {
             Asserts = new Dictionary<string, SsisAssert>();
             TestSuite = testSuite;
             Name = name;
             Task = task;
-            //TaskName = taskName;
             PackageLocation = package;
             TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite);
             TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite);
             TaskResult = taskResult;
         }
-
-        //public Test(SsisTestSuite testSuite, string name, string package, string task, string taskName, DTSExecResult taskResult)
-        //{
-        //    Asserts = new Dictionary<string, SsisAssert>();
-        //    TestSuite = testSuite;
-        //    Name = name;
-        //    Task = task;
-        //    //TaskName = taskName;
-        //    PackageLocation = package;
-        //    TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite);
-        //    TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite);
-        //    TaskResult = taskResult;
-        //}
 
         public Test(SsisTestSuite testSuite, XmlNode testXml)
         {
@@ -102,12 +83,6 @@ namespace SsisUnit
 #endif
         public string Task { get; set; }
 
-        ///// <summary>
-        ///// The task's name is solely used for display and informational purposes.  The <see cref="Task"/> property determines what gets executed when executing the <see cref="Test"/>.
-        ///// </summary>
-        //[Browsable(false)]
-        //public string TaskName { get; set; }
-
 #if SQL2005
         [Description("The package that this test will run against."),
          TypeConverter("SsisUnit.Design.PackageRefConverter, SsisUnit.Design, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
@@ -147,7 +122,16 @@ namespace SsisUnit
             Package packageToTest = null;
             DtsContainer taskHost = null;
 
-            LoadPackageAndTask(PackageLocation, Task, ref packageToTest, ref taskHost);
+            try
+            {
+                LoadPackageAndTask(PackageLocation, Task, ref packageToTest, ref taskHost);
+            }
+            catch (Exception)
+            {
+                TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
+
+                throw;
+            }
 
             string setupResults = string.Empty;
             bool setupSucceeded;
@@ -163,8 +147,14 @@ namespace SsisUnit
             }
             catch (Exception ex)
             {
-                setupResults = "Setup failed: " + ex.Message + " : " + ex.InnerException;
+                setupResults = "Setup failed: " + ex.Message;
+
+                if (ex.InnerException != null)
+                    setupResults += " : " + ex.InnerException;
+
                 setupSucceeded = false;
+
+                TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
             }
             finally
             {
@@ -195,7 +185,7 @@ namespace SsisUnit
 
                 if (result == TaskResult)
                 {
-                    TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), true)));
+                    TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), true)));
                     TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
 
                     foreach (SsisAssert assert in Asserts.Values)
@@ -213,12 +203,12 @@ namespace SsisUnit
                 }
                 else
                 {
-                    TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), false)));
+                    TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), false)));
                     TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
 
                     foreach (DtsError err in packageToTest.Errors)
                     {
-                        TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(new TestResult(DateTime.Now, PackageLocation, _taskName, Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
+                        TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
                         TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
                     }
 
@@ -252,9 +242,14 @@ namespace SsisUnit
             }
             catch (Exception ex)
             {
-                teardownResults = "Teardown failed: " + ex.Message + " : " + ex.InnerException;
+                teardownResults = "Teardown failed: " + ex.Message;
+
+                if (ex.InnerException != null)
+                    teardownResults += " : " + ex.InnerException;
 
                 returnValue = false;
+
+                TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
             }
             finally
             {
@@ -327,13 +322,17 @@ namespace SsisUnit
                     throw new Exception("The task host was not found.");
                 }
             }
+            catch (DtsPackageStoreException)
+            {
+                throw;
+            }
             catch (KeyNotFoundException)
             {
                 throw new KeyNotFoundException(string.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packagePath));
             }
             catch (Exception ex)
             {
-                throw new ArgumentException(string.Format("The package path ({0}) or the task host ({1}) is not valid." + ex.Message, packagePath, taskId));
+                throw new ArgumentException(string.Format("The package path ({0}) or the task host ({1}) is not valid. {2}", string.IsNullOrEmpty(packagePath) ? "<NOT PROVIDED>" : packagePath, taskId, ex.Message));
             }
         }
 
@@ -388,7 +387,6 @@ namespace SsisUnit
             Name = testXml.Attributes != null && testXml.Attributes["name"] != null ? testXml.Attributes["name"].Value : null;
             PackageLocation = testXml.Attributes != null && testXml.Attributes["package"] != null ? testXml.Attributes["package"].Value : null;
             Task = testXml.Attributes != null && testXml.Attributes["task"] != null ? testXml.Attributes["task"].Value : null;
-            //TaskName = testXml.Attributes != null && testXml.Attributes["taskName"] != null ? testXml.Attributes["taskName"].Value : null;
             Asserts = LoadAsserts(testXml);
             TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite, testXml["TestSetup"]);
             TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite, testXml["TestTeardown"]);
@@ -433,7 +431,7 @@ namespace SsisUnit
                     if (assert.Attributes == null)
                         continue;
 
-                    returnValue.Add(assert.Attributes["name"].Value, new SsisAssert(TestSuite, assert));
+                    returnValue.Add(assert.Attributes["name"].Value, new SsisAssert(TestSuite, this, assert));
                 }
             }
 
@@ -442,10 +440,10 @@ namespace SsisUnit
 
         private class SsisEvents : DefaultEvents
         {
-            public override bool OnError(DtsObject source, int errorCode, string subComponent, string description, string helpFile, int helpContext, string idofInterfaceWithError)
-            {
-                return base.OnError(source, errorCode, subComponent, description, helpFile, helpContext, idofInterfaceWithError);
-            }
+            // public override bool OnError(DtsObject source, int errorCode, string subComponent, string description, string helpFile, int helpContext, string idofInterfaceWithError)
+            // {
+            //     return base.OnError(source, errorCode, subComponent, description, helpFile, helpContext, idofInterfaceWithError);
+            // }
         }
     }
 }
