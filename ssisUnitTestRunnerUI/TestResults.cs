@@ -236,7 +236,6 @@ namespace ssisUnitTestRunnerUI
             _testSuite.SetupCompleted -= _setupCompleted;
             _testSuite.TeardownCompleted -= _teardownCompleted;
             _testSuite.TestCompleted -= _testCompleted;
-            _testSuite.CommandStarted -= _commandStarted;
             _testSuite.CommandCompleted -= _commandCompleted;
             _testSuite.CommandFailed -= _commandFailed;
 
@@ -246,7 +245,6 @@ namespace ssisUnitTestRunnerUI
             _testSuite.SetupCompleted += _setupCompleted;
             _testSuite.TeardownCompleted += _teardownCompleted;
             _testSuite.TestCompleted += _testCompleted;
-            _testSuite.CommandStarted += _commandStarted;
             _testSuite.CommandCompleted += _commandCompleted;
             _testSuite.CommandFailed += _commandFailed;
 
