@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using System.Text;
 using System.Xml;
 using System.ComponentModel;
@@ -10,6 +11,8 @@ namespace SsisUnit
     public class PackageRef
     {
         private string _storageType;
+
+        private SecureString _password;
 
         public PackageRef(string name, string packagePath, PackageStorageType storageType, string server)
         {
@@ -70,10 +73,16 @@ namespace SsisUnit
             }
         }
 
+        [Description("The password to use for accessing the package.")]
+        public string Password { set { _password = value.ConvertToSecureString(); } }
+
+        internal SecureString StoredPassword { get { return _password; } }
+
+
         public string PersistToXml()
         {
-            StringBuilder xml = new StringBuilder();
-            XmlWriterSettings writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
+            var xml = new StringBuilder();
+            var writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
 
             using (XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings))
             {
@@ -111,6 +120,11 @@ namespace SsisUnit
             if (packageXml.Attributes["server"] != null)
             {
                 Server = packageXml.Attributes["server"].Value;
+            }
+
+            if (packageXml.Attributes["password"] != null)
+            {
+                Password = packageXml.Attributes["password"].Value;
             }
         }
     }

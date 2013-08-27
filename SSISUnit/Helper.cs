@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Xml;
 using System.Globalization;
 
@@ -281,12 +283,20 @@ namespace SsisUnit
                 if (!isPackagePathFilePath)
                 {
                     if (testSuite.PackageRefs.ContainsKey(packageName))
+                    {
                         packageRef = testSuite.PackageRefs[packageName];
+                    }
                     else
                     {
                         foreach (PackageRef packageReference in testSuite.PackageRefs.Values)
                         {
-                            if ((packageReference.Name != null && string.Compare(packageReference.Name, packageName, StringComparison.OrdinalIgnoreCase) == 0) || (packageReference.PackagePath != null && string.Compare(packageReference.PackagePath, packageName, StringComparison.OrdinalIgnoreCase) == 0))
+                            if ((packageReference.Name != null
+                                 && string.Compare(
+                                     packageReference.Name, packageName, StringComparison.OrdinalIgnoreCase) == 0)
+                                || (packageReference.PackagePath != null
+                                    && string.Compare(
+                                        packageReference.PackagePath, packageName, StringComparison.OrdinalIgnoreCase)
+                                    == 0))
                             {
                                 packageRef = packageReference;
 
@@ -297,6 +307,8 @@ namespace SsisUnit
 
                     if (packageRef == null)
                         throw new KeyNotFoundException();
+
+                    ssisApp.PackagePassword = packageRef.StoredPassword.ConvertToUnsecureString();
 
                     switch (packageRef.StorageType)
                     {
@@ -472,5 +484,38 @@ namespace SsisUnit
 
             return null;
         }
+
+        public static string ConvertToUnsecureString(this SecureString securePassword)
+        {
+            if (securePassword == null)
+                throw new ArgumentNullException("securePassword");
+
+            IntPtr unmanagedString = IntPtr.Zero;
+            try
+            {
+                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(securePassword);
+                return Marshal.PtrToStringUni(unmanagedString);
+            }
+            finally
+            {
+                Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
+            }
+        }
+
+        public static SecureString ConvertToSecureString(this string password)
+        {
+            if (password == null)
+                throw new ArgumentNullException("password");
+
+            var securePassword = new SecureString();
+            foreach (var character in password)
+            {
+                securePassword.AppendChar(character);
+            }
+            securePassword.MakeReadOnly();
+            return securePassword;
+        }
+
+
     }
 }
