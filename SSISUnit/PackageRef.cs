@@ -74,7 +74,17 @@ namespace SsisUnit
         }
 
         [Description("The password to use for accessing the package.")]
-        public string Password { set { _password = value.ConvertToSecureString(); } }
+        public string Password
+        {
+            set 
+            {
+#if SQL2005
+                _password = Helper.ConvertToSecureString(value);
+#else
+                _password = value.ConvertToSecureString();
+#endif
+            }
+        }
 
         internal SecureString StoredPassword { get { return _password; } }
 

@@ -110,6 +110,10 @@
     <EmbeddedResource Include="UTSsisUnit.ssisUnit" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SSISUnit\SSISUnit_SQL2008.csproj">
       <Project>{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}</Project>
       <Name>SSISUnit_SQL2008</Name>

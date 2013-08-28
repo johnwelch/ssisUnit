@@ -5,13 +5,14 @@ using System.Text;
 using System.Windows.Forms;
 using SsisUnit;
 
+using SsisUnitBase.Enums;
+using SsisUnitBase.EventArgs;
+
 namespace ssisUnitTestRunnerUI
 {
     [Localizable(false)]
     public partial class TestResults : Form
     {
-        private SsisTestSuite _testSuite;
-
         private readonly EventHandler<AssertCompletedEventArgs> _assertCompleted;
         private readonly EventHandler<SetupCompletedEventArgs> _setupCompleted;
         private readonly EventHandler<TeardownCompletedEventArgs> _teardownCompleted;
@@ -22,6 +23,8 @@ namespace ssisUnitTestRunnerUI
         private readonly EventHandler<TestSuiteFailedEventArgs> _testSuiteFailed;
 
         private readonly string _fileName;
+
+        private SsisTestSuite _testSuite;
 
         public TestResults(SsisTestSuite testSuite, string fileName)
         {
@@ -55,12 +58,12 @@ namespace ssisUnitTestRunnerUI
 
                 _testSuite.Execute();
                 
-                lblTestCount.Text = "Test Count: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount).ToString("N0");
-                lblTestPassed.Text = "Tests Passed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount).ToString("N0");
-                lblTestsFailed.Text = "Tests Failed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestFailedCount).ToString("N0");
-                lblAssertCount.Text = "Assert Count: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertCount).ToString("N0");
-                lblAssertPassed.Text = "Asserts Passed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount).ToString("N0");
-                lblAssertsFailed.Text = "Asserts Failed: " + _testSuite.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount).ToString("N0");
+                lblTestCount.Text = "Test Count: " + _testSuite.Statistics.GetStatistic(StatisticEnum.TestCount).ToString("N0");
+                lblTestPassed.Text = "Tests Passed: " + _testSuite.Statistics.GetStatistic(StatisticEnum.TestPassedCount).ToString("N0");
+                lblTestsFailed.Text = "Tests Failed: " + _testSuite.Statistics.GetStatistic(StatisticEnum.TestFailedCount).ToString("N0");
+                lblAssertCount.Text = "Assert Count: " + _testSuite.Statistics.GetStatistic(StatisticEnum.AssertCount).ToString("N0");
+                lblAssertPassed.Text = "Asserts Passed: " + _testSuite.Statistics.GetStatistic(StatisticEnum.AssertPassedCount).ToString("N0");
+                lblAssertsFailed.Text = "Asserts Failed: " + _testSuite.Statistics.GetStatistic(StatisticEnum.AssertFailedCount).ToString("N0");
             }
             catch (Exception ex)
             {
@@ -230,7 +233,7 @@ namespace ssisUnitTestRunnerUI
             _testSuite.CommandFailed -= _commandFailed;
         }
 
-        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RefreshToolStripMenuItemClick(object sender, EventArgs e)
         {
             _testSuite.AssertCompleted -= _assertCompleted;
             _testSuite.SetupCompleted -= _setupCompleted;

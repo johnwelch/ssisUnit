@@ -4,6 +4,8 @@ using System.Xml;
 using System.Globalization;
 using System.ComponentModel;
 
+using SsisUnitBase.EventArgs;
+
 #if SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 #elif SQL2005

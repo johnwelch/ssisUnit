@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
-namespace SsisUnit
+namespace SsisUnitBase.EventArgs
 {
-    public class CommandStartedEventArgs : EventArgs
+    public class CommandStartedEventArgs : System.EventArgs
     {
         public CommandStartedEventArgs(DateTime startedExecutionTime, string commandName, string parentName, string package)
         {

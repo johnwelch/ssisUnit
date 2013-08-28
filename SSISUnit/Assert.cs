@@ -5,6 +5,10 @@ using Microsoft.SqlServer.Dts.Runtime;
 using System.Globalization;
 using System.ComponentModel;
 
+using SsisUnitBase;
+using SsisUnitBase.Enums;
+using SsisUnitBase.EventArgs;
+
 #if SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 #elif SQL2005
@@ -92,7 +96,7 @@ namespace SsisUnit
 
         public bool Execute(Package package, DtsContainer task)
         {
-            _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertCount);
+            _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertCount);
 
             bool returnValue;
             string resultMessage = string.Empty;
@@ -133,12 +137,12 @@ namespace SsisUnit
             if (returnValue)
             {
                 resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult, _expectedResult);
-                _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
+                _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertPassedCount);
             }
             else
             {
                 resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult, _expectedResult);
-                _testSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
+                _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
             }
 
             if (dataCompareCommandResults != null)

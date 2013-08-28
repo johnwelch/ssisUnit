@@ -85,14 +85,9 @@
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
     <Compile Include="Assert.cs" />
-    <Compile Include="AssertCompletedEventArgs.cs" />
     <Compile Include="CommandBase.cs" />
-    <Compile Include="CommandCompletedEventArgs.cs" />
-    <Compile Include="CommandFailedEventArgs.cs" />
     <Compile Include="CommandProperty.cs" />
-    <Compile Include="CommandResultsBase.cs" />
     <Compile Include="CommandSet.cs" />
-    <Compile Include="CommandStartedEventArgs.cs" />
     <Compile Include="Commands\ComponentInputCommand.cs" />
     <Compile Include="Commands\ComponentOutputCommand.cs" />
     <Compile Include="ConnectionList.cs" />
@@ -107,17 +102,12 @@
     <Compile Include="Enums\PackageStorageType.cs" />
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
-    <Compile Include="IssisTestCase.cs" />
-    <Compile Include="ISsisUnitPersist.cs" />
-    <Compile Include="IValidate.cs" />
     <Compile Include="PackageRef.cs" />
     <Compile Include="ProcessCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyCommand.cs" />
     <Compile Include="ReflectorEval.cs" />
-    <Compile Include="SetupCompletedEventArgs.cs" />
     <Compile Include="SqlCommand.cs" />
-    <Compile Include="SsisBaseObject.cs" />
     <Compile Include="SsisTestSuite.cs" />
     <Compile Include="SsisUnit.cs">
       <DependentUpon>SsisUnit.xsd</DependentUpon>
@@ -128,14 +118,8 @@
       <DependentUpon>ssisUnit.settings</DependentUpon>
     </Compile>
     <Compile Include="ssisUnit1.Designer.cs" />
-    <Compile Include="TeardownCompletedEventArgs.cs" />
     <Compile Include="Test.cs" />
-    <Compile Include="TestCompletedEventArgs.cs" />
     <Compile Include="TestRef.cs" />
-    <Compile Include="TestResult.cs" />
-    <Compile Include="TestSuiteCompletedEventArgs.cs" />
-    <Compile Include="TestSuiteFailedEventArgs.cs" />
-    <Compile Include="TestSuiteResults.cs" />
     <Compile Include="VariableCommand.cs" />
     <Compile Include="XmlHelper.cs" />
   </ItemGroup>
@@ -180,6 +164,10 @@
       <Project>{2CAB4A02-40F5-47DA-AF07-F35A35A1402C}</Project>
       <Name>SsisUnit.TestComponents.2008</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+      <Name>SsisUnitBase</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

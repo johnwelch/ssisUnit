@@ -1,4 +1,4 @@
-﻿namespace SsisUnit
+namespace SsisUnitBase
 {
     public abstract class CommandResultsBase
     {

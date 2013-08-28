@@ -308,7 +308,14 @@ namespace SsisUnit
                     if (packageRef == null)
                         throw new KeyNotFoundException();
 
-                    ssisApp.PackagePassword = packageRef.StoredPassword.ConvertToUnsecureString();
+                    if (packageRef.StoredPassword != null)
+                    {
+#if SQL2005
+                        ssisApp.PackagePassword = Helper.ConvertToUnsecureString(packageRef.StoredPassword);
+#else
+                        ssisApp.PackagePassword = packageRef.StoredPassword.ConvertToUnsecureString();
+#endif
+                    }
 
                     switch (packageRef.StorageType)
                     {
@@ -485,12 +492,66 @@ namespace SsisUnit
             return null;
         }
 
+#if SQL2005
+        public static SecureString ConvertToSecureString(string password)
+        {
+            if (password == null)
+                throw new ArgumentNullException("password");
+
+            var securePassword = new SecureString();
+
+            foreach (var character in password)
+            {
+                securePassword.AppendChar(character);
+            }
+
+            securePassword.MakeReadOnly();
+
+            return securePassword;
+        }
+
+        public static string ConvertToUnsecureString(SecureString securePassword)
+        {
+            if (securePassword == null)
+                throw new ArgumentNullException("securePassword");
+
+            IntPtr unmanagedString = IntPtr.Zero;
+            try
+            {
+                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(securePassword);
+
+                return Marshal.PtrToStringUni(unmanagedString);
+            }
+            finally
+            {
+                Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
+            }
+        }
+#else
+        public static SecureString ConvertToSecureString(this string password)
+        {
+            if (password == null)
+                throw new ArgumentNullException("password");
+
+            var securePassword = new SecureString();
+            
+            foreach (var character in password)
+            {
+                securePassword.AppendChar(character);
+            }
+            
+            securePassword.MakeReadOnly();
+            
+            return securePassword;
+        }
+
         public static string ConvertToUnsecureString(this SecureString securePassword)
         {
             if (securePassword == null)
                 throw new ArgumentNullException("securePassword");
 
             IntPtr unmanagedString = IntPtr.Zero;
+
             try
             {
                 unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(securePassword);
@@ -501,21 +562,6 @@ namespace SsisUnit
                 Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
             }
         }
-
-        public static SecureString ConvertToSecureString(this string password)
-        {
-            if (password == null)
-                throw new ArgumentNullException("password");
-
-            var securePassword = new SecureString();
-            foreach (var character in password)
-            {
-                securePassword.AppendChar(character);
-            }
-            securePassword.MakeReadOnly();
-            return securePassword;
-        }
-
-
+#endif
     }
 }

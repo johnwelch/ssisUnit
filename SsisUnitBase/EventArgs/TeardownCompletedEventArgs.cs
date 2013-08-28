@@ -1,19 +1,19 @@
-﻿using System;
+using System;
 
-namespace SsisUnit
+namespace SsisUnitBase.EventArgs
 {
-    public class SetupCompletedEventArgs : EventArgs
+    public class TeardownCompletedEventArgs : System.EventArgs
     {
-        public SetupCompletedEventArgs(DateTime setupExecutionTime, string testName, string package, string taskId, string results)
+        public TeardownCompletedEventArgs(DateTime teardownExecutionTime, string testName, string package, string taskId, string results)
         {
             TestName = testName;
-            SetupExecutionTime = setupExecutionTime;
+            TeardownExecutionTime = teardownExecutionTime;
             TaskGuid = taskId;
             Package = package;
             Results = results;
         }
 
-        public DateTime SetupExecutionTime { get; private set; }
+        public DateTime TeardownExecutionTime { get; private set; }
 
         public string Results { get; private set; }
 

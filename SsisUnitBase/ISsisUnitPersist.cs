@@ -1,5 +1,4 @@
-﻿using System;
-namespace SsisUnit
+namespace SsisUnitBase
 {
     public interface ISsisUnitPersist
     {

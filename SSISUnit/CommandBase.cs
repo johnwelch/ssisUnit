@@ -8,11 +8,8 @@ using System.Xml;
 
 using Microsoft.SqlServer.Dts.Runtime;
 
-#if SQL2012 || SQL2008
-using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
-#elif SQL2005
-using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
-#endif
+using SsisUnitBase;
+using SsisUnitBase.EventArgs;
 
 namespace SsisUnit
 {
@@ -238,11 +235,6 @@ namespace SsisUnit
         }
 
         public abstract object Execute(Package package, DtsContainer container);
-
-        //public virtual object Execute(Package package)
-        //{
-        //    return Execute(package, null, null);
-        //}
 
         public virtual object Execute()
         {

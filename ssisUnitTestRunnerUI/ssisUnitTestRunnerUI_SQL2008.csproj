@@ -155,6 +155,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SsisUnitDesign\SsisUnit.Design_SQL2008.csproj">
       <Project>{3B38F252-0DE8-4639-9AF9-AB8B216B685C}</Project>
       <Name>SsisUnit.Design_SQL2008</Name>

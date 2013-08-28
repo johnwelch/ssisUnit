@@ -10,6 +10,8 @@ using System.Xml;
 
 using SsisUnit.Enums;
 
+using SsisUnitBase;
+
 namespace ssisUnitTestRunnerUI
 {
     public partial class testSuiteUI : Form

@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
-namespace SsisUnit
+namespace SsisUnitBase.EventArgs
 {
-    public class CommandFailedEventArgs : EventArgs
+    public class CommandFailedEventArgs : System.EventArgs
     {
         public CommandFailedEventArgs(DateTime failedExecutionTime, string commandName, string parentName, string package, string results)
         {

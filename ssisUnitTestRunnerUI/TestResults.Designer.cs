@@ -136,7 +136,7 @@
             this.refreshToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.refreshToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.refreshToolStripMenuItem.Text = "Refresh Test Case";
-            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.RefreshToolStripMenuItemClick);
             // 
             // dataGridView1
             // 

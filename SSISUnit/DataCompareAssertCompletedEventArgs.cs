@@ -1,5 +1,8 @@
 ﻿using System;
 
+using SsisUnitBase;
+using SsisUnitBase.EventArgs;
+
 namespace SsisUnit
 {
     public sealed class DataCompareAssertCompletedEventArgs : AssertCompletedEventArgs

@@ -7,6 +7,10 @@ using Microsoft.SqlServer.Dts.Runtime;
 using System.Globalization;
 using System.ComponentModel;
 
+using SsisUnitBase;
+using SsisUnitBase.Enums;
+using SsisUnitBase.EventArgs;
+
 #if SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 #elif SQL2005
@@ -115,7 +119,7 @@ namespace SsisUnit
         /// <returns>True if the test was executed with no errors, false if it encountered errors.</returns>
         public bool Execute()
         {
-            TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestCount);
+            TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestCount);
 
             bool returnValue = false;
 
@@ -128,7 +132,7 @@ namespace SsisUnit
             }
             catch (Exception)
             {
-                TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
+                TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestFailedCount);
 
                 throw;
             }
@@ -154,7 +158,7 @@ namespace SsisUnit
 
                 setupSucceeded = false;
 
-                TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
+                TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestFailedCount);
             }
             finally
             {
@@ -181,12 +185,12 @@ namespace SsisUnit
 
                 DTSExecResult result = taskHost.ExecutionResult;
 
-                TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertCount);
+                TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertCount);
 
                 if (result == TaskResult)
                 {
                     TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), true)));
-                    TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount);
+                    TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertPassedCount);
 
                     foreach (SsisAssert assert in Asserts.Values)
                     {
@@ -199,27 +203,27 @@ namespace SsisUnit
                     resultMessage = "All asserts were completed.";
                     returnValue = true;
 
-                    TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestPassedCount);
+                    TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestPassedCount);
                 }
                 else
                 {
                     TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), false)));
-                    TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
+                    TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
 
                     foreach (DtsError err in packageToTest.Errors)
                     {
                         TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
-                        TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount);
+                        TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
                     }
 
                     resultMessage = "The task " + _taskName + " did not execute successfully.";
 
-                    TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
+                    TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestFailedCount);
                 }
             }
             catch (Exception ex)
             {
-                TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
+                TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestFailedCount);
                 returnValue = false;
                 resultMessage = "Exception occurred: " + ex.Message;
             }
@@ -249,7 +253,7 @@ namespace SsisUnit
 
                 returnValue = false;
 
-                TestSuite.Statistics.IncrementStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
+                TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestFailedCount);
             }
             finally
             {

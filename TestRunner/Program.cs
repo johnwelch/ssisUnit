@@ -4,6 +4,8 @@ using System.Text;
 using SsisUnit;
 using System.IO;
 
+using SsisUnitBase.EventArgs;
+
 namespace ssisUnitTestRunner
 {
     class Program

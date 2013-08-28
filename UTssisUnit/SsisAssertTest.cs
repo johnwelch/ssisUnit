@@ -5,6 +5,9 @@ using System;
 
 using SsisUnit.Enums;
 
+using SsisUnitBase;
+using SsisUnitBase.Enums;
+
 namespace UTssisUnit
 {
     [TestClass]
@@ -169,9 +172,9 @@ namespace UTssisUnit
             }
 
             Assert.AreEqual(1, testCount);
-            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual(5, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.TestPassedCount));
+            Assert.AreEqual(5, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, target.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
 
         [TestMethod]
@@ -210,9 +213,9 @@ namespace UTssisUnit
             }
 
             Assert.AreEqual(1, testCount);
-            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.TestPassedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
 
         [TestMethod]

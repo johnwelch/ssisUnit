@@ -9,16 +9,25 @@ using System.Xml.Schema;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
 
+using SsisUnitBase;
+using SsisUnitBase.Enums;
+using SsisUnitBase.EventArgs;
+
 #if SQL2005
 [assembly: InternalsVisibleTo("SsisUnit.Design, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cd0c8c9049e8ae2a4e2665f34aad415e66587e19a343aeb1138671262a9f4eee33296545920a87dfd785ed54df26d766634eefd55633e11ae91b501962c69cb227f56ccd450486356ad3a8f854f8037e5a37eb3d674fff96bfc2c1d9f30d1e17570a9dc96b53e1c49da433fa381b9d00e6be0536aae4612e76400862e5127298")]
 #elif SQL2008
 [assembly: InternalsVisibleTo("SsisUnit2008.Design, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cd0c8c9049e8ae2a4e2665f34aad415e66587e19a343aeb1138671262a9f4eee33296545920a87dfd785ed54df26d766634eefd55633e11ae91b501962c69cb227f56ccd450486356ad3a8f854f8037e5a37eb3d674fff96bfc2c1d9f30d1e17570a9dc96b53e1c49da433fa381b9d00e6be0536aae4612e76400862e5127298")]
 #elif SQL2012
+using System.ComponentModel.Composition;
+
 [assembly: InternalsVisibleTo("SsisUnit.Design.2012, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cd0c8c9049e8ae2a4e2665f34aad415e66587e19a343aeb1138671262a9f4eee33296545920a87dfd785ed54df26d766634eefd55633e11ae91b501962c69cb227f56ccd450486356ad3a8f854f8037e5a37eb3d674fff96bfc2c1d9f30d1e17570a9dc96b53e1c49da433fa381b9d00e6be0536aae4612e76400862e5127298")]
 #endif
 namespace SsisUnit
 {
-    public class SsisTestSuite : IssisTestSuite, IValidate
+#if SQL2012
+    [Export(typeof(ISsisTestSuite))]
+#endif
+    public class SsisTestSuite : ISsisTestSuite, IValidate
     {
         private XmlDocument _testCaseDoc;
         private XmlNamespaceManager _namespaceMgr;
@@ -70,6 +79,20 @@ namespace SsisUnit
         #endregion
 
         #region Properties
+
+        public int SsisVersion
+        {
+            get
+            {
+#if SQL2005
+                return 2005;
+#elif SQL2008
+                return 2008;
+#elif SQL2012
+                return 2012;
+#endif
+            }
+        }
 
         public TestSuiteResults Statistics { get; private set; }
 
@@ -208,12 +231,16 @@ namespace SsisUnit
 
         #endregion
 
-        #region ISSISTestCase Members
+        #region ISsisTestSuite Members
+
+        public ISsisTestSuite CreateSsisTestSuite(string testSuiteFilepath)
+        {
+            return new SsisTestSuite(testSuiteFilepath);
+        }
 
         public void Setup()
         {
             throw new NotImplementedException();
-            //Setup(null, null);
         }
 
         public void Test()
@@ -224,7 +251,6 @@ namespace SsisUnit
         public void Teardown()
         {
             throw new NotImplementedException();
-            //Teardown(null, null);
         }
 
         #endregion
@@ -390,9 +416,9 @@ namespace SsisUnit
                 throw;
             }
 
-            int totalTests = Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount);
-            int failedTests = Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestFailedCount);
-            int passedTests = Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount);
+            int totalTests = Statistics.GetStatistic(StatisticEnum.TestCount);
+            int failedTests = Statistics.GetStatistic(StatisticEnum.TestFailedCount);
+            int passedTests = Statistics.GetStatistic(StatisticEnum.TestPassedCount);
 
             string completionMessage;
 
@@ -403,7 +429,7 @@ namespace SsisUnit
 
             OnRaiseTestSuiteCompleted(new TestSuiteCompletedEventArgs(DateTime.Now, totalTests, failedTests, passedTests, completionMessage, failedTests < 1));
 
-            return Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount);
+            return Statistics.GetStatistic(StatisticEnum.TestCount);
         }
 
         public void Execute(SsisTestSuite ssisTestCase)
@@ -675,16 +701,6 @@ namespace SsisUnit
         }
 
         #endregion
-
-        //internal int Teardown(XmlNode teardown, Package pkg, DtsContainer task)
-        //{
-        //    return TeardownCommands.Execute(pkg, task);
-        //}
-
-        //internal int Teardown(Package pkg, DtsContainer task)
-        //{
-        //    return TeardownCommands.Execute(pkg, task);
-        //}
 
         #endregion
     }

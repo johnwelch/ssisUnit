@@ -78,6 +78,12 @@
     <None Include="app.config" />
     <None Include="SsisUnit.snk" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "C:\Program Files (x86)\Microsoft SQL Server\100\DTS\PipelineComponents"

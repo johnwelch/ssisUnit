@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 
+using SsisUnitBase;
+
 namespace SsisUnit
 {
     public sealed class DataCompareCommandResults : CommandResultsBase

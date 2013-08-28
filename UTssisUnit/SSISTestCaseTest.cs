@@ -9,6 +9,8 @@ using System.IO;
 
 using SsisUnit.Enums;
 
+using SsisUnitBase.Enums;
+
 namespace UTssisUnit
 {
     [TestClass]
@@ -180,8 +182,8 @@ namespace UTssisUnit
         ////    try
         ////    {
         ////        target.Execute();
-        ////        Assert.AreEqual(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertCount));
-        ////        Assert.AreEqual(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
+        ////        Assert.AreEqual(4, target.Statistics.GetStatistic(StatisticEnum.AssertCount));
+        ////        Assert.AreEqual(4, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
         ////    }
         ////    catch (Exception ex)
         ////    {
@@ -217,9 +219,9 @@ namespace UTssisUnit
         ////    try
         ////    {
         ////        target.Execute();
-        ////        Assert.AreEqual(3, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount));
-        ////        Assert.AreEqual(2, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-        ////        Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
+        ////        Assert.AreEqual(3, target.Statistics.GetStatistic(StatisticEnum.TestCount));
+        ////        Assert.AreEqual(2, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+        ////        Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.TestPassedCount));
         ////    }
         ////    catch (Exception ex)
         ////    {
@@ -244,8 +246,8 @@ namespace UTssisUnit
                 Assert.Fail(ex.Message);
             }
 
-            Assert.AreEqual(2, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestCount));
+            Assert.AreEqual(2, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.TestCount));
         }
 
         [TestMethod]
@@ -323,18 +325,18 @@ namespace UTssisUnit
 
             int testCount = target.Execute();
             Assert.AreEqual(1, testCount);
-            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.TestPassedCount));
+            Assert.AreEqual(4, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, target.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
             Assert.IsFalse(File.Exists(lineCount2File));
 
             // TODO: add ability to gracefully handle bad package refs - right now it blows the test case out of the water - no teardown
             target = new SsisTestSuite(saveFile);
             testCount = target.Execute();
             Assert.AreEqual(1, testCount);
-            Assert.AreEqual(1, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.TestPassedCount));
-            Assert.AreEqual(4, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual(0, target.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.TestPassedCount));
+            Assert.AreEqual(4, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, target.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
             Assert.IsFalse(File.Exists(lineCount2File));
         }
     }

@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace SsisUnit
+using SsisUnitBase.Enums;
+
+namespace SsisUnitBase
 {
     public class TestSuiteResults
     {
         private readonly Dictionary<StatisticEnum, TestSuiteStatistic> _statistics = new Dictionary<StatisticEnum, TestSuiteStatistic>(6);
         // private List<string> _results = new List<string>();
 
-        internal TestSuiteResults()
+        public TestSuiteResults()
         {
             _statistics.Add(StatisticEnum.TestCount, new TestSuiteStatistic());
             _statistics.Add(StatisticEnum.AssertCount, new TestSuiteStatistic());
@@ -20,7 +22,7 @@ namespace SsisUnit
 
         #region Methods
 
-        internal void Reset()
+        public void Reset()
         {
             foreach (TestSuiteStatistic tss in _statistics.Values)
             {
@@ -28,7 +30,7 @@ namespace SsisUnit
             }
         }
 
-        internal void IncrementStatistic(StatisticEnum statistic)
+        public void IncrementStatistic(StatisticEnum statistic)
         {
             _statistics[statistic].IncrementValue();
         }
@@ -39,17 +41,6 @@ namespace SsisUnit
         }
 
         #endregion
-
-        public enum StatisticEnum
-        {
-            TestCount = 0,
-            AssertCount = 1,
-            TestPassedCount = 2,
-            TestFailedCount = 3,
-            AssertPassedCount = 4,
-            AssertFailedCount = 5 // ,
-            // TaskFailedCount = 6
-        }
 
         private class TestSuiteStatistic
         {

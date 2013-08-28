@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-namespace SsisUnit
+namespace SsisUnitBase
 {
     public interface IValidate
     {

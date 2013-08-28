@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
-namespace SsisUnit
+namespace SsisUnitBase
 {
     public abstract class SsisUnitBaseObject : IValidate, ISsisUnitPersist
     {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using SsisUnitBase.EventArgs;
+
 namespace SsisUnit
 {
     public class DataCompareCommandCompletedEventArgs : CommandCompletedEventArgs

@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
-namespace SsisUnit
+namespace SsisUnitBase.EventArgs
 {
-    public class AssertCompletedEventArgs : EventArgs
+    public class AssertCompletedEventArgs : System.EventArgs
     {
         public AssertCompletedEventArgs(DateTime testExecutionTime, string packageName, string taskName, string testName, string assertName, string testResultMsg, bool testPassed)
         {
@@ -10,7 +10,7 @@ namespace SsisUnit
             TestExecResult = new TestResult(testExecutionTime, packageName, taskName, testName, testResultMsg, testPassed);
         }
 
-        public AssertCompletedEventArgs(DateTime testExecutionTime, string packageName, string taskName, string testName, string assertName, string testResultMsg, bool testPassed, CommandBase assertCommand)
+        public AssertCompletedEventArgs(DateTime testExecutionTime, string packageName, string taskName, string testName, string assertName, string testResultMsg, bool testPassed, SsisUnitBaseObject assertCommand)
             : this(testExecutionTime, packageName, taskName, testName, assertName, testResultMsg, testPassed)
         {
             AssertCommand = assertCommand;
@@ -22,13 +22,13 @@ namespace SsisUnit
             TestExecResult = testResult;
         }
 
-        public AssertCompletedEventArgs(string assertName, TestResult testResult, CommandBase assertCommand)
+        public AssertCompletedEventArgs(string assertName, TestResult testResult, SsisUnitBaseObject assertCommand)
             : this(assertName, testResult)
         {
             AssertCommand = assertCommand;
         }
 
-        public CommandBase AssertCommand { get; private set; }
+        public SsisUnitBaseObject AssertCommand { get; private set; }
         public string AssertName { get; private set; }
         public TestResult TestExecResult { get; private set; }
     }

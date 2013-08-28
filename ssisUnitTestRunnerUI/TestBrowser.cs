@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using SsisUnit;
 using SsisUnit.Enums;
 
+using SsisUnitBase;
+
 namespace ssisUnitTestRunnerUI
 {
     public partial class TestBrowser : UserControl

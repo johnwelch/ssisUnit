@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
-namespace SsisUnit
+namespace SsisUnitBase.EventArgs
 {
-    public class TestCompletedEventArgs : EventArgs
+    public class TestCompletedEventArgs : System.EventArgs
     {
         public TestCompletedEventArgs(DateTime testExecutionTime, string packageName, string taskName, string testName, string testResultMsg, bool testPassed)
         {

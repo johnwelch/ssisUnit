@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
-namespace SsisUnit
+namespace SsisUnitBase.EventArgs
 {
-    public class TestSuiteFailedEventArgs : EventArgs
+    public class TestSuiteFailedEventArgs : System.EventArgs
     {
         public TestSuiteFailedEventArgs(DateTime testExecutionTime, string testSuiteResultMessage)
         {

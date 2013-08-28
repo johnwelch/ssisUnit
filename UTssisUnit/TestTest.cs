@@ -5,6 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SsisUnit;
 using SsisUnit.Commands;
 
+using SsisUnitBase.Enums;
+
 namespace UTssisUnit
 {
     /// <summary>
@@ -126,8 +128,8 @@ namespace UTssisUnit
             target.Asserts.Add("Test Row Count", assert);
             assert.Command = new VariableCommand(ts, VariableCommand.VariableOperation.Get, "User::ProductRowCount", null);
             ts.Execute();
-            Assert.AreEqual(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual(1, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+            Assert.AreEqual(1, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(1, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
 
         [TestMethod]
@@ -148,8 +150,8 @@ namespace UTssisUnit
             // TODO: Think this might be missing something - asserts were originally 1 passed, 1 failed
             // See if I can find original test package
 
-            Assert.AreEqual(2, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual(0, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+            Assert.AreEqual(2, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
 
         [TestMethod]
@@ -174,8 +176,8 @@ namespace UTssisUnit
 
             ts.Execute();
 
-            Assert.AreEqual(2, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertPassedCount));
-            Assert.AreEqual(0, ts.Statistics.GetStatistic(TestSuiteResults.StatisticEnum.AssertFailedCount));
+            Assert.AreEqual(2, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
     }
 }
