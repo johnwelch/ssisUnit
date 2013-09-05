@@ -36,13 +36,13 @@
             this.addTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addConnectionRefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addPackageRefToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cboTests = new System.Windows.Forms.ComboBox();
             this.dlgFileOpen = new System.Windows.Forms.OpenFileDialog();
             this.btnFileOpen = new System.Windows.Forms.Button();
             this.imgList = new System.Windows.Forms.ImageList(this.components);
-            this.addDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,7 +71,7 @@
             this.toolStripMenuItem1,
             this.deleteItemToolStripMenuItem});
             this.mnuContextMenuStrip.Name = "mnuContextMenuStrip";
-            this.mnuContextMenuStrip.Size = new System.Drawing.Size(182, 186);
+            this.mnuContextMenuStrip.Size = new System.Drawing.Size(182, 208);
             // 
             // addAssertToolStripMenuItem
             // 
@@ -106,6 +106,13 @@
             this.addPackageRefToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.addPackageRefToolStripMenuItem.Text = "Add Package Ref";
             this.addPackageRefToolStripMenuItem.Click += new System.EventHandler(this.AddPackageRefToolStripMenuItemClick);
+            // 
+            // addDatasetToolStripMenuItem
+            // 
+            this.addDatasetToolStripMenuItem.Name = "addDatasetToolStripMenuItem";
+            this.addDatasetToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addDatasetToolStripMenuItem.Text = "Add Dataset";
+            this.addDatasetToolStripMenuItem.Click += new System.EventHandler(this.AddDatasetToolStripMenuItemClick);
             // 
             // toolStripMenuItem1
             // 
@@ -150,13 +157,6 @@
             this.imgList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.imgList.ImageSize = new System.Drawing.Size(16, 16);
             this.imgList.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // addDatasetToolStripMenuItem
-            // 
-            this.addDatasetToolStripMenuItem.Name = "addDatasetToolStripMenuItem";
-            this.addDatasetToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.addDatasetToolStripMenuItem.Text = "Add Dataset";
-            this.addDatasetToolStripMenuItem.Click += new System.EventHandler(this.AddDatasetToolStripMenuItemClick);
             // 
             // TestBrowser
             // 

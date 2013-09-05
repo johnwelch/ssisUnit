@@ -89,6 +89,11 @@ namespace SsisUnit
                 Properties.Add(PropValue, new CommandProperty(PropValue, value.ToString()));
         }
 
+        public override object Execute(object project, Package package, DtsContainer container)
+        {
+            return Execute(package, container);
+        }
+
         public override object Execute(Package package, DtsContainer container)
         {
             try

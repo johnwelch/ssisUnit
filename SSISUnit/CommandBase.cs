@@ -234,6 +234,7 @@ namespace SsisUnit
             return Execute(package, container);
         }
 
+        public abstract object Execute(object project, Package package, DtsContainer container);
         public abstract object Execute(Package package, DtsContainer container);
 
         public virtual object Execute()

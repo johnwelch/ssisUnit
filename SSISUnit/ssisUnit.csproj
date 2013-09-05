@@ -36,22 +36,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SQL2005</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;SQL2005</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.DTSPipelineWrap, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
@@ -83,9 +67,11 @@
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="DtsPackageStoreException.cs" />
     <Compile Include="Enums\PackageStorageType.cs" />
+    <Compile Include="Enums\ParameterType.cs" />
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="PackageRef.cs" />
+    <Compile Include="ParameterCommand.cs" />
     <Compile Include="ProcessCommand.cs" />
     <Compile Include="PropertyCommand.cs" />
     <Compile Include="ReflectorEval.cs" />

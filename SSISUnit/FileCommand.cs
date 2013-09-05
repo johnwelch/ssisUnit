@@ -4,6 +4,8 @@ using System.IO;
 using System.Globalization;
 using System.ComponentModel;
 
+using Microsoft.SqlServer.Dts.Runtime;
+
 using SsisUnitBase.EventArgs;
 
 #if SQL2012 || SQL2008
@@ -126,17 +128,17 @@ namespace SsisUnit
             return returnValue;
         }
 
-        //public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package)
-        //{
-        //    return Execute();
-        //}
-
-        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        public override object Execute(object project, Package package, DtsContainer container)
         {
             return Execute();
         }
 
-        public override object Execute(XmlNode command, Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        public override object Execute(Package package, DtsContainer container)
+        {
+            return Execute();
+        }
+
+        public override object Execute(XmlNode command, Package package, DtsContainer container)
         {
             LoadFromXml(command);
             return Execute();

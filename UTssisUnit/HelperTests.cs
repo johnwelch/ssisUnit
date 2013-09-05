@@ -1,17 +1,19 @@
-﻿using System;
-
-using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
+﻿using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using NUnit.Framework;
+
+using SsisUnit;
+using SsisUnit.Enums;
 
 namespace UTssisUnit
 {
-    [TestClass]
+    [TestFixture]
     public class HelperTests : ExternalFileResourceTestBase
     {
         private const string TestPackageResource = "UTssisUnit.TestPackages.UTBasicScenario2012.dtsx";
 
-        [TestMethod]
+        [Test]
         public void FindExecutableByIdTest()
         {
             var ssisApp = new Application();
@@ -25,7 +27,7 @@ namespace UTssisUnit
             Assert.AreEqual("UT Basic Scenario", result.Name);
         }
 
-        [TestMethod]
+        [Test]
         public void FindExecutableByNameTest()
         {
             var ssisApp = new Application();
@@ -36,7 +38,7 @@ namespace UTssisUnit
             Assert.AreEqual("SELECT COUNT", result.Name);
         }
 
-        [TestMethod]
+        [Test]
         public void FindExecutableByPathTest()
         {
             var ssisApp = new Application();
@@ -55,7 +57,7 @@ namespace UTssisUnit
             Assert.AreEqual("OLE DB Source", remainingPath);
         }
 
-        [TestMethod]
+        [Test]
         public void FindComponentByPathTest()
         {
             var ssisApp = new Application();
@@ -70,7 +72,7 @@ namespace UTssisUnit
             Assert.AreEqual("OLE DB Source", result2.Name);
         }
 
-        [TestMethod]
+        [Test]
         public void FindInputByPathTest()
         {
             var ssisApp = new Application();
@@ -84,7 +86,7 @@ namespace UTssisUnit
             Assert.AreEqual("Derived Column Input", result2.Name);
         }
 
-        [TestMethod]
+        [Test]
         public void FindOutputByPathTest()
         {
             var ssisApp = new Application();
@@ -98,7 +100,7 @@ namespace UTssisUnit
             Assert.AreEqual("Derived Column Output", result2.Name);
         }
 
-        [TestMethod]
+        [Test]
         public void FindPathTest()
         {
             var ssisApp = new Application();
@@ -114,7 +116,7 @@ namespace UTssisUnit
         }
 
 
-        [TestMethod]
+        [Test]
         public void FindExecutableDoesNotExistTest()
         {
             var ssisApp = new Application();
@@ -131,5 +133,40 @@ namespace UTssisUnit
             Assert.IsNull(result);
         }
 
+        [Test]
+        [Ignore("A 2012 SSIS project needs to be added to the unit test resources.")]
+        public void LoadPackageFromProjectInFileSystemTest()
+        {
+            SsisTestSuite testSuite = new SsisTestSuite();
+
+            var packageRef = new PackageRef("BI Cleanup.dtsx", "BI Cleanup.dtsx", PackageStorageType.FileSystem, null) { ProjectPath = @"C:\Temp\LaunchParty201307.ispac" };
+
+            testSuite.PackageRefs.Add(packageRef.Name, packageRef);
+
+            object loadedProject;
+
+            var packageToTest = SsisUnit.Helper.LoadPackage(testSuite, packageRef.PackagePath, packageRef.ProjectPath, out loadedProject);
+
+            Assert.IsNotNull(packageToTest);
+            Assert.IsNotNull(loadedProject);
+        }
+
+        [Test]
+        [Ignore("The SSIS Catalog cannot be tested statically.")]
+        public void LoadPackageFromProjectInSsisCatalogTest()
+        {
+            SsisTestSuite testSuite = new SsisTestSuite();
+
+            var packageRef = new PackageRef("Period.In.My.Name.1 1.dtsx", "Period.In.My.Name.1 1.dtsx", PackageStorageType.SsisCatalog, @"FL-WS-DEV-JN21\SQL2012") { ProjectPath = @"Jeremiah SSIS Deployed Projects\SSIS2012" };
+
+            testSuite.PackageRefs.Add(packageRef.Name, packageRef);
+
+            object loadedProject;
+
+            var packageToTest = SsisUnit.Helper.LoadPackage(testSuite, packageRef.PackagePath, packageRef.ProjectPath, out loadedProject);
+
+            Assert.IsNotNull(packageToTest);
+            Assert.IsNotNull(loadedProject);
+        }
     }
 }

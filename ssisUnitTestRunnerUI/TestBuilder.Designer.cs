@@ -350,7 +350,6 @@
             // deleteSelectedItemToolStripMenuItem
             // 
             this.deleteSelectedItemToolStripMenuItem.Name = "deleteSelectedItemToolStripMenuItem";
-            this.deleteSelectedItemToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
             this.deleteSelectedItemToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.deleteSelectedItemToolStripMenuItem.Text = "&Delete Selected Item";
             this.deleteSelectedItemToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedItemToolStripMenuItem_Click);

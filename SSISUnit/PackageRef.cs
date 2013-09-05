@@ -38,11 +38,18 @@ namespace SsisUnit
         [Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string PackagePath { get; set; }
 
+        [Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+        public string ProjectPath { get; set; }
+
         public string Name { get; set; }
 
         public PackageStorageType StorageType
         {
-            get { return ConvertStorageTypeString(_storageType); }
+            get
+            {
+                return ConvertStorageTypeString(_storageType);
+            }
+
             set
             {
                 _storageType = value.ToString();
@@ -68,6 +75,8 @@ namespace SsisUnit
                     return PackageStorageType.MSDB;
                 case "PACKAGESTORE":
                     return PackageStorageType.PackageStore;
+                case "SSISCATALOG":
+                    return PackageStorageType.SsisCatalog;
                 default:
                     throw new ArgumentException(string.Format("The provided storage type ({0}) is not recognized.", type));
             }
@@ -76,18 +85,17 @@ namespace SsisUnit
         [Description("The password to use for accessing the package.")]
         public string Password
         {
-            set 
+            set
             {
 #if SQL2005
-                _password = Helper.ConvertToSecureString(value);
+                _password = value != null ? Helper.ConvertToSecureString(value) : null;
 #else
-                _password = value.ConvertToSecureString();
+                _password = value != null ? value.ConvertToSecureString() : null;
 #endif
             }
         }
 
         internal SecureString StoredPassword { get { return _password; } }
-
 
         public string PersistToXml()
         {
@@ -102,6 +110,9 @@ namespace SsisUnit
 
                 if (Server != string.Empty)
                     xmlWriter.WriteAttributeString("server", Server);
+
+                if (!string.IsNullOrEmpty(ProjectPath))
+                    xmlWriter.WriteAttributeString("projectPath", ProjectPath);
 
                 xmlWriter.WriteAttributeString("storageType", StorageType.ToString());
                 xmlWriter.WriteEndElement();
@@ -135,6 +146,11 @@ namespace SsisUnit
             if (packageXml.Attributes["password"] != null)
             {
                 Password = packageXml.Attributes["password"].Value;
+            }
+
+            if (packageXml.Attributes["projectPath"] != null)
+            {
+                ProjectPath = packageXml.Attributes["projectPath"].Value;
             }
         }
     }

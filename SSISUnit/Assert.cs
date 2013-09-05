@@ -96,6 +96,11 @@ namespace SsisUnit
 
         public bool Execute(Package package, DtsContainer task)
         {
+            return Execute(null, package, task);
+        }
+
+        public bool Execute(object project, Package package, DtsContainer task)
+        {
             _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertCount);
 
             bool returnValue;
@@ -106,14 +111,14 @@ namespace SsisUnit
 
             if (dataCompareCommand != null)
             {
-                dataCompareCommandResults = dataCompareCommand.Execute(package, task) as DataCompareCommandResults;
+                dataCompareCommandResults = dataCompareCommand.Execute(project, package, task) as DataCompareCommandResults;
 
                 validationResult = dataCompareCommandResults != null && dataCompareCommandResults.IsDatasetsSame;
             }
             else
             {
                 dataCompareCommandResults = null;
-                validationResult = Command.Execute(package, task);
+                validationResult = Command.Execute(project, package, task);
             }
 
             if (validationResult == null)

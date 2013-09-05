@@ -130,6 +130,30 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="ParameterCommand">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="optional"/>
+      <xs:attribute name="parameterName" type="xs:string" use="required"/>
+      <xs:attribute name="operation" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Get" />
+            <xs:enumeration value="Set" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="parameterType" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Project" />
+            <xs:enumeration value="Package" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="value" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  
   <!-- Define Property Command -->
   <xs:element name="PropertyCommand">
     <xs:complexType>
@@ -175,6 +199,7 @@
             <xs:complexType>
               <xs:choice minOccurs="1" maxOccurs="1">
                 <xs:element ref="DataCompareCommand"/>
+                <xs:element ref="ParameterCommand"/>
                 <xs:element ref="ProcessCommand"/>
                 <xs:element ref="SqlCommand"/>
                 <xs:element ref="VariableCommand"/>
@@ -207,7 +232,6 @@
       <xs:attribute name="name" type="xs:string" use="required"/>
       <xs:attribute name="package" type="xs:string" use="required"/>
       <xs:attribute name="task" type="xs:string" use="required"/>
-      <!--<xs:attribute name="taskName" type="xs:string" use="optional"/>-->
       <xs:attribute name="taskResult" use="optional" default="Success">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -262,10 +286,12 @@
             <xs:enumeration value="FileSystem" />
             <xs:enumeration value="MSDB" />
             <xs:enumeration value="PackageStore" />
+            <xs:enumeration value="SsisCatalog" />
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="password" type="xs:string" use="optional" />
+      <xs:attribute name="projectPath" type="xs:string" use="optional" />
     </xs:complexType>
   </xs:element>
 
@@ -279,6 +305,7 @@
       <xs:element ref="FileCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="DirectoryCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="PropertyCommand" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="ParameterCommand" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="ComponentInputCommand" minOccurs="0" maxOccurs="unbounded"/>
     </xs:choice>
   </xs:complexType>

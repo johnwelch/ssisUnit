@@ -6,6 +6,8 @@ using System.Data.Common;
 using System.Globalization;
 using System.Xml;
 
+using Microsoft.SqlServer.Dts.Runtime;
+
 using SsisUnitBase.EventArgs;
 
 #if SQL2012 || SQL2008
@@ -159,7 +161,12 @@ namespace SsisUnit
             }
         }
 
-        public override object Execute(Microsoft.SqlServer.Dts.Runtime.Package package, Microsoft.SqlServer.Dts.Runtime.DtsContainer container)
+        public override object Execute(object project, Package package, DtsContainer container)
+        {
+            return Execute(package, container);
+        }
+
+        public override object Execute(Package package, DtsContainer container)
         {
             if (ExpectedDataset == null)
                 throw new ApplicationException(string.Format(CultureInfo.CurrentCulture, "The expectedDataset attribute is {0}, which does not reference a valid dataset.", Properties[PropExpectedDataset].Value));

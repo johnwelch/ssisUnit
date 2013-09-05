@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 
 using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
@@ -69,6 +67,11 @@ namespace SsisUnit.Commands
         }
        
         #endregion
+
+        public override object Execute(object project, Package package, DtsContainer container)
+        {
+            return Execute(package, container);
+        }
 
         public override object Execute(Package package, DtsContainer container)
         {

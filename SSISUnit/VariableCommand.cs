@@ -71,6 +71,11 @@ namespace SsisUnit
             Properties[PropValue] = new CommandProperty(PropValue, value);
         }
 
+        public override object Execute(object project, Package package, DtsContainer container)
+        {
+            return Execute(package, container);
+        }
+
         public override object Execute(Package package, DtsContainer container)
         {
             object returnValue;

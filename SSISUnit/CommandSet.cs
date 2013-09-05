@@ -79,10 +79,10 @@ namespace SsisUnit
 
         public void Execute()
         {
-            Execute(null, null);
+            Execute(null, null, null);
         }
 
-        public int Execute(Package package, DtsContainer task)
+        public int Execute(object project, Package package, DtsContainer task)
         {
             int commandCount = 0;
 
@@ -94,7 +94,7 @@ namespace SsisUnit
                     command.CommandCompleted += CommandOnCommandCompleted;
                     command.CommandFailed += CommandOnCommandFailed;
 
-                    command.Execute(package, task);
+                    command.Execute(project, package, task);
                 }
                 finally
                 {

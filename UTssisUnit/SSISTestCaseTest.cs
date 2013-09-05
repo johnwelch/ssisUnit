@@ -89,7 +89,7 @@ namespace UTssisUnit
             string remainingPath;
             DtsContainer task = SsisUnit.Helper.FindExecutable(packageToTest, "SELECT COUNT", out remainingPath);
 
-            int result = target.SetupCommands.Execute(packageToTest, task);
+            int result = target.SetupCommands.Execute(null, packageToTest, task);
             Assert.AreEqual(4, result);
         }
 
@@ -104,7 +104,7 @@ namespace UTssisUnit
             string remainingPath;
             DtsContainer task = SsisUnit.Helper.FindExecutable(packageToTest, "SELECT COUNT", out remainingPath);
 
-            int result = target.TeardownCommands.Execute(packageToTest, task);
+            int result = target.TeardownCommands.Execute(null, packageToTest, task);
             Assert.AreEqual(2, result);
         }
 

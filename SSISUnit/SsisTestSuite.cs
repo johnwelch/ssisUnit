@@ -344,16 +344,21 @@ namespace SsisUnit
             {
                 Stream strm = GetStreamFromExecutingAssembly("SsisUnit.xsd");
 
-                var settings = new XmlReaderSettings();
-                settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", XmlReader.Create(strm));
-                settings.ValidationType = ValidationType.Schema;
+                using (XmlReader reader = XmlReader.Create(strm))
+                {
+                    reader.Read();
 
-                var bytes = Encoding.ASCII.GetBytes(PersistToXml());
+                    var settings = new XmlReaderSettings();
+                    settings.Schemas.Add("http://tempuri.org/SsisUnit.xsd", reader);
+                    settings.ValidationType = ValidationType.Schema;
 
-                var test = new XmlDocument();
-                test.Load(XmlReader.Create(new MemoryStream(bytes), settings));
+                    var bytes = Encoding.ASCII.GetBytes(PersistToXml());
 
-                return test.SchemaInfo.Validity == XmlSchemaValidity.Valid;
+                    var test = new XmlDocument();
+                    test.Load(XmlReader.Create(new MemoryStream(bytes), settings));
+
+                    return test.SchemaInfo.Validity == XmlSchemaValidity.Valid;
+                }
             }
             catch (XmlSchemaValidationException)
             {
