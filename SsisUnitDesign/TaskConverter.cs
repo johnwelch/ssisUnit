@@ -27,7 +27,7 @@ namespace SsisUnit.Design
                 try
                 {
                     Test test = (Test)context.Instance;
-                    Package pkg = Helper.LoadPackage(test.TestSuite, test.PackageLocation);
+                    Package pkg = Helper.LoadPackage(test.TestSuite, test.PackageLocation, test.StoredPassword);
                     DtsContainer con = Helper.FindExecutable(pkg, value.ToString());
                     return con.ID;
                 }
@@ -61,7 +61,7 @@ namespace SsisUnit.Design
                 if (!IsGuid(value)) return value;
 
                 Test test = (Test)context.Instance;
-                Package pkg = Helper.LoadPackage(test.TestSuite, test.PackageLocation);
+                Package pkg = Helper.LoadPackage(test.TestSuite, test.PackageLocation, test.StoredPassword);
                 DtsContainer con = Helper.FindExecutable(pkg, value.ToString());
                 return con.Name;
             }

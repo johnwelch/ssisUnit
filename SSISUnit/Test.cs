@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security;
 using System.Text;
 using System.Xml;
 
@@ -27,22 +28,28 @@ namespace SsisUnit
 
         private string _taskName;
 
-        public Test(SsisTestSuite testSuite, string name, string package, string task)
-            : this(testSuite, name, null, package, task, DTSExecResult.Success) { }
+        private SecureString _securePassword;
 
-        public Test(SsisTestSuite testSuite, string name, string project, string package, string task)
-            : this(testSuite, name, project, package, task, DTSExecResult.Success) { }
+        public Test(SsisTestSuite testSuite, string name, string package, string password, string task)
+            : this(testSuite, name, null, package, password, task, DTSExecResult.Success) { }
 
-        public Test(SsisTestSuite testSuite, string name, string package, string task, DTSExecResult taskResult)
-            : this(testSuite, name, null, package, task, taskResult) { }
+        public Test(SsisTestSuite testSuite, string name, string project, string package, string password, string task)
+            : this(testSuite, name, project, package, password, task, DTSExecResult.Success) { }
 
-        public Test(SsisTestSuite testSuite, string name, string project, string package, string task, DTSExecResult taskResult)
+        public Test(SsisTestSuite testSuite, string name, string package, string password, string task, DTSExecResult taskResult)
+            : this(testSuite, name, null, package, password, task, taskResult) { }
+
+        public Test(SsisTestSuite testSuite, string name, string project, string package, string password, string task, DTSExecResult taskResult)
         {
             Asserts = new Dictionary<string, SsisAssert>();
             TestSuite = testSuite;
             Name = name;
             Task = task;
             PackageLocation = package;
+
+            if (password != null)
+                _securePassword = Helper.ConvertToSecureString(password);
+
             ProjectLocation = project;
             TestSetup = new CommandSet(string.IsNullOrEmpty(Name) ? "Setup" : Name + " Setup", TestSuite);
             TestTeardown = new CommandSet(string.IsNullOrEmpty(Name) ? "Teardown" : Name + " Teardown", TestSuite);
@@ -104,6 +111,15 @@ namespace SsisUnit
 #endif
         public string PackageLocation { get; set; }
 
+        [Browsable(false)]
+        internal SecureString StoredPassword
+        {
+            get
+            {
+                return _securePassword;
+            }
+        }
+
         /*
         #if SQL2005
             [Description("The package that this test will run against."),
@@ -152,7 +168,7 @@ namespace SsisUnit
 
                 try
                 {
-                    LoadPackageAndTask(PackageLocation, ProjectLocation, Task, out packageToTest, out taskHost, out loadedProject);
+                    LoadPackageAndTask(PackageLocation, StoredPassword, ProjectLocation, Task, out packageToTest, out taskHost, out loadedProject);
                 }
                 catch (Exception)
                 {
@@ -351,11 +367,11 @@ namespace SsisUnit
                 handler(sender, e);
         }
 
-        private void LoadPackageAndTask(string packagePath, string projectPath, string taskId, out Package package, out DtsContainer taskHost, out object loadedProject)
+        private void LoadPackageAndTask(string packagePath, SecureString packagePassword, string projectPath, string taskId, out Package package, out DtsContainer taskHost, out object loadedProject)
         {
             try
             {
-                package = Helper.LoadPackage(TestSuite, packagePath, projectPath, out loadedProject);
+                package = Helper.LoadPackage(TestSuite, packagePath, packagePassword, projectPath, out loadedProject);
                 string remainingPath;
                 taskHost = Helper.FindExecutable(package, taskId, out remainingPath);
                 if (taskHost == null)
@@ -386,7 +402,6 @@ namespace SsisUnit
             xmlWriter.WriteStartElement("Test");
             xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("package", PackageLocation);
-            // xmlWriter.WriteAttributeString("project", ProjectLocation);
             xmlWriter.WriteAttributeString("task", Task);
             xmlWriter.WriteAttributeString("taskResult", TaskResult.ToString());
 

@@ -95,7 +95,39 @@ namespace SsisUnit
             }
         }
 
+        /// <summary>
+        ///     The package password as a <see cref="SecureString"/>.
+        /// </summary>
+        // DO NOT allow public "get" access via a property so as to add an extra barrier for security.
+        [Browsable(false), ReadOnly(true)]
         internal SecureString StoredPassword { get { return _password; } }
+
+        /// <summary>
+        ///     This method will return the package password as a <see cref="SecureString"/>.
+        /// </summary>
+        /// <returns>The package password as a <see cref="SecureString"/>.</returns>
+        public SecureString GetSecurePassword()
+        {
+            return StoredPassword;
+        }
+
+        /// <summary>
+        ///     Sets the package password with the provided <see cref="SecureString"/>.  If the <paramref name="password"/> provided is NULL, the the package password will be set to NULL.
+        /// </summary>
+        /// <param name="password">The package password.</param>
+        public void SetSecurePassword(SecureString password)
+        {
+            if (password == null)
+            {
+                _password = null;
+
+                return;
+            }
+
+            var passwordString = Helper.ConvertToUnsecureString(password);
+
+            _password = passwordString != null ? Helper.ConvertToSecureString(passwordString) : null;
+        }
 
         public string PersistToXml()
         {
@@ -113,6 +145,9 @@ namespace SsisUnit
 
                 if (!string.IsNullOrEmpty(ProjectPath))
                     xmlWriter.WriteAttributeString("projectPath", ProjectPath);
+
+                if (_password != null)
+                    xmlWriter.WriteAttributeString("password", Helper.ConvertToUnsecureString(_password));
 
                 xmlWriter.WriteAttributeString("storageType", StorageType.ToString());
                 xmlWriter.WriteEndElement();

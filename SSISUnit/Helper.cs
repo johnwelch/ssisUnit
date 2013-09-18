@@ -269,13 +269,13 @@ namespace SsisUnit
             return currentExecutable;
         }
 
-        public static Package LoadPackage(SsisTestSuite testSuite, string packageName)
+        public static Package LoadPackage(SsisTestSuite testSuite, string packageName, SecureString packagePassword)
         {
             object loadedProject = null;
 
             try
             {
-                return LoadPackage(testSuite, packageName, null, out loadedProject);
+                return LoadPackage(testSuite, packageName, packagePassword, null, out loadedProject);
             }
             finally
             {
@@ -290,7 +290,7 @@ namespace SsisUnit
             }
         }
 
-        public static Package LoadPackage(SsisTestSuite testSuite, string packageName, string projectPath, out object loadedProject)
+        public static Package LoadPackage(SsisTestSuite testSuite, string packageName, SecureString packagePassword, string projectPath, out object loadedProject)
         {
             var ssisApp = new Application();
             Package package = null;
@@ -311,7 +311,17 @@ namespace SsisUnit
                     {
                         isPackagePathFilePath = true;
 
-                        package = ssisApp.LoadPackage(fileInfo.FullName, null);
+                        if (packagePassword != null)
+                            ssisApp.PackagePassword = ConvertToUnsecureString(packagePassword);
+
+                        try
+                        {
+                            package = ssisApp.LoadPackage(fileInfo.FullName, null);
+                        }
+                        catch (DtsRuntimeException)
+                        {
+                            isPackagePathFilePath = false;
+                        }
                     }
                 }
 

@@ -81,7 +81,7 @@ namespace UTssisUnit
             // Added to verify work item #7188 - multiple periods in object names
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[test.multple.periods.in.path].Properties[Description]", "Test Descr"));
 
-            Test ssisTest = new Test(ts, "Test", "PackageA", "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}");
+            Test ssisTest = new Test(ts, "Test", "PackageA", null, "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}");
 
             ts.Tests.Add("Test", ssisTest);
 

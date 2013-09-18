@@ -254,7 +254,7 @@ namespace ssisUnitTestRunnerUI
                     counter++;
                 }
 
-                ts.Tests.Add(testName, new Test(ts, testName, package.Name, item.ID));
+                ts.Tests.Add(testName, new Test(ts, testName, package.Name, null, item.ID));
             }
         }
 

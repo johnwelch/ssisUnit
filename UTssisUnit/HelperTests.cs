@@ -145,7 +145,7 @@ namespace UTssisUnit
 
             object loadedProject;
 
-            var packageToTest = SsisUnit.Helper.LoadPackage(testSuite, packageRef.PackagePath, packageRef.ProjectPath, out loadedProject);
+            var packageToTest = SsisUnit.Helper.LoadPackage(testSuite, packageRef.PackagePath, null, packageRef.ProjectPath, out loadedProject);
 
             Assert.IsNotNull(packageToTest);
             Assert.IsNotNull(loadedProject);
@@ -163,7 +163,7 @@ namespace UTssisUnit
 
             object loadedProject;
 
-            var packageToTest = SsisUnit.Helper.LoadPackage(testSuite, packageRef.PackagePath, packageRef.ProjectPath, out loadedProject);
+            var packageToTest = SsisUnit.Helper.LoadPackage(testSuite, packageRef.PackagePath, null, packageRef.ProjectPath, out loadedProject);
 
             Assert.IsNotNull(packageToTest);
             Assert.IsNotNull(loadedProject);

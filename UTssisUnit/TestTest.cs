@@ -53,7 +53,7 @@ namespace UTssisUnit
         public void NewTestTest()
         {
             var target = new SsisTestSuite();
-            var ssisTest = new Test(target, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
+            var ssisTest = new Test(target, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", null, "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);
 
             Assert.AreEqual(1, target.Tests.Count);
@@ -66,7 +66,7 @@ namespace UTssisUnit
         public void PersistToXmlTest()
         {
             var testSuite = new SsisTestSuite();
-            var target = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", "SELECT COUNT");
+            var target = new Test(testSuite, "Test", "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx", null, "SELECT COUNT");
             target.Asserts.Add("Test", new SsisAssert(testSuite, target, "Test", 100, false));
             target.Asserts["Test"].Command = new SqlCommand(testSuite, "AdventureWorks", true, "SELECT COUNT(*) FROM Production.Product");
 
@@ -78,7 +78,7 @@ namespace UTssisUnit
         public void LoadFromXmlTest1()
         {
             var testSuite = new SsisTestSuite();
-            var target = new Test(testSuite, string.Empty, string.Empty, string.Empty);
+            var target = new Test(testSuite, string.Empty, string.Empty, null, string.Empty);
             target.LoadFromXml(_xmlTest);
 
             Assert.AreEqual(_xmlTest, target.PersistToXml());
@@ -88,7 +88,7 @@ namespace UTssisUnit
         public void LoadFromXmlTest()
         {
             var testSuite = new SsisTestSuite();
-            var target = new Test(testSuite, string.Empty, string.Empty, string.Empty);
+            var target = new Test(testSuite, string.Empty, string.Empty, null, string.Empty);
             XmlNode node = Helper.GetXmlNodeFromString(_xmlTest);
             target.LoadFromXml(node);
             Assert.AreEqual(_xmlTest, target.PersistToXml());
@@ -98,7 +98,7 @@ namespace UTssisUnit
         public void LoadFromXmlTestFull()
         {
             var testSuite = new SsisTestSuite();
-            var target = new Test(testSuite, string.Empty, string.Empty, string.Empty);
+            var target = new Test(testSuite, string.Empty, string.Empty, null, string.Empty);
             XmlNode node = Helper.GetXmlNodeFromString(_xmlTestFull);
             target.LoadFromXml(node);
             Assert.AreEqual(_xmlTestFull, target.PersistToXml());
@@ -110,7 +110,7 @@ namespace UTssisUnit
             const string PackageLocation = "C:\\Projects\\SSISUnit\\SSIS2005\\SSIS2005\\UT Basic Scenario.dtsx";
             const string TaskName = "SELECT COUNT";
             const string PackageName = "Test";
-            var target = new Test(new SsisTestSuite(), PackageName, PackageLocation, TaskName);
+            var target = new Test(new SsisTestSuite(), PackageName, PackageLocation, null, TaskName);
 
             Assert.AreEqual(PackageName, target.Name);
             Assert.AreEqual(PackageLocation, target.PackageLocation);
@@ -121,7 +121,7 @@ namespace UTssisUnit
         public void TaskThatFailsTest()
         {
             var ts = new SsisTestSuite();
-            var target = new Test(ts, "Test Task That Fails", "C:\\Projects\\SSISUnit\\UTssis2008packages\\UT Basic Scenario.dtsx", "SELECT COUNT", DTSExecResult.Failure);
+            var target = new Test(ts, "Test Task That Fails", "C:\\Projects\\SSISUnit\\UTssis2008packages\\UT Basic Scenario.dtsx", null, "SELECT COUNT", DTSExecResult.Failure);
             target.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\SELECT COUNT.Properties[SqlStatementSource]", "SELECT ''"));
             ts.Tests.Add("Test Task That Fails", target);
             var assert = new SsisAssert(ts, target, "Test Row Count", 504, false, false);
@@ -139,7 +139,7 @@ namespace UTssisUnit
             var newFileName = CreateTempFile(GetTempPath("Test", true), "TestDataFlowExpression2012.dtsx");
             File.Copy(packageFile, newFileName, true);
             var ts = new SsisTestSuite();
-            var target = new Test(ts, "DataFlowExpression", newFileName, "Data Flow Task");
+            var target = new Test(ts, "DataFlowExpression", newFileName, null, "Data Flow Task");
             ts.Tests.Add("Test Task That Fails", target);
             var assert = new SsisAssert(ts, target, "Test Anything", "true==true", false, true);
             target.Asserts.Add("Test Row Count", assert);
@@ -167,7 +167,7 @@ namespace UTssisUnit
                                                                                                + "CAST('Test' AS VARCHAR(50)) AS ColVarChar, "
                                                                                                + "CAST(N'Test' AS NVARCHAR(50)) AS ColNVarChar, "
                                                                                                + "CAST('1900-01-01' AS DATETIME) AS ColDateTime"));
-            var target = new Test(ts, "DataFlowComponent", newFileName, @"Package\Data Flow Task\Derived Column");
+            var target = new Test(ts, "DataFlowComponent", newFileName, null, @"Package\Data Flow Task\Derived Column");
             ts.Tests.Add("Test Data Flow Derived Column", target);
             target.TestSetup.Commands.Add(new ComponentInputCommand(ts, "ComponentInput", "testInput", @"Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]"));
             var assert = new SsisAssert(ts, target, "Test Output", true, false);
