@@ -129,7 +129,16 @@
     <EmbeddedResource Include="UTSsisUnit.ssisUnit" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTssisUnit_TestSuite.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+      <Project>{e693cce8-9edf-4117-ab7f-eb87b87e29ea}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SSISUnit\SSISUnit_SQL2012.csproj">
+      <Project>{8c839f0e-0afd-4d9a-8dee-5c7963e3e6c7}</Project>
+      <Name>SSISUnit_SQL2012</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
       <Visible>False</Visible>
@@ -151,20 +160,6 @@
       <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
-      <Project>{e693cce8-9edf-4117-ab7f-eb87b87e29ea}</Project>
-      <Name>SsisUnitBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SSISUnit\SSISUnit_SQL2012.csproj">
-      <Project>{8c839f0e-0afd-4d9a-8dee-5c7963e3e6c7}</Project>
-      <Name>SSISUnit_SQL2012</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TestRunner\ssisUnitTestRunner - SQL2012.csproj">
-      <Project>{8edf3c6b-f9b0-4547-8b8b-b21f2ff8c9c0}</Project>
-      <Name>ssisUnitTestRunner - SQL2012</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
