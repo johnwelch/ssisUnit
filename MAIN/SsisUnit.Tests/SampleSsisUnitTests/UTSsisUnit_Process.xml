@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
+  <ConnectionList>
+  </ConnectionList>
+  <Setup>
+    <ProcessCommand process="CMD.EXE" arguments="/c COPY c:\temp\temp.txt c:\temp\temp2.txt"/>
+    <ProcessCommand process="NOTEPAD.EXE" arguments=""/>
+    <ProcessCommand process="NOTEPAD.EXE"/>
+  </Setup>
+  <Tests>
+    <Test name="PassedTestProcess" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT">
+      <Assert name="Test Process" expectedResult="0" testBefore="true">
+        <ProcessCommand process="CMD.EXE" arguments="/c DIR c:\temp\"/>
+      </Assert>
+    </Test>
+  </Tests>
+  <Teardown>
+    <ProcessCommand process="CMD.EXE" arguments="/c BADCOMMAND"/>
+  </Teardown>
+</TestSuite>
