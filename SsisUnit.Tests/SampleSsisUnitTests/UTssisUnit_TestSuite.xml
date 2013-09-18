@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
+  <ConnectionList>
+    <Connection name="Sandbox" connection="Provider=SQLNCLI;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb" connectionType="ConnectionString"/>
+  </ConnectionList>
+  <TestSuiteSetup>
+    <SqlCommand connectionRef="Sandbox" returnsValue="false">
+      CREATE TABLE [dbo].[TestTableA](
+      [ID] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+      [ColName] [varchar](50) NOT NULL)
+    </SqlCommand>
+  </TestSuiteSetup>
+  <Setup>
+    <SqlCommand connectionRef="Sandbox" returnsValue="false">
+      INSERT INTO TestTableA VALUES('Test')
+    </SqlCommand>
+  </Setup>
+  <Tests>
+    <Test name="Validate Row Count" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT Basic Scenario.dtsx" task="SELECT COUNT" >
+      <Assert name="Row Count" expectedResult="1" testBefore="false">
+        <SqlCommand connectionRef="Sandbox" returnsValue="true">
+          SELECT COUNT(*) FROM TestTableA
+        </SqlCommand>
+      </Assert>
+    </Test>
+    <TestRef path="C:\Projects\SSISUnit\UTssisUnit\UTssisUnit_Package.xml"/>
+  </Tests>
+  <Teardown>
+    <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
+      TRUNCATE TABLE TestTableA
+    </SqlCommand>
+    <VariableCommand operation="Set"  name="ProductRowCount" value="10"/>
+  </Teardown>
+  <TestSuiteTeardown>
+    <SqlCommand connectionRef="Sandbox" returnsValue="false">
+      DROP TABLE dbo.TestTableA
+    </SqlCommand>
+  </TestSuiteTeardown>
+</TestSuite>

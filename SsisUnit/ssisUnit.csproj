@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SsisUnit</RootNamespace>
+    <AssemblyName>SsisUnit</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>SsisUnit.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SQL2005</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;SQL2005</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.DTSPipelineWrap, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.PipelineHost, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="app.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>app.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Assert.cs" />
+    <Compile Include="CommandBase.cs" />
+    <Compile Include="CommandProperty.cs" />
+    <Compile Include="CommandSet.cs" />
+    <Compile Include="Commands\ComponentInputCommand.cs" />
+    <Compile Include="Commands\ComponentOutputCommand.cs" />
+    <Compile Include="ConnectionList.cs" />
+    <Compile Include="ConnectionRef.cs" />
+    <Compile Include="DataCompareAssertCompletedEventArgs.cs" />
+    <Compile Include="DataCompareCommand.cs" />
+    <Compile Include="DataCompareCommandCompletedEventArgs.cs" />
+    <Compile Include="DataCompareCommandResults.cs" />
+    <Compile Include="Dataset.cs" />
+    <Compile Include="DirectoryCommand.cs" />
+    <Compile Include="DtsPackageStoreException.cs" />
+    <Compile Include="Enums\PackageStorageType.cs" />
+    <Compile Include="Enums\ParameterType.cs" />
+    <Compile Include="FileCommand.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="PackageRef.cs" />
+    <Compile Include="ParameterCommand.cs" />
+    <Compile Include="ProcessCommand.cs" />
+    <Compile Include="PropertyCommand.cs" />
+    <Compile Include="ReflectorEval.cs" />
+    <Compile Include="SqlCommand.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SsisTestSuite.cs" />
+    <Compile Include="ssisUnit.cs">
+      <DependentUpon>SsisUnit.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Test.cs" />
+    <Compile Include="TestRef.cs" />
+    <Compile Include="VariableCommand.cs" />
+    <Compile Include="XmlHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SsisUnit.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="app.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>app.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="SsisUnit.pfx" />
+    <None Include="SsisUnit.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BaseTest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.csproj">
+      <Project>{6C8078E0-99DD-40D0-94DA-E17B3FC50679}</Project>
+      <Name>SsisUnit.TestComponents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

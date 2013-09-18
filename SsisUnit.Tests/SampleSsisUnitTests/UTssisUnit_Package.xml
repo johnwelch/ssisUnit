@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
+  <ConnectionList>
+    <Connection name="AdventureWorks" connectionType="ConnectionString" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks"/>
+  </ConnectionList>
+  <PackageList>
+    
+  </PackageList>
+  <TestSuiteSetup>
+    
+  </TestSuiteSetup>
+  <Setup>
+    <SqlCommand connectionRef="AdventureWorks" returnsValue="false">
+      CREATE TABLE [dbo].[TestTable](
+      [ID] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+      [ColName] [varchar](50) NOT NULL)
+    </SqlCommand>
+  </Setup>
+  <Tests>
+    <Test name="Test Get Starting Row Count" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="Get Starting Row Count">
+      <Assert name="Check Row Count" expectedResult="0" testBefore="false">
+        <VariableCommand operation="Get" name="RowCount"/>
+      </Assert>
+    </Test>
+    <Test name="Test Get Ending Row Count" package="C:\Projects\SSISUnit\SSIS2005\SSIS2005\UT_Simple.dtsx" task="Get Ending Row Count" >
+      <Assert name="Test Row Count" expectedResult="504" testBefore="false">
+        <VariableCommand operation="Get" name="RowCount"/>
+      </Assert>
+    </Test>
+  </Tests>
+  <Teardown>
+    <SqlCommand connectionRef="AdventureWorks" returnsValue="false">
+      DROP TABLE dbo.TestTable
+    </SqlCommand>
+  </Teardown>
+</TestSuite>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TestSuite xmlns="http://tempuri.org/SsisUnit.xsd">
+  <ConnectionList>
+    <Connection name="AdventureWorks" connection="Provider=SQLOLEDB;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=Adventureworks" connectionType="ConnectionString"/>
+  </ConnectionList>
+  <Setup>
+    <SqlCommand connectionRef="Invalid" returnsValue="false">
+      SELECT ProductID FROM Production.Product
+    </SqlCommand>
+    <BadCommand></BadCommand>
+    <ProcessCommand process="CMD.EXE" arguments="/c BADCOMMAND"/>
+  </Setup>
+  <Tests>
+    
+  </Tests>
+  <Teardown>
+    
+  </Teardown>
+</TestSuite>
