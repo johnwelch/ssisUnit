@@ -344,9 +344,9 @@
 		<row><td>SSISUnit_SQL2012.Primary_output</td><td>{C00F9AFA-AF92-49CC-8F5C-930D09AE6D56}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunit_sql2012.primary_out</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>SsisUnit.Design_SQL2012.Primary_output</td><td>{9A86737A-3B21-4571-9A50-FFB9DA0BF62D}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunit.design_sql2012.prim</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>SsisUnit.TestComponents.2012.Primary_output</td><td>{47ABD9CE-9DE2-431D-B0AA-4D8A1E8253A1}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunit.testcomponents.2012</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>SsisUnitBase.Primary_output</td><td>{0BD3B7E7-69FF-4709-B394-A116707004B9}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunitbase.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td>{0C43A9CD-B5E6-480C-B881-818DBB5F3F1E}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunittestrunnerui_sql2012</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>ssisUnitTestRunner___SQL2012.Primary_output</td><td>{4889F114-136D-4638-B3A7-8BAEEB9225FE}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunittestrunner___sql2012</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>SsisUnit.TestRunner.2012.Primary_output</td><td>{60815268-E18E-4067-9EF5-A68019B17E1C}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunit.testrunner.2012.pri</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>SsisUnitBase.Primary_output</td><td>{1C683364-6D50-4479-AD42-9A9126CDE5AF}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunitbase.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td>{370763DD-0934-42C2-B21B-8EA74CE659D6}</td><td>INSTALLDIR</td><td>2</td><td/><td>ssisunittestrunnerui_sql2012</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -557,7 +557,7 @@
 		<row><td>LicenseAgreement</td><td>DlgLine</td><td>Line</td><td>48</td><td>234</td><td>326</td><td>0</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>LicenseAgreement</td><td>DlgTitle</td><td>Text</td><td>13</td><td>6</td><td>292</td><td>25</td><td>65539</td><td/><td>##IDS__IsLicenseDlg_LicenseAgreement##</td><td/><td/><td>0</td><td/><td/><td/></row>
 		<row><td>LicenseAgreement</td><td>ISPrintButton</td><td>PushButton</td><td>301</td><td>188</td><td>65</td><td>17</td><td>3</td><td/><td>##IDS_PRINT_BUTTON##</td><td>Agree</td><td/><td>0</td><td/><td/><td/></row>
-		<row><td>LicenseAgreement</td><td>Memo</td><td>ScrollableText</td><td>8</td><td>55</td><td>358</td><td>130</td><td>7</td><td/><td/><td/><td/><td>0</td><td/><td>&lt;ISProductFolder&gt;\Eula.rtf</td><td/></row>
+		<row><td>LicenseAgreement</td><td>Memo</td><td>ScrollableText</td><td>8</td><td>55</td><td>358</td><td>130</td><td>7</td><td/><td/><td/><td/><td>0</td><td/><td>C:\Projects\ssisUnit\MAIN\SsisUnit\Eula.rtf</td><td/></row>
 		<row><td>LicenseAgreement</td><td>Next</td><td>PushButton</td><td>230</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS_NEXT##</td><td>Cancel</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>MaintenanceType</td><td>Back</td><td>PushButton</td><td>164</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS_BACK##</td><td>Next</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>MaintenanceType</td><td>Banner</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary1</td></row>
@@ -1874,9 +1874,9 @@
 		<row><td>AlwaysInstall</td><td>SSISUnit_SQL2012.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>SsisUnit.Design_SQL2012.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>SsisUnit.TestComponents.2012.Primary_output</td></row>
+		<row><td>AlwaysInstall</td><td>SsisUnit.TestRunner.2012.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>SsisUnitBase.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td></row>
-		<row><td>AlwaysInstall</td><td>ssisUnitTestRunner___SQL2012.Primary_output</td></row>
 	</table>
 
 	<table name="File">
@@ -1893,10 +1893,10 @@
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>ssisunit.design_sql2012.prim</td><td>SsisUnit.Design_SQL2012.Primary_output</td><td>SsisUnit.Design_SQL2012.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;SsisUnit.Design_SQL2012&gt;|Built</td><td>3</td><td/></row>
 		<row><td>ssisunit.testcomponents.2012</td><td>SsisUnit.TestComponents.2012.Primary_output</td><td>SsisUnit.TestComponents.2012.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;SsisUnit.TestComponents.2012&gt;|Built</td><td>3</td><td/></row>
-		<row><td>ssisunit.xsd</td><td>ISX_DEFAULTCOMPONENT</td><td>SsisUnit.xsd</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\ssisUnit\SSISUnit\SsisUnit.xsd</td><td>1</td><td/></row>
+		<row><td>ssisunit.testrunner.2012.pri</td><td>SsisUnit.TestRunner.2012.Primary_output</td><td>SsisUnit.TestRunner.2012.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;SsisUnit.TestRunner.2012&gt;|Built</td><td>3</td><td/></row>
+		<row><td>ssisunit.xsd</td><td>ISX_DEFAULTCOMPONENT</td><td>SsisUnit.xsd</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Projects\ssisUnit\MAIN\SsisUnit\SsisUnit.xsd</td><td>1</td><td/></row>
 		<row><td>ssisunit_sql2012.primary_out</td><td>SSISUnit_SQL2012.Primary_output</td><td>SSISUnit_SQL2012.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;SSISUnit_SQL2012&gt;|Built</td><td>3</td><td/></row>
-		<row><td>ssisunitbase.primary_output</td><td>SsisUnitBase.Primary_output</td><td>SsisUnitBase.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;SsisUnitBase&gt;|Built</td><td>3</td><td/></row>
-		<row><td>ssisunittestrunner___sql2012</td><td>ssisUnitTestRunner___SQL2012.Primary_output</td><td>ssisUnitTestRunner - SQL2012.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;ssisUnitTestRunner - SQL2012&gt;|Built</td><td>3</td><td/></row>
+		<row><td>ssisunitbase.primary_output</td><td>SsisUnitBase.Primary_output</td><td>SsisUnitBase.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;SsisUnitBase1&gt;|Built</td><td>3</td><td/></row>
 		<row><td>ssisunittestrunnerui_sql2012</td><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td>ssisUnitTestRunnerUI_SQL2012.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;ssisUnitTestRunnerUI_SQL2012&gt;|Built</td><td>3</td><td/></row>
 	</table>
 
@@ -2045,9 +2045,9 @@
 		<row><td>SSISUnit_SQL2012.Primary_output</td><td/><td/><td>_28C6017E_FBDF_4DCB_AAAA_1464E8E2CFB9_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>SsisUnit.Design_SQL2012.Primary_output</td><td/><td/><td>_39D6528E_6BA7_4761_A45D_8DCB1E2BAAC7_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>SsisUnit.TestComponents.2012.Primary_output</td><td/><td/><td>_E9705BA8_8828_4BC5_B439_8C93A89AA655_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>SsisUnitBase.Primary_output</td><td/><td/><td>_6783A26A_BCB7_44BF_B7AD_6511295255C7_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td/><td/><td>_755C4CCC_79F4_4CF0_893B_F95B17024F13_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>ssisUnitTestRunner___SQL2012.Primary_output</td><td/><td/><td>_EFB9ADAD_1AB2_4F51_8563_95358D1FF25E_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>SsisUnit.TestRunner.2012.Primary_output</td><td/><td/><td>_6E91156A_E319_43DB_9978_BD81674175E7_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>SsisUnitBase.Primary_output</td><td/><td/><td>_DC8065A4_0F05_4B8D_AE13_56F2788A4B8D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td/><td/><td>_005D0A58_7E0D_4BA1_890E_C66BA193E20B_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">
@@ -2117,6 +2117,17 @@
 	<table name="ISDependency">
 		<col key="yes" def="S50">ISDependency</col>
 		<col def="I2">Exclude</col>
+		<row><td>DTSMSG110.DLL</td><td>1</td></row>
+		<row><td>DTSPIPELINE.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.DIAGNOSTICS.STRACE.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.DTSMSG.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.DTSPIPELINEWRAP.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.DTSRUNTIMEWRAP.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.INTEGRATIONSERVICES.COMMON.OBJECTMODEL.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.MANAGEDDTS.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.MANAGEMENT.INTEGRATIONSERVICES.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.MSXML6_INTEROP.DLL</td><td>1</td></row>
+		<row><td>MICROSOFT.SQLSERVER.PIPELINEHOST.DLL</td><td>1</td></row>
 	</table>
 
 	<table name="ISDisk1File">
@@ -2357,7 +2368,9 @@
 		<row><td>SSISUnit_SQL2012</td><td>SSISUnit\SSISUnit_SQL2012.csproj</td><td/><td>2</td></row>
 		<row><td>SsisUnit.Design_SQL2012</td><td>SsisUnitDesign\SsisUnit.Design_SQL2012.csproj</td><td/><td>2</td></row>
 		<row><td>SsisUnit.TestComponents.2012</td><td>SsisUnit.TestComponents\SsisUnit.TestComponents.2012.csproj</td><td/><td>2</td></row>
+		<row><td>SsisUnit.TestRunner.2012</td><td>SsisUnitTestRunner\SsisUnit.TestRunner.2012.csproj</td><td/><td>2</td></row>
 		<row><td>SsisUnitBase</td><td>SsisUnitBase\SsisUnitBase.csproj</td><td/><td>2</td></row>
+		<row><td>SsisUnitBase1</td><td>SsisUnit.Base\SsisUnitBase.csproj</td><td/><td>2</td></row>
 		<row><td>SystemFolder</td><td/><td/><td>1</td></row>
 		<row><td>WindowsFolder</td><td/><td/><td>1</td></row>
 		<row><td>ssisUnitTestRunner - SQL2012</td><td>TestRunner\ssisUnitTestRunner - SQL2012.csproj</td><td/><td>2</td></row>
@@ -2421,13 +2434,13 @@
 		<col def="S255">DotNetBuildConfiguration</col>
 		<col def="S255">MsiCommandLine</col>
 		<col def="I4">ISSetupPrerequisiteLocation</col>
-		<row><td>CD_ROM</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>Default</td><td>0</td><td>1033</td><td>0</td><td>2</td><td>Intel</td><td/><td>1033</td><td>0</td><td>650</td><td>0</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>75805</td><td/><td/><td/><td>3</td></row>
+		<row><td>CD_ROM</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>Default</td><td>0</td><td>1033</td><td>0</td><td>2</td><td>Intel</td><td/><td>1033</td><td>0</td><td>650</td><td>0</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>75804</td><td/><td/><td/><td>3</td></row>
 		<row><td>Custom</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>Default</td><td>2</td><td>1033</td><td>0</td><td>2</td><td>Intel</td><td/><td>1033</td><td>0</td><td>100</td><td>0</td><td>1024</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>75805</td><td/><td/><td/><td>3</td></row>
 		<row><td>DVD-10</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>Default</td><td>3</td><td>1033</td><td>0</td><td>2</td><td>Intel</td><td/><td>1033</td><td>0</td><td>8.75</td><td>1</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>75805</td><td/><td/><td/><td>3</td></row>
 		<row><td>DVD-18</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>Default</td><td>3</td><td>1033</td><td>0</td><td>2</td><td>Intel</td><td/><td>1033</td><td>0</td><td>15.83</td><td>1</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>75805</td><td/><td/><td/><td>3</td></row>
 		<row><td>DVD-5</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>Default</td><td>3</td><td>1033</td><td>0</td><td>2</td><td>Intel</td><td/><td>1033</td><td>0</td><td>4.38</td><td>1</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>75805</td><td/><td/><td/><td>3</td></row>
 		<row><td>DVD-9</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>Default</td><td>3</td><td>1033</td><td>0</td><td>2</td><td>Intel</td><td/><td>1033</td><td>0</td><td>7.95</td><td>1</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>75805</td><td/><td/><td/><td>3</td></row>
-		<row><td>SingleImage</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>PackageName</td><td>1</td><td>1033</td><td>0</td><td>1</td><td>Intel</td><td/><td>1033</td><td>0</td><td>0</td><td>0</td><td>0</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>108573</td><td/><td/><td/><td>3</td></row>
+		<row><td>SingleImage</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>PackageName</td><td>1</td><td>1033</td><td>2</td><td>1</td><td>Intel</td><td/><td>1033</td><td>0</td><td>0</td><td>0</td><td>0</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>108573</td><td/><td/><td/><td>3</td></row>
 		<row><td>WebDeployment</td><td>Express</td><td>&lt;ISProjectDataFolder&gt;</td><td>PackageName</td><td>4</td><td>1033</td><td>2</td><td>1</td><td>Intel</td><td/><td>1033</td><td>0</td><td>0</td><td>0</td><td>0</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>124941</td><td/><td/><td/><td>3</td></row>
 	</table>
 
@@ -2670,7 +2683,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Pragmatic Works</td><td>0</td><td/><td>-1801375701</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Pragmatic Works</td><td>0</td><td/><td>-1801369489</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>-1801342965</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>-1801342965</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION40FULL</td><td>1033</td><td>Microsoft .NET Framework 4.0 Full package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>-1801379669</td></row>
@@ -3485,6 +3498,7 @@
 		<row><td>IDS_SETUPEXE_LAUNCH_COND_E</td><td>1033</td><td>This setup was built with an evaluation version of InstallShield and can only be launched from setup.exe.</td><td>0</td><td/><td>-1801342965</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>-1801383637</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME2</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>-1801359061</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME3</td><td>1033</td><td>SsisUnit Test Runner</td><td>0</td><td/><td>-1801366449</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO</td><td>1033</td><td>From the list of servers below, select the database server you would like to target.</td><td>0</td><td/><td>-1801342965</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_DB</td><td>1033</td><td>From the list of catalog names below, select the database catalog you would like to target.</td><td>0</td><td/><td>-1801342965</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_TEMPLATE</td><td>1033</td><td>[IS_SQLBROWSE_INTRO]</td><td>0</td><td/><td>-1801342965</td></row>
@@ -3775,8 +3789,8 @@
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>-1801342965</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td/><td>0</td><td/><td>-1801342965</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td/><td>0</td><td/><td>-1801332725</td></row>
-		<row><td>ID_STRING3</td><td>1033</td><td>http://www.PragmaticWorks.com</td><td>0</td><td/><td>-1801375701</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>Pragmatic Works</td><td>0</td><td/><td>-1801375701</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>http://www.PragmaticWorks.com</td><td>0</td><td/><td>-1801369489</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>Pragmatic Works</td><td>0</td><td/><td>-1801369489</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-1801342965</td></row>
 	</table>
 
@@ -3999,8 +4013,8 @@
 		<col def="S0">Value</col>
 		<row><td>ActiveLanguage</td><td>1033</td></row>
 		<row><td>Comments</td><td/></row>
-		<row><td>CurrentMedia</td><td dt:dt="bin.base64" md5="de9f554a3bc05c12be9c31b998217995">
-UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
+		<row><td>CurrentMedia</td><td dt:dt="bin.base64" md5="6d78a46bf2c52ee27034bbcad20f7f95">
+QwBEAF8AUgBPAE0AAQBFAHgAcAByAGUAcwBzAA==
 			</td></row>
 		<row><td>DefaultProductConfiguration</td><td>Express</td></row>
 		<row><td>EnableSwidtag</td><td>1</td></row>
@@ -4017,7 +4031,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{2294A408-E924-4748-A7DF-D82F6ED06075}</td></row>
 		<row><td>ISUSSignature</td><td>{43567408-58E0-453A-A028-62DEF16A6E01}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewAppV,viewProject,viewRealSetupDesign,viewSetupDesign,viewSetupTypes,viewUpgradePaths,viewUpdateService,viewObjects,viewRelease</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewAppV,viewProject,viewRealSetupDesign,viewSetupDesign,viewSetupTypes,viewUpgradePaths,viewUpdateService,viewObjects,viewRelease,viewISToday,viewAppFiles,viewFeatureFiles,viewDependencies,viewShortcuts,viewFileExtensions,viewEnvironmentVariables,viewUI,viewSupportFiles,viewCustomActions,viewInstallScriptStd,viewDesignPatches</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4471,8 +4485,6 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="L255">FileName</col>
 		<col def="s72">DirProperty</col>
 		<col def="i2">InstallMode</col>
-		<row><td>FileKey1</td><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td/><td>pragma_1_pragmatic_works</td><td>2</td></row>
-		<row><td>FileKey2</td><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td/><td>ssisun_1_ssisunit_2012</td><td>2</td></row>
 		<row><td>_Built</td><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td/><td>ssisun_1_ssisunit_2012</td><td>2</td></row>
 	</table>
 
@@ -4559,7 +4571,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>_Built</td><td>ssisun_1_ssisunit_2012</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built</td><td>ssisun_1_ssisunit_2012</td><td>##IDS_SHORTCUT_DISPLAY_NAME3##</td><td>ssisUnitTestRunnerUI_SQL2012.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">

@@ -29,10 +29,6 @@
 	</ItemGroup>
 	<Import Project="$(MSBuildExtensionsPath32)\InstallShield\2013Limited\InstallShield.targets"/>
 	<ItemGroup>
-		<ProjectReference Include="..\SSISUnit\SSISUnit_SQL2012.csproj">
-			<Name>SSISUnit_SQL2012</Name>
-			<Project>{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}</Project>
-		</ProjectReference>
 		<ProjectReference Include="..\SsisUnitDesign\SsisUnit.Design_SQL2012.csproj">
 			<Name>SsisUnit.Design_SQL2012</Name>
 			<Project>{3B38F252-0DE8-4639-9AF9-AB8B216B685C}</Project>
@@ -41,17 +37,13 @@
 			<Name>SsisUnit.TestComponents.2012</Name>
 			<Project>{6C8078E0-99DD-40D0-94DA-E17B3FC50679}</Project>
 		</ProjectReference>
-		<ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
-			<Name>SsisUnitBase</Name>
-			<Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
-		</ProjectReference>
-		<ProjectReference Include="..\TestRunner\ssisUnitTestRunner - SQL2012.csproj">
-			<Name>ssisUnitTestRunner - SQL2012</Name>
+		<ProjectReference Include="..\SsisUnitTestRunner\SsisUnit.TestRunner.2012.csproj">
+			<Name>SsisUnit.TestRunner.2012</Name>
 			<Project>{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}</Project>
 		</ProjectReference>
-		<ProjectReference Include="..\ssisUnitTestRunnerUI\ssisUnitTestRunnerUI_SQL2012.csproj">
-			<Name>ssisUnitTestRunnerUI_SQL2012</Name>
-			<Project>{A943E51D-D0CC-4EF1-875B-937D0B179241}</Project>
+		<ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
+			<Name>SsisUnitBase</Name>
+			<Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
 		</ProjectReference>
 	</ItemGroup>
 </Project>

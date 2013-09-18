@@ -55,6 +55,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ssisUnitRunner.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -154,7 +157,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+    <ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
       <Project>{e693cce8-9edf-4117-ab7f-eb87b87e29ea}</Project>
       <Name>SsisUnitBase</Name>
     </ProjectReference>
@@ -166,6 +169,9 @@
       <Project>{8c839f0e-0afd-4d9a-8dee-5c7963e3e6c7}</Project>
       <Name>SSISUnit_SQL2012</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ssisUnitRunner.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
