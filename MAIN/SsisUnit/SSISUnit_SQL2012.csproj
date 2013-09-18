@@ -173,13 +173,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
+      <Project>{e693cce8-9edf-4117-ab7f-eb87b87e29ea}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.2012.csproj">
       <Project>{6c8078e0-99dd-40d0-94da-e17b3fc50679}</Project>
       <Name>SsisUnit.TestComponents.2012</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
-      <Project>{e693cce8-9edf-4117-ab7f-eb87b87e29ea}</Project>
-      <Name>SsisUnitBase</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
