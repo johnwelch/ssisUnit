@@ -130,7 +130,7 @@
     <EmbeddedResource Include="SampleSsisUnitTests\UTssisUnit_TestSuite.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+    <ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
       <Project>{e693cce8-9edf-4117-ab7f-eb87b87e29ea}</Project>
       <Name>SsisUnitBase</Name>
     </ProjectReference>
