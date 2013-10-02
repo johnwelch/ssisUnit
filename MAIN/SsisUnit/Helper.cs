@@ -206,7 +206,7 @@ namespace SsisUnit
         private static DtsContainer NavigateReferencePath(IDTSSequence parentExecutable, string taskId, out string remainingPath)
         {
             // This is a 2012 format path to the task / component.
-            var pathParts = new Queue<string>(taskId.Split(new[] { "\\" }, StringSplitOptions.None));
+            var pathParts = new Queue<string>(taskId.Split(new[] { "\\" }, StringSplitOptions.RemoveEmptyEntries));
             if (pathParts.Count == 0)
             {
                 throw new ArgumentException(

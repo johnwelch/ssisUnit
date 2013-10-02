@@ -222,6 +222,20 @@ namespace SsisUnit
 
                     var events = new SsisEvents();
 
+#if SQL2012
+                    Project project = loadedProject as Project;
+
+                    if (project != null)
+                    {
+                        foreach (var connectionManagerItem in project.ConnectionManagerItems)
+                        {
+                            packageToTest.Connections.Join(connectionManagerItem.ConnectionManager);
+                        }
+                    }
+#else
+                loadedProject = null;
+#endif
+
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, events, null, null);
 
                     DTSExecResult result = taskHost.ExecutionResult;
@@ -497,10 +511,10 @@ namespace SsisUnit
 
         private class SsisEvents : DefaultEvents
         {
-            // public override bool OnError(DtsObject source, int errorCode, string subComponent, string description, string helpFile, int helpContext, string idofInterfaceWithError)
-            // {
-            //     return base.OnError(source, errorCode, subComponent, description, helpFile, helpContext, idofInterfaceWithError);
-            // }
+            public override bool OnError(DtsObject source, int errorCode, string subComponent, string description, string helpFile, int helpContext, string idofInterfaceWithError)
+            {
+                return base.OnError(source, errorCode, subComponent, description, helpFile, helpContext, idofInterfaceWithError);
+            }
         }
     }
 }

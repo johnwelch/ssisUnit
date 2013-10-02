@@ -116,6 +116,7 @@
     <EmbeddedResource Include="TestPackages\DataFlowComponent.dtsx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="TestPackages\ISPACTesting.ispac" />
     <None Include="UT_BadTestFile.ssisUnit" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTssisUnit_Package.xml" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTSsisUnit_BadData.ssisUnit" />
