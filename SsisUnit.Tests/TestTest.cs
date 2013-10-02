@@ -4,6 +4,7 @@ using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SsisUnit;
 using SsisUnit.Commands;
+using SsisUnit.Enums;
 
 using SsisUnitBase.Enums;
 
@@ -173,6 +174,46 @@ namespace UTssisUnit
             var assert = new SsisAssert(ts, target, "Test Output", true, false);
             target.Asserts.Add("Test Output", assert);
             assert.Command = new ComponentOutputCommand(ts, "ComponentOutput", string.Empty, string.Empty);
+
+            ts.Execute();
+
+            Assert.AreEqual(2, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
+        }
+
+        [TestMethod]
+        public void ProjectConnectionTest()
+        {
+            var projectFile = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
+            var ts = new SsisTestSuite();
+            ts.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;Provider=SQLNCLI11", ConnectionRef.ConnectionTypeEnum.ConnectionString, "System.Data.SqlClient"));
+            ts.PackageRefs.Add("TestPackage", new PackageRef("TestPackage", "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem));
+            ts.PackageRefs["TestPackage"].ProjectPath = projectFile;
+            var target = new Test(ts, "ExecuteSQL", "TestPackage", null, @"\Package\Execute SQL Task");
+            ts.Tests.Add("Test Execute SQL", target);
+            var assert = new SsisAssert(ts, target, "Test Output", 71, false);
+            target.Asserts.Add("Test Output", assert);
+            assert.Command = new SqlCommand(ts, "AdventureWorks", true, "SELECT COUNT(*) FROM sys.tables");
+
+            ts.Execute();
+
+            Assert.AreEqual(2, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
+        }
+
+        [TestMethod]
+        public void ProjectParamTest()
+        {
+            var projectFile = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
+            var ts = new SsisTestSuite();
+            ts.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;Provider=SQLNCLI11", ConnectionRef.ConnectionTypeEnum.ConnectionString, "System.Data.SqlClient"));
+            ts.PackageRefs.Add("TestPackage", new PackageRef("TestPackage", "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem));
+            ts.PackageRefs["TestPackage"].ProjectPath = projectFile;
+            var target = new Test(ts, "ExecuteSQL", "TestPackage", null, @"\Package\Test Param");
+            ts.Tests.Add("Test Execute SQL", target);
+            var assert = new SsisAssert(ts, target, "Test Output", 71, false);
+            target.Asserts.Add("Test Output", assert);
+            assert.Command = new SqlCommand(ts, "AdventureWorks", true, "SELECT COUNT(*) FROM sys.tables");
 
             ts.Execute();
 

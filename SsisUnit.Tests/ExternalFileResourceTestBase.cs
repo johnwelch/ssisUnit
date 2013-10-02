@@ -104,10 +104,16 @@ namespace UTssisUnit
             return stream;
         }
 
-        protected string UnpackToFile(string packageResource)
+        protected string UnpackToFile(string packageResource, bool writeBytes = false)
         {
             var tempFileName = Path.GetTempFileName();
             var stream = GetResourceStream(packageResource);
+
+            if (writeBytes)
+            {
+                return UnpackBytesToFile(stream, tempFileName);
+            }
+
             using (var sr = new StreamReader(stream))
             {
                 using (StreamWriter sw = File.CreateText(tempFileName))
@@ -118,6 +124,16 @@ namespace UTssisUnit
             }
 
             return tempFileName;
+        }
+
+        private string UnpackBytesToFile(Stream stream, string filename)
+        {
+            using (Stream file = File.Create(filename))
+            {
+                stream.CopyTo(file);
+            }
+
+            return filename;
         }
     }
 }
