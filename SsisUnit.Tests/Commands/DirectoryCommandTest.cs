@@ -1,8 +1,10 @@
-﻿using System;
+using System;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using SsisUnit;
 
-namespace UTssisUnit
+namespace UTssisUnit.Commands
 {
     /// <summary>
     /// This is a test class for DirectoryCommandTest and is intended

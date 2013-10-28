@@ -1,11 +1,12 @@
-﻿using System.Diagnostics;
+using System;
+using System.Diagnostics;
+using System.Xml;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using SsisUnit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml;
-using System;
 
-namespace UTssisUnit
+namespace UTssisUnit.Commands
 {
     [TestClass]
     public class SqlCommandTest : ExternalFileResourceTestBase

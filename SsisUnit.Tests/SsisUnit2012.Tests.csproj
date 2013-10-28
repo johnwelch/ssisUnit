@@ -80,14 +80,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DirectoryCommandTest.cs" />
+    <Compile Include="Commands\DataCompareCommandTest.cs" />
+    <Compile Include="Commands\DirectoryCommandTest.cs" />
+    <Compile Include="Commands\FileCommandTest.cs" />
+    <Compile Include="Commands\ProcessCommandTest.cs" />
+    <Compile Include="Commands\PropertyCommandTest.cs" />
+    <Compile Include="Commands\SqlCommandTest.cs" />
     <Compile Include="ExternalFileResourceTestBase.cs" />
-    <Compile Include="FileCommandTest.cs" />
     <Compile Include="PackageRefTest.cs" />
-    <Compile Include="ProcessCommandTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyCommandTest.cs" />
-    <Compile Include="SqlCommandTest.cs" />
     <Compile Include="SsisAssertTest.cs" />
     <Compile Include="SSISTestCaseTest.cs" />
     <Compile Include="ssisUnit_UTHelper.cs" />
