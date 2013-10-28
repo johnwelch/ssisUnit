@@ -1,12 +1,12 @@
-﻿using SsisUnit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.SqlServer.Dts.Runtime;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using SsisUnit;
 using SsisUnit.Enums;
 
 using SsisUnitBase.Enums;
 
-namespace UTssisUnit
+namespace UTssisUnit.Commands
 {
     [TestClass]
     public class PropertyCommandTest : ExternalFileResourceTestBase
