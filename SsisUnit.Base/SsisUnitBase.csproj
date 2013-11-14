@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandResultsBase.cs" />
+    <Compile Include="Enums\CommandParentType.cs" />
     <Compile Include="Enums\StatisticEnum.cs" />
     <Compile Include="EventArgs\AssertCompletedEventArgs.cs" />
     <Compile Include="EventArgs\CommandCompletedEventArgs.cs" />

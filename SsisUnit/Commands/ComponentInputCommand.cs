@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
@@ -21,7 +20,7 @@ namespace SsisUnit.Commands
 {
     class ComponentInputCommand : CommandBase
     {
-        private const string SsisUnitSourceId = "SsisUnit.TestComponents.SsisUnitSource";
+        // private const string SsisUnitSourceId = "SsisUnit.TestComponents.SsisUnitSource";
         private const string PropName = "name";
         private const string PropDataSet = "dataset";
         private const string PropInput = "input";
@@ -115,7 +114,7 @@ namespace SsisUnit.Commands
 #if DEBUG
             for (int i = 0; i < placeholderSource.OutputCollection[0].OutputColumnCollection.Count; i++)
             {
-                Debug.Print(placeholderSource.OutputCollection[0].OutputColumnCollection[i].Name);
+                System.Diagnostics.Debug.Print(placeholderSource.OutputCollection[0].OutputColumnCollection[i].Name);
             }
 #endif
 

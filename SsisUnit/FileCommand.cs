@@ -6,6 +6,7 @@ using System.ComponentModel;
 
 using Microsoft.SqlServer.Dts.Runtime;
 
+using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
 #if SQL2012 || SQL2008
@@ -90,9 +91,11 @@ namespace SsisUnit
                 }
             }
 
+            CommandParentType commandParentType = GetCommandParentType();
+
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null, commandParentType));
 
                 switch (operation)
                 {
@@ -116,11 +119,11 @@ namespace SsisUnit
                         break;
                 }
 
-                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName), commandParentType));
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message, commandParentType));
 
                 throw;
             }

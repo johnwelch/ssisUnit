@@ -8,13 +8,12 @@ using SsisUnitBase.EventArgs;
 
 namespace ssisUnitTestRunner
 {
-    class Program
+    public class Program
     {
         private const string ARG_TEST_CASE = "/TESTCASE";
         //private const string ARG_PACKAGE = "/PACKAGE";
         private const string ARG_OUTPUT_FILE = "/OUTPUT";
         private const string ARG_REPORT_LEVEL = "/REPORT";
-
 
         static int Main(string[] args)
         {
@@ -158,7 +157,6 @@ namespace ssisUnitTestRunner
                 WriteOutput(vals);
             }
 
-
             private void unitRunner_TestCompleted(object sender, TestCompletedEventArgs e)
             {
                 object[] vals = new object[] { e.TestExecResult.TestExecutionTime.ToString(), e.TestExecResult.PackageName, e.TestExecResult.TaskName, e.TestExecResult.TestName, e.TestExecResult.TestResultMsg, e.TestExecResult.TestPassed };
@@ -192,10 +190,6 @@ namespace ssisUnitTestRunner
                     outputFile.Close();
                 }
             }
-
         }
-
-
-
     }
 }
