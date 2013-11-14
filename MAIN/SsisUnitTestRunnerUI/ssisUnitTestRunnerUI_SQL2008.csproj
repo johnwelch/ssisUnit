@@ -155,7 +155,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
+    <ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
       <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
       <Name>SsisUnitBase</Name>
     </ProjectReference>

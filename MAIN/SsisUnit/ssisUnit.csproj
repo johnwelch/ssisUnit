@@ -102,13 +102,13 @@
     <EmbeddedResource Include="BaseTest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
+      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.csproj">
       <Project>{6C8078E0-99DD-40D0-94DA-E17B3FC50679}</Project>
       <Name>SsisUnit.TestComponents</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
-      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
-      <Name>SsisUnitBase</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -104,7 +104,16 @@ namespace UTssisUnit
             return stream;
         }
 
+#if (SQL2005)
+        protected string UnpackToFile(string packageResource)
+        {
+            return UnpackToFile(packageResource, false);
+        }
+
+        protected string UnpackToFile(string packageResource, bool writeBytes)
+#else
         protected string UnpackToFile(string packageResource, bool writeBytes = false)
+#endif
         {
             var tempFileName = Path.GetTempFileName();
             var stream = GetResourceStream(packageResource);
@@ -128,12 +137,23 @@ namespace UTssisUnit
 
         private string UnpackBytesToFile(Stream stream, string filename)
         {
-            using (Stream file = File.Create(filename))
+            using (FileStream file = File.Create(filename))
             {
-                stream.CopyTo(file);
+                CopyTo(stream, file);
             }
 
             return filename;
+        }
+
+        private void CopyTo(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[8 * 1024];
+            int bytesRead;
+
+            while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, bytesRead);
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Xml;
 
 using Microsoft.SqlServer.Dts.Runtime;
 
+using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
 #if SQL2012 || SQL2008
@@ -192,9 +193,11 @@ namespace SsisUnit
             DataTable expectedDataTable;
             DataTable actualDataTable;
 
+            CommandParentType commandParentType = GetCommandParentType();
+
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, Name, null, null, commandParentType));
 
                 if (!ExpectedDataset.IsResultsStored)
                 {
@@ -223,7 +226,7 @@ namespace SsisUnit
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message, commandParentType));
 
                 throw;
             }
@@ -267,7 +270,7 @@ namespace SsisUnit
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, ex.Message, commandParentType));
 
                 throw;
             }
@@ -398,12 +401,12 @@ namespace SsisUnit
                               ExpectedDataset.Name,
                               ActualDataset.Name);
 
-            var completedEventArgs = new DataCompareCommandCompletedEventArgs(DateTime.Now, Name, null, null, resultMessage, results);
+            var completedEventArgs = new DataCompareCommandCompletedEventArgs(DateTime.Now, Name, null, null, resultMessage, results, commandParentType);
 
             if (isResultsSame)
                 OnCommandCompleted(completedEventArgs);
             else
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, resultMessage, results));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, Name, null, null, resultMessage, results, commandParentType));
 
             return results;
         }

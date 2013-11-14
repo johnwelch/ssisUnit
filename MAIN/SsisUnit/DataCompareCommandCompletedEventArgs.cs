@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
+using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
 namespace SsisUnit
 {
     public class DataCompareCommandCompletedEventArgs : CommandCompletedEventArgs
     {
-        public DataCompareCommandCompletedEventArgs(DateTime completedExecutionTime, string commandName, string parentName, string package, string results, DataCompareCommandResults dataCompareCommandResults)
-            : base(completedExecutionTime, commandName, parentName, package, results)
+        public DataCompareCommandCompletedEventArgs(DateTime completedExecutionTime, string commandName, string parentName, string package, string results, DataCompareCommandResults dataCompareCommandResults, CommandParentType commandParentType)
+            : base(completedExecutionTime, commandName, parentName, package, results, commandParentType)
         {
             if (dataCompareCommandResults == null)
                 throw new ArgumentNullException("dataCompareCommandResults");

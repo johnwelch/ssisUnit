@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using SsisUnit.Enums;
 
+using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
 using Package = Microsoft.SqlServer.Dts.Runtime.Package;
@@ -85,9 +86,11 @@ namespace SsisUnit
 #if SQL2012
             object returnValue;
 
+            CommandParentType commandParentType = GetCommandParentType();
+
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null, commandParentType));
 
                 Parameter parameter;
 
@@ -119,11 +122,11 @@ namespace SsisUnit
                 else
                     returnValue = parameter.Value = Convert.ChangeType(Value, parameter.DataType);
 
-                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName), commandParentType));
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message, commandParentType));
 
                 throw;
             }

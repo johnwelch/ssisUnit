@@ -162,14 +162,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
+      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.2008.csproj">
       <Project>{2CAB4A02-40F5-47DA-AF07-F35A35A1402C}</Project>
       <Name>SsisUnit.TestComponents.2008</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SsisUnitBase\SsisUnitBase.csproj">
-      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
-      <Name>SsisUnitBase</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

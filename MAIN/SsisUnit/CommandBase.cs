@@ -9,6 +9,7 @@ using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 
 using SsisUnitBase;
+using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
 namespace SsisUnit
@@ -31,14 +32,13 @@ namespace SsisUnit
 
         private readonly SsisTestSuite _testSuite;
 
-        private string _body = string.Empty;
-
         #endregion
 
         #region Constructors and Destructors
 
         protected CommandBase()
         {
+            Body = string.Empty;
             _properties = new Dictionary<string, CommandProperty> { { PropName, new CommandProperty(PropName, string.Empty) } };
         }
 
@@ -110,17 +110,7 @@ namespace SsisUnit
 
         #region Properties
 
-        protected string Body
-        {
-            get
-            {
-                return _body;
-            }
-            set
-            {
-                _body = value;
-            }
-        }
+        protected string Body { get; set; }
 
         protected Dictionary<string, CommandProperty> Properties
         {
@@ -242,6 +232,47 @@ namespace SsisUnit
             return Execute(null, null);
         }
 
+        public CommandParentType GetCommandParentType()
+        {
+            if (Parent == null)
+                return CommandParentType.Unknown;
+                
+            if (Parent is SsisAssert)
+                return CommandParentType.Assert;
+
+            if (TestSuite == null)
+                return CommandParentType.Unknown;
+
+            if (Parent == TestSuite.TestSuiteSetup)
+                return CommandParentType.TestSuiteSetup;
+
+            if (Parent == TestSuite.TestSuiteTeardown)
+                return CommandParentType.TestSuiteTeardown;
+
+            if (Parent == TestSuite.SetupCommands)
+                return CommandParentType.UnitTestSetup;
+
+            if (Parent == TestSuite.TeardownCommands)
+                return CommandParentType.UnitTestTeardown;
+
+            if (TestSuite.Tests == null)
+                return CommandParentType.Unknown;
+
+            foreach (var test in TestSuite.Tests)
+            {
+                if (test.Value == null)
+                    continue;
+
+                if (Parent == test.Value.TestSetup)
+                    return CommandParentType.TestSetup;
+
+                if (Parent == test.Value.TestTeardown)
+                    return CommandParentType.TestTeardown;
+            }
+
+            return CommandParentType.Unknown;
+        }
+
         public override sealed void LoadFromXml(string commandXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(commandXml));
@@ -278,8 +309,8 @@ namespace SsisUnit
                 xmlWriter.WriteAttributeString(prop.Name, prop.Value);
             }
 
-            if (_body != string.Empty)
-                xmlWriter.WriteString(_body);
+            if (Body != string.Empty)
+                xmlWriter.WriteString(Body);
 
             xmlWriter.WriteEndElement();
             xmlWriter.Close();
@@ -290,6 +321,14 @@ namespace SsisUnit
         #endregion
 
         #region Methods
+
+        protected void AddProperty(string propertyName, string initialValue)
+        {
+            if (!Properties.ContainsKey(propertyName))
+            {
+                Properties.Add(propertyName, new CommandProperty(propertyName, initialValue));
+            }
+        }
 
         protected void CheckCommandType(string commandName)
         {
@@ -322,13 +361,5 @@ namespace SsisUnit
         }
 
         #endregion
-
-        protected void AddProperty(string propertyName, string initialValue)
-        {
-            if (!Properties.ContainsKey(propertyName))
-            {
-                Properties.Add(propertyName, new CommandProperty(propertyName, initialValue));
-            }
-        }
     }
 }

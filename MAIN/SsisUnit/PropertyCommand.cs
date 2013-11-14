@@ -3,6 +3,7 @@ using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.ComponentModel;
 
+using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
 #if SQL2012 || SQL2008
@@ -96,19 +97,21 @@ namespace SsisUnit
 
         public override object Execute(Package package, DtsContainer container)
         {
+            CommandParentType commandParentType = GetCommandParentType();
+
             try
             {
-                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null));
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null, commandParentType));
 
                 object returnValue = LocatePropertyValue(package, PropertyPath, Operation, Value);
 
-                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName)));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName), commandParentType));
 
                 return returnValue;
             }
             catch (Exception ex)
             {
-                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message));
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message, commandParentType));
 
                 throw;
             }
