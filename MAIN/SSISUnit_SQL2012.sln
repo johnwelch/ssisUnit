@@ -26,7 +26,7 @@ Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "ssisUnit2012Setup", "ssisUn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnitBase", "SsisUnit.Base\SsisUnitBase.csproj", "{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunner - SQL2012", "SsisUnitTestRunner\ssisUnitTestRunner - SQL2012.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunner - SQL2012", "SsisUnitTestRunner\ssisUnit.TestRunner.2012.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
