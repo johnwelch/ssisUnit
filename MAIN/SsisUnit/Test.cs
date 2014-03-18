@@ -25,6 +25,8 @@ namespace SsisUnit
         public event EventHandler<CommandCompletedEventArgs> CommandCompleted;
         public event EventHandler<CommandFailedEventArgs> CommandFailed;
         public event EventHandler<CommandStartedEventArgs> CommandStarted;
+        public event EventHandler<TestStartedEventArgs> TestStarted;
+        public event EventHandler<TestCompletedEventArgs> TestCompleted;
 
         private string _taskName;
 
@@ -155,6 +157,8 @@ namespace SsisUnit
         /// <returns>True if the test was executed with no errors, false if it encountered errors.</returns>
         public bool Execute()
         {
+            OnRaiseTestStarted(new TestStartedEventArgs());
+
             TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestCount);
 
             bool returnValue = false;
@@ -327,6 +331,8 @@ namespace SsisUnit
 #else
                 loadedProject = null;
 #endif
+
+                OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, Name, PackageLocation, _taskName, string.Format("The {0} unit test has completed.", Name), returnValue));
             }
         }
 
@@ -379,6 +385,26 @@ namespace SsisUnit
 
             if (handler != null)
                 handler(sender, e);
+        }
+
+        private void OnRaiseTestCompleted(TestCompletedEventArgs e)
+        {
+            EventHandler<TestCompletedEventArgs> handler = TestCompleted;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private void OnRaiseTestStarted(TestStartedEventArgs e)
+        {
+            EventHandler<TestStartedEventArgs> handler = this.TestStarted;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         private void LoadPackageAndTask(string packagePath, SecureString packagePassword, string projectPath, string taskId, out Package package, out DtsContainer taskHost, out object loadedProject)
