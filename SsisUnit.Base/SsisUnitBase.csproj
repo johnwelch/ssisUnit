@@ -55,8 +55,10 @@
     <Compile Include="EventArgs\SetupCompletedEventArgs.cs" />
     <Compile Include="EventArgs\TeardownCompletedEventArgs.cs" />
     <Compile Include="EventArgs\TestCompletedEventArgs.cs" />
+    <Compile Include="EventArgs\TestStartedEventArgs.cs" />
     <Compile Include="EventArgs\TestSuiteCompletedEventArgs.cs" />
     <Compile Include="EventArgs\TestSuiteFailedEventArgs.cs" />
+    <Compile Include="EventArgs\TestSuiteStartedEventArgs.cs" />
     <Compile Include="ISsisTestSuite.cs" />
     <Compile Include="ISsisUnitPersist.cs" />
     <Compile Include="IValidate.cs" />

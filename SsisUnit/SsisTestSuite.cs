@@ -133,8 +133,10 @@ namespace SsisUnit
         public event EventHandler<SetupCompletedEventArgs> SetupCompleted;
         public event EventHandler<TeardownCompletedEventArgs> TeardownCompleted;
         public event EventHandler<TestCompletedEventArgs> TestCompleted;
+        public event EventHandler<TestStartedEventArgs> TestStarted;
         public event EventHandler<TestSuiteCompletedEventArgs> TestSuiteCompleted;
         public event EventHandler<TestSuiteFailedEventArgs> TestSuiteFailed;
+        public event EventHandler<TestSuiteStartedEventArgs> TestSuiteStarted;
 
         internal virtual void OnRaiseCommandCompleted(object sender, CommandCompletedEventArgs e)
         {
@@ -182,7 +184,17 @@ namespace SsisUnit
             }
         }
 
-        private void OnRaiseTestSuiteCompleted(TestSuiteCompletedEventArgs e)
+        internal virtual void OnRaiseTestStarted(TestStartedEventArgs e)
+        {
+            EventHandler<TestStartedEventArgs> handler = TestStarted;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        internal virtual void OnRaiseTestSuiteCompleted(TestSuiteCompletedEventArgs e)
         {
             EventHandler<TestSuiteCompletedEventArgs> handler = TestSuiteCompleted;
 
@@ -193,11 +205,21 @@ namespace SsisUnit
             }
         }
 
-        private void OnRaiseTestSuiteFailed(TestSuiteFailedEventArgs e)
+        internal virtual void OnRaiseTestSuiteFailed(TestSuiteFailedEventArgs e)
         {
             EventHandler<TestSuiteFailedEventArgs> handler = TestSuiteFailed;
 
             // Event will be null if there are no subscribers
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        internal virtual void OnRaiseTestSuiteStarted(TestSuiteStartedEventArgs e)
+        {
+            EventHandler<TestSuiteStartedEventArgs> handler = TestSuiteStarted;
+
             if (handler != null)
             {
                 handler(this, e);
@@ -382,6 +404,8 @@ namespace SsisUnit
                 Statistics.Reset();
             }
 
+            OnRaiseTestSuiteStarted(new TestSuiteStartedEventArgs());
+
             try
             {
                 ExecuteCommandSet(TestSuiteSetup);
@@ -397,11 +421,19 @@ namespace SsisUnit
             {
                 try
                 {
+                    test.TestStarted += TestStarted;
+                    test.TestCompleted += TestCompleted;
+
                     test.Execute();
                 }
                 catch (Exception ex)
                 {
                     OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, test.PackageLocation, test.Task, test.Name, ex.Message, false));
+                }
+                finally
+                {
+                    test.TestCompleted -= TestCompleted;
+                    test.TestStarted -= TestStarted;
                 }
             }
 
