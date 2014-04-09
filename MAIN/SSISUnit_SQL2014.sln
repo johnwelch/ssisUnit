@@ -1,20 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSISUnit_SQL2012", "SSISUnit\SSISUnit_SQL2012.csproj", "{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSISUnit.2014", "SSISUnit\SSISUnit.2014.csproj", "{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit.TestComponents.2012", "SsisUnit.TestComponents\SsisUnit.TestComponents.2012.csproj", "{6C8078E0-99DD-40D0-94DA-E17B3FC50679}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit.TestComponents.2014", "SsisUnit.TestComponents\SsisUnit.TestComponents.2014.csproj", "{6C8078E0-99DD-40D0-94DA-E17B3FC50679}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit.Design_SQL2012", "SsisUnitDesign\SsisUnit.Design_SQL2012.csproj", "{3B38F252-0DE8-4639-9AF9-AB8B216B685C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit.Design_SQL2014", "SsisUnitDesign\SsisUnit.Design_SQL2014.csproj", "{3B38F252-0DE8-4639-9AF9-AB8B216B685C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunnerUI_SQL2012", "ssisUnitTestRunnerUI\ssisUnitTestRunnerUI_SQL2012.csproj", "{A943E51D-D0CC-4EF1-875B-937D0B179241}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunnerUI.2014", "ssisUnitTestRunnerUI\ssisUnitTestRunnerUI.2014.csproj", "{A943E51D-D0CC-4EF1-875B-937D0B179241}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{17BB6EF3-A1CF-4326-A7E6-A7BF928C1D2B}"
 	ProjectSection(SolutionItems) = preProject
 		SsisUnit.testsettings = SsisUnit.testsettings
 	EndProjectSection
 EndProject
-Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "ssisUnit2012Setup", "ssisUnit2012Setup\ssisUnit2012Setup.isproj", "{2A9028F9-B03B-46A2-9369-83CE1F38FD2B}"
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "ssisUnit2014Setup", "ssisUnit2012Setup\ssisUnit2014Setup.isproj", "{2A9028F9-B03B-46A2-9369-83CE1F38FD2B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7} = {8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}
 		{A943E51D-D0CC-4EF1-875B-937D0B179241} = {A943E51D-D0CC-4EF1-875B-937D0B179241}
@@ -26,9 +26,9 @@ Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "ssisUnit2012Setup", "ssisUn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnitBase", "SsisUnit.Base\SsisUnitBase.csproj", "{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnit.TestRunner.2012", "SsisUnitTestRunner\ssisUnit.TestRunner.2012.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnit.TestRunner.2014", "SsisUnitTestRunner\ssisUnit.TestRunner.2014.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit2012.Tests", "SsisUnit.Tests\SsisUnit2012.Tests.csproj", "{ADC78700-333C-4BDC-9F64-DA20F500C273}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit2014.Tests", "SsisUnit.Tests\SsisUnit2014.Tests.csproj", "{ADC78700-333C-4BDC-9F64-DA20F500C273}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -36,28 +36,28 @@ Global
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs04
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = SSISUnit\\SSISUnit_SQL2012.csproj
-		SccProjectName1 = SSISUnit
-		SccLocalPath1 = SSISUnit
-		SccProjectUniqueName2 = SsisUnit.TestComponents\\SsisUnit.TestComponents.2012.csproj
+		SccProjectUniqueName1 = SsisUnit.Base\\SsisUnitBase.csproj
+		SccProjectName1 = SsisUnit.Base
+		SccLocalPath1 = SsisUnit.Base
+		SccProjectUniqueName2 = SsisUnit.TestComponents\\SsisUnit.TestComponents.2014.csproj
 		SccProjectName2 = SsisUnit.TestComponents
 		SccLocalPath2 = SsisUnit.TestComponents
-		SccProjectUniqueName3 = SsisUnitDesign\\SsisUnit.Design_SQL2012.csproj
-		SccProjectName3 = SsisUnitDesign
-		SccLocalPath3 = SsisUnitDesign
-		SccProjectUniqueName4 = ssisUnitTestRunnerUI\\ssisUnitTestRunnerUI_SQL2012.csproj
-		SccProjectName4 = ssisUnitTestRunnerUI
-		SccLocalPath4 = ssisUnitTestRunnerUI
-		SccProjectUniqueName5 = ssisUnit2012Setup\\ssisUnit2012Setup.isproj
-		SccProjectName5 = ssisUnit2012Setup
-		SccLocalPath5 = ssisUnit2012Setup
-		SccProjectUniqueName6 = SsisUnit.Base\\SsisUnitBase.csproj
-		SccProjectName6 = SsisUnit.Base
-		SccLocalPath6 = SsisUnit.Base
-		SccProjectUniqueName7 = SsisUnitTestRunner\\ssisUnit.TestRunner.2012.csproj
-		SccProjectName7 = SsisUnitTestRunner
-		SccLocalPath7 = SsisUnitTestRunner
-		SccProjectUniqueName8 = SsisUnit.Tests\\SsisUnit2012.Tests.csproj
+		SccProjectUniqueName3 = SSISUnit\\SSISUnit.2014.csproj
+		SccProjectName3 = SSISUnit
+		SccLocalPath3 = SSISUnit
+		SccProjectUniqueName4 = SsisUnitDesign\\SsisUnit.Design_SQL2014.csproj
+		SccProjectName4 = SsisUnitDesign
+		SccLocalPath4 = SsisUnitDesign
+		SccProjectUniqueName5 = ssisUnitTestRunnerUI\\ssisUnitTestRunnerUI.2014.csproj
+		SccProjectName5 = ssisUnitTestRunnerUI
+		SccLocalPath5 = ssisUnitTestRunnerUI
+		SccProjectUniqueName6 = SsisUnitTestRunner\\ssisUnit.TestRunner.2014.csproj
+		SccProjectName6 = SsisUnitTestRunner
+		SccLocalPath6 = SsisUnitTestRunner
+		SccProjectUniqueName7 = ssisUnit2012Setup\\ssisUnit2014Setup.isproj
+		SccProjectName7 = ssisUnit2012Setup
+		SccLocalPath7 = ssisUnit2012Setup
+		SccProjectUniqueName8 = SsisUnit.Tests\\SsisUnit2014.Tests.csproj
 		SccProjectName8 = SsisUnit.Tests
 		SccLocalPath8 = SsisUnit.Tests
 	EndGlobalSection
