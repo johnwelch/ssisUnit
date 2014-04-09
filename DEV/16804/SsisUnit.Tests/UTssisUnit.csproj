@@ -1,0 +1,132 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{ADC78700-333C-4BDC-9F64-DA20F500C273}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UTssisUnit</RootNamespace>
+    <AssemblyName>UTssisUnit</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>SsisUnit.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SQL2005</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;SQL2005</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SQL2005</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;SQL2005</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SQLServer.ManagedDTS, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\DataCompareCommandTest.cs" />
+    <Compile Include="Commands\DirectoryCommandTest.cs" />
+    <Compile Include="Commands\FileCommandTest.cs" />
+    <Compile Include="Commands\ProcessCommandTest.cs" />
+    <Compile Include="Commands\PropertyCommandTest.cs" />
+    <Compile Include="Commands\SqlCommandTest.cs" />
+    <Compile Include="ExternalFileResourceTestBase.cs" />
+    <Compile Include="PackageRefTest.cs" />
+    <Compile Include="ProgramTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SsisAssertTest.cs" />
+    <Compile Include="SSISTestCaseTest.cs" />
+    <Compile Include="ssisUnit_UTHelper.cs" />
+    <Compile Include="TestTest.cs" />
+    <Compile Include="VariableCommandTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SampleSsisUnitTests\UTSsisUnit.ssisUnit" />
+    <None Include="SampleSsisUnitTests\UTSsisUnit_BadData.ssisUnit" />
+    <None Include="SampleSsisUnitTests\UTSsisUnit_Property.ssisUnit" />
+    <None Include="SampleSsisUnitTests\UT_BadTestFile.ssisUnit" />
+    <None Include="SsisUnit.pfx" />
+    <None Include="SsisUnit.snk" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnitChild.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnitParent.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_Directory.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_File.xml" />
+    <Content Include="SampleSsisUnitTests\UTssisUnit_Package.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_PackageList.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_Process.xml" />
+    <Content Include="SampleSsisUnitTests\UTSsisUnit_TestSetup_Teardown.xml" />
+    <Content Include="SampleSsisUnitTests\UTssisUnit_TestSuite.xml" />
+    <EmbeddedResource Include="UTSsisUnit.ssisUnit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
+      <Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+      <Name>SsisUnitBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SsisUnitTestRunner\ssisUnitTestRunner.csproj">
+      <Project>{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}</Project>
+      <Name>ssisUnitTestRunner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SSISUnit\SsisUnit.csproj">
+      <Project>{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}</Project>
+      <Name>SsisUnit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Test References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
