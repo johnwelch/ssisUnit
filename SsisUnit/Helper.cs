@@ -12,14 +12,14 @@ using System.IO;
 
 using SsisUnit.Enums;
 
-#if SQL2012
+#if SQL2014 || SQL2012
 using System.Linq;
 using System.Data.SqlClient;
 
 using Microsoft.SqlServer.Management.IntegrationServices;
 #endif
 
-#if SQL2012 || SQL2008
+#if SQL2014 || SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 using IDTSInput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSInput100;
 using IDTSOutput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSOutput100;
@@ -279,7 +279,7 @@ namespace SsisUnit
             }
             finally
             {
-#if SQL2012
+#if SQL2014 || SQL2012
                 Project project = loadedProject as Project;
 
                 if (project != null)
@@ -367,7 +367,7 @@ namespace SsisUnit
                     switch (packageRef.StorageType)
                     {
                         case PackageStorageType.FileSystem:
-#if SQL2012
+#if SQL2014 || SQL2012
                             Project project;
 
                             if (string.IsNullOrWhiteSpace(packageRef.ProjectPath))
@@ -395,7 +395,7 @@ namespace SsisUnit
                             package = ssisApp.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
                             break;
                         case PackageStorageType.SsisCatalog:
-#if SQL2012
+#if SQL2014 || SQL2012
                             password = packageRef.StoredPassword == null ? null : packageRef.StoredPassword.ConvertToUnsecureString();
 
                             SqlConnectionStringBuilder sqlConnectionStringBuilder = new SqlConnectionStringBuilder { DataSource = packageRef.Server, InitialCatalog = "SSISDB", IntegratedSecurity = true };
@@ -448,6 +448,8 @@ namespace SsisUnit
                 const string SsisPackageStoreVersion = "2008";
 #elif SQL2012
                 const string SsisPackageStoreVersion = "2012";
+#elif SQL2014
+                const string SsisPackageStoreVersion = "2014";
 #endif
 
                 if (packageRef != null && packageRef.StorageType == PackageStorageType.PackageStore && dtsEx.ErrorCode == HResults.DTS_E_PACKAGENOTFOUND)
@@ -483,7 +485,7 @@ namespace SsisUnit
             ssisProjectName = relativeProjectPath.Substring(indx + 1 > relativeProjectPath.Length ? indx : indx + 1);
         }
 
-#if SQL2012
+#if SQL2014 || SQL2012
         private static Package LoadPackageFromProject(Project loadedProject, string projectName, string packageName)
         {
             PackageItem packageItem = loadedProject.PackageItems.FirstOrDefault(x => string.Compare(x.StreamName, packageName, StringComparison.InvariantCultureIgnoreCase) == 0);
@@ -586,7 +588,7 @@ namespace SsisUnit
 
         internal static DbCommand GetCommand(ConnectionRef connectionRef, string commandText)
         {
-            DbProviderFactory dbFactory = connectionRef.ConnectionType != ConnectionRef.ConnectionTypeEnum.AdoNet ? GetReservedFactory(connectionRef.ConnectionString) : GetFactory(connectionRef.InvariantType);
+            var dbFactory = CreateProviderFactory(connectionRef);
 
             DbConnection conn = dbFactory.CreateConnection();
 
@@ -604,6 +606,14 @@ namespace SsisUnit
             dbCommand.CommandText = commandText;
 
             return dbCommand;
+        }
+
+        internal static DbProviderFactory CreateProviderFactory(ConnectionRef connectionRef)
+        {
+            DbProviderFactory dbFactory = connectionRef.ConnectionType != ConnectionRef.ConnectionTypeEnum.AdoNet
+                                              ? GetReservedFactory(connectionRef.ConnectionString)
+                                              : GetFactory(connectionRef.InvariantType);
+            return dbFactory;
         }
 
         public static IDTSOutput FindComponentOutput(MainPipe mainPipe, string path)
