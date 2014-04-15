@@ -32,6 +32,15 @@ namespace UTssisUnit.Commands
         }
 
         [TestMethod]
+        public void SqlCommandExecuteWithAdoNetTest()
+        {
+            var ts = new SsisTestSuite();
+            ts.ConnectionRefs.Add("Test", new ConnectionRef("Test", "Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient"));
+            var target = new SqlCommand(ts, "Test", true, "SELECT 1");
+            Assert.AreEqual(1, target.Execute());
+        }
+
+        [TestMethod]
         public void ExecuteNoResultsTest()
         {
             var target = new SqlCommand(_testSuite);

@@ -62,7 +62,7 @@ namespace UTssisUnit.Commands
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
 #elif SQL2008
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
-#elif SQL2012
+#elif SQL2014 || SQL2012
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2012.dtsx");
 #endif
 
