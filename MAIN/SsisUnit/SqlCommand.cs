@@ -9,7 +9,7 @@ using Microsoft.SqlServer.Dts.Runtime;
 using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
-#if SQL2012 || SQL2008
+#if SQL2014 || SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 #elif SQL2005
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
@@ -23,10 +23,10 @@ namespace SsisUnit
         private const string PropConnection = "connectionRef";
         private const string PropReturnsValue = "returnsValue";
 
-        private const string TagOledb = "Provider";
-        private const string TagSql = "SqlClient";
-        private const string FactoryOledb = "System.Data.OleDb";
-        private const string FactorySql = "System.Data.SqlClient";
+        //private const string TagOledb = "Provider";
+        //private const string TagSql = "SqlClient";
+        //private const string FactoryOledb = "System.Data.OleDb";
+        //private const string FactorySql = "System.Data.SqlClient";
 
         public SqlCommand(SsisTestSuite testSuite)
             : base(testSuite)
@@ -114,7 +114,7 @@ namespace SsisUnit
                     result = null;
                 }
 
-                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName), commandParentType));
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format(CultureInfo.CurrentCulture, "The {0} command has completed.", CommandName), commandParentType));
             }
             catch (Exception ex)
             {
@@ -146,8 +146,8 @@ namespace SsisUnit
 
         private DbCommand GetCommand(ConnectionRef connectionRef, string commandText)
         {
-            DbProviderFactory dbFactory = GetFactory(connectionRef.ConnectionString);
-
+            DbProviderFactory dbFactory = Helper.CreateProviderFactory(connectionRef);
+            
             DbConnection conn = dbFactory.CreateConnection();
 
             if (conn == null)
@@ -166,32 +166,32 @@ namespace SsisUnit
             return dbCommand;
         }
 
-        /// <summary>
-        /// Tries to return the appropriate Provider Factory based on the value passed in. Creating
-        /// the factory depends on having the appropriate provider name, so this method checks for 
-        /// common values that indicate what type of connection it is.
-        /// </summary>
-        /// <param name="providerType">Value that provides a hint on the connection type</param>
-        /// <returns>A generic provider factory based on the provider type passed in.</returns>
-        private DbProviderFactory GetFactory(string providerType)
-        {
-            string factoryInvariantName;
+        ///// <summary>
+        ///// Tries to return the appropriate Provider Factory based on the value passed in. Creating
+        ///// the factory depends on having the appropriate provider name, so this method checks for 
+        ///// common values that indicate what type of connection it is.
+        ///// </summary>
+        ///// <param name="providerType">Value that provides a hint on the connection type</param>
+        ///// <returns>A generic provider factory based on the provider type passed in.</returns>
+        //private DbProviderFactory GetFactory(string providerType)
+        //{
+        //    string factoryInvariantName;
 
-            if (providerType.Contains(TagOledb))
-            {
-                factoryInvariantName = FactoryOledb;
-            }
-            else if (providerType.Contains(TagSql))
-            {
-                factoryInvariantName = FactorySql;
-            }
-            else
-            {
-                throw new ArgumentException("Connection type not supported");
-            }
+        //    if (providerType.Contains(TagOledb))
+        //    {
+        //        factoryInvariantName = FactoryOledb;
+        //    }
+        //    else if (providerType.Contains(TagSql))
+        //    {
+        //        factoryInvariantName = FactorySql;
+        //    }
+        //    else
+        //    {
+        //        throw new ArgumentException("Connection type not supported");
+        //    }
 
-            return DbProviderFactories.GetFactory(factoryInvariantName);
-        }
+        //    return DbProviderFactories.GetFactory(factoryInvariantName);
+        //}
 
 #if SQL2005
         [Description("The Connection that the SQLCommand will use"),
@@ -202,6 +202,9 @@ namespace SsisUnit
 #elif SQL2012
         [Description("The Connection that the SQLCommand will use"),
          TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+#elif SQL2014
+        [Description("The Connection that the SQLCommand will use"),
+         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
         public ConnectionRef ConnectionReference
         {
@@ -233,6 +236,9 @@ namespace SsisUnit
 #elif SQL2012
         [Description("The SQL statement to be executed by the SQLCommand"),
          Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#elif SQL2014
+        [Description("The SQL statement to be executed by the SQLCommand"),
+         Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
 #endif
         // ReSharper disable InconsistentNaming
         public string SQLStatement
