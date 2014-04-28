@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security;
 using System.Text;
 using System.Xml;
@@ -12,7 +13,7 @@ using SsisUnitBase;
 using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
-#if SQL2012 || SQL2008
+#if SQL2014 || SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 #elif SQL2005
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
@@ -22,6 +23,8 @@ namespace SsisUnit
 {
     public class Test : SsisUnitBaseObject
     {
+        internal Package InternalPackage;
+
         public event EventHandler<CommandCompletedEventArgs> CommandCompleted;
         public event EventHandler<CommandFailedEventArgs> CommandFailed;
         public event EventHandler<CommandStartedEventArgs> CommandStarted;
@@ -181,6 +184,8 @@ namespace SsisUnit
                     throw;
                 }
 
+                InternalPackage = packageToTest;
+
                 string setupResults = string.Empty;
                 bool setupSucceeded;
                 _taskName = taskHost.Name;
@@ -216,17 +221,14 @@ namespace SsisUnit
 
                 try
                 {
-                    foreach (SsisAssert assert in Asserts.Values)
+                    foreach (SsisAssert assert in Asserts.Values.Where(assert=>assert.TestBefore))
                     {
-                        if (!assert.TestBefore)
-                            continue;
-
                         assert.Execute(loadedProject, packageToTest, taskHost);
                     }
 
                     var events = new SsisEvents();
 
-#if SQL2012
+#if SQL2012 || SQL2014
                     Project project = loadedProject as Project;
 
                     if (project != null)
