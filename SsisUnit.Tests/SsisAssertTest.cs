@@ -5,7 +5,6 @@ using System;
 
 using SsisUnit.Enums;
 
-using SsisUnitBase;
 using SsisUnitBase.Enums;
 
 namespace UTssisUnit
@@ -229,6 +228,41 @@ namespace UTssisUnit
             var ssisAssert = new SsisAssert(testSuite, ssisTest, "Test", null, false, false);
 
             Assert.AreEqual(assertXml, ssisAssert.PersistToXml());
+        }
+
+        [TestMethod]
+        public void TestAssertCommandFailure()
+        {
+            var target = new SsisTestSuite();
+
+            target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
+                "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
+                ConnectionRef.ConnectionTypeEnum.ConnectionString));
+            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
+
+            var ssisTest = new Test(target, "Test", "UT Basic Scenario", null, "SELECT COUNT");
+            target.Tests.Add("Test", ssisTest);
+
+            var ssisAssert = new SsisAssert(target, ssisTest, "Test Count", "(int)result==2", false, true);
+            ssisAssert.Command = new SqlCommand(target, "AdventureWorks", true, "SELECT COUNT(*) FROM sys,.tables WHERE 1='test'");
+
+            ssisTest.Asserts.Add("Test Count", ssisAssert);
+
+            int testCount = 0;
+
+            try
+            {
+                testCount = target.Execute();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+
+            Assert.AreEqual(1, testCount);
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.TestPassedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
     }
 }

@@ -105,7 +105,7 @@ namespace SsisUnit
 
             bool returnValue;
             string resultMessage = string.Empty;
-            object validationResult;
+            object validationResult = null;
             var dataCompareCommand = Command as DataCompareCommand;
             DataCompareCommandResults dataCompareCommandResults;
 
@@ -118,7 +118,17 @@ namespace SsisUnit
             else
             {
                 dataCompareCommandResults = null;
-                validationResult = Command.Execute(project, package, task);
+                try
+                {
+                    validationResult = Command.Execute(project, package, task);
+                }
+                catch (Exception ex)
+                {
+                    resultMessage += string.Format(CultureInfo.CurrentCulture, "The assert command failed with the following exception: {0}", ex.Message);
+                    _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
+                    _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, _test.Name, Name, resultMessage, false, Command));
+                    return false;
+                }
             }
 
             if (validationResult == null)

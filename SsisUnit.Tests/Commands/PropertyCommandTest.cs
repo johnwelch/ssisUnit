@@ -104,5 +104,36 @@ namespace UTssisUnit.Commands
         {
             return new SsisAssert(ts, test, assertName, result, false) { Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty) };
         }
+
+        [TestMethod]
+        public void TestSetConnectionSrtring()
+        {
+            string packageFilepath;
+#if SQL2005
+            packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+#elif SQL2008
+            packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
+#elif SQL2014 || SQL2012
+            packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2012.dtsx");
+#endif
+
+            var ts = new SsisTestSuite();
+            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageStorageType.FileSystem));
+
+            var ssisTest = new Test(ts, "Test", "PackageA", null, "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}");
+            ssisTest.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[localhost.AdventureWorksDW2008].Properties[ConnectionString]", "Provider=SQLNCLI11.1;Data Source=localhost;Initial Catalog=AdventureWorksDW2012;Integrated Security=SSPI;Application Name=TestValue"));
+
+            ts.Tests.Add("Test", ssisTest);
+
+            ts.Tests["Test"].Asserts.Add("Assert", AddNewAssert(ts, ssisTest, "Assert", "Data Source=localhost;Initial Catalog=AdventureWorksDW2012;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=TestValue;", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[ConnectionString]"));
+
+            ts.Execute();
+
+            Assert.AreEqual("Data Source=localhost;Initial Catalog=AdventureWorksDW2012;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=TestValue;",
+                ssisTest.InternalPackage.Connections["localhost.AdventureWorksDW2008"].ConnectionString);
+
+            Assert.AreEqual(2, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
+        }
     }
 }
