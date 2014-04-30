@@ -280,7 +280,7 @@ namespace SsisUnit
             finally
             {
 #if SQL2014 || SQL2012
-                Project project = loadedProject as Project;
+                var project = loadedProject as Project;
 
                 if (project != null)
                     project.Dispose();
@@ -298,180 +298,68 @@ namespace SsisUnit
 
             loadedProject = null;
 
-            try
+            bool isPackagePathFilePath = false;
+
+            if (string.IsNullOrEmpty(projectPath) && packageName.Contains(".dtsx"))
             {
-                bool isPackagePathFilePath = false;
+                // Assume that it is a file path.
+                var fileInfo = new FileInfo(Environment.ExpandEnvironmentVariables(packageName));
 
-                if (string.IsNullOrEmpty(projectPath) && packageName.Contains(".dtsx"))
+                if (fileInfo.Exists)
                 {
-                    // Assume that it is a file path.
-                    var fileInfo = new FileInfo(packageName);
+                    isPackagePathFilePath = true;
 
-                    if (fileInfo.Exists)
+                    if (packagePassword != null) ssisApp.PackagePassword = ConvertToUnsecureString(packagePassword);
+
+                    try
                     {
-                        isPackagePathFilePath = true;
+                        package = ssisApp.LoadPackage(fileInfo.FullName, null);
+                    }
+                    catch (DtsRuntimeException)
+                    {
+                        isPackagePathFilePath = false;
+                    }
+                }
+            }
 
-                        if (packagePassword != null)
-                            ssisApp.PackagePassword = ConvertToUnsecureString(packagePassword);
+            if (!isPackagePathFilePath)
+            {
+                if (testSuite.PackageRefs.ContainsKey(packageName))
+                {
+                    packageRef = testSuite.PackageRefs[packageName];
+                }
+                else
+                {
+                    foreach (PackageRef packageReference in testSuite.PackageRefs.Values)
+                    {
+                        if ((packageReference.Name != null
+                             && string.Compare(
+                                 packageReference.Name,
+                                 packageName,
+                                 StringComparison.OrdinalIgnoreCase) == 0)
+                            || (packageReference.PackagePath != null
+                                && string.Compare(
+                                    packageReference.PackagePath,
+                                    packageName,
+                                    StringComparison.OrdinalIgnoreCase) == 0))
+                        {
+                            packageRef = packageReference;
 
-                        try
-                        {
-                            package = ssisApp.LoadPackage(fileInfo.FullName, null);
-                        }
-                        catch (DtsRuntimeException)
-                        {
-                            isPackagePathFilePath = false;
+                            break;
                         }
                     }
                 }
 
-                if (!isPackagePathFilePath)
-                {
-                    if (testSuite.PackageRefs.ContainsKey(packageName))
-                    {
-                        packageRef = testSuite.PackageRefs[packageName];
-                    }
-                    else
-                    {
-                        foreach (PackageRef packageReference in testSuite.PackageRefs.Values)
-                        {
-                            if ((packageReference.Name != null
-                                 && string.Compare(
-                                     packageReference.Name, packageName, StringComparison.OrdinalIgnoreCase) == 0)
-                                || (packageReference.PackagePath != null
-                                    && string.Compare(
-                                        packageReference.PackagePath, packageName, StringComparison.OrdinalIgnoreCase)
-                                    == 0))
-                            {
-                                packageRef = packageReference;
+                if (packageRef == null) throw new KeyNotFoundException();
 
-                                break;
-                            }
-                        }
-                    }
-
-                    if (packageRef == null)
-                        throw new KeyNotFoundException();
-
-                    if (packageRef.StoredPassword != null)
-                    {
-#if SQL2005
-                        ssisApp.PackagePassword = Helper.ConvertToUnsecureString(packageRef.StoredPassword);
-#else
-                        ssisApp.PackagePassword = packageRef.StoredPassword.ConvertToUnsecureString();
-#endif
-                    }
-
-                    string password;
-
-                    switch (packageRef.StorageType)
-                    {
-                        case PackageStorageType.FileSystem:
-#if SQL2014 || SQL2012
-                            Project project;
-
-                            if (string.IsNullOrWhiteSpace(packageRef.ProjectPath))
-                                package = ssisApp.LoadPackage(packageRef.PackagePath, null);
-                            else
-                            {
-                                password = packageRef.StoredPassword == null ? null : packageRef.StoredPassword.ConvertToUnsecureString();
-
-                                // Read the project file into memory and release the file before opening the project.
-                                MemoryStream fileMemoryStream = new MemoryStream(File.ReadAllBytes(packageRef.ProjectPath));
-
-                                project = string.IsNullOrEmpty(password) ? Project.OpenProject(fileMemoryStream) : Project.OpenProject(fileMemoryStream, password);
-                                project.ProtectionLevel = DTSProtectionLevel.EncryptSensitiveWithUserKey;
-                                loadedProject = project;
-                                package = LoadPackageFromProject(project, project.Name, packageRef.PackagePath);
-                            }
-#else
-                            package = ssisApp.LoadPackage(packageRef.PackagePath, null);
-#endif
-                            break;
-                        case PackageStorageType.MSDB:
-                            package = ssisApp.LoadFromSqlServer(packageRef.PackagePath, packageRef.Server, null, null, null);
-                            break;
-                        case PackageStorageType.PackageStore:
-                            package = ssisApp.LoadFromDtsServer(packageRef.PackagePath, packageRef.Server, null);
-                            break;
-                        case PackageStorageType.SsisCatalog:
-#if SQL2014 || SQL2012
-                            password = packageRef.StoredPassword == null ? null : packageRef.StoredPassword.ConvertToUnsecureString();
-
-                            SqlConnectionStringBuilder sqlConnectionStringBuilder = new SqlConnectionStringBuilder { DataSource = packageRef.Server, InitialCatalog = "SSISDB", IntegratedSecurity = true };
-
-                            var integrationServices = new IntegrationServices(new SqlConnection(sqlConnectionStringBuilder.ToString()));
-                            Catalog ssisCatalog = integrationServices.Catalogs.FirstOrDefault();
-
-                            if (ssisCatalog == null)
-                                throw new Exception("A SSIS Catalog could not be found.");
-
-                            string ssisFolderName;
-                            string ssisProjectName;
-
-                            ParseSsisProjectPath(packageRef.ProjectPath, out ssisFolderName, out ssisProjectName);
-
-                            CatalogFolder catalogFolder = ssisCatalog.Folders.FirstOrDefault(x => string.Compare(x.Name, ssisFolderName, StringComparison.OrdinalIgnoreCase) == 0);
-
-                            if (catalogFolder == null)
-                                throw new Exception(string.Format("The catalog folder {0} could not be found.", ssisFolderName));
-
-                            ProjectInfo projectInfo = catalogFolder.Projects.FirstOrDefault(x => string.Compare(x.Name, ssisProjectName, StringComparison.OrdinalIgnoreCase) == 0);
-
-                            if (projectInfo == null)
-                                throw new Exception(string.Format("The project {0} could not be found.", ssisProjectName));
-
-                            byte[] projectBytes = projectInfo.GetProjectBytes();
-
-                            if (projectBytes == null || projectBytes.Length < 1)
-                                throw new Exception(string.Format("The project {0} could not be loaded.", ssisProjectName));
-
-                            var catalogMemoryStream = new MemoryStream(projectBytes);
-
-                            project = password == null ? Project.OpenProject(catalogMemoryStream) : Project.OpenProject(catalogMemoryStream, password);
-                            project.ProtectionLevel = DTSProtectionLevel.EncryptSensitiveWithUserKey;
-                            loadedProject = project;
-                            package = LoadPackageFromProject(project, project.Name, packageRef.PackagePath);
-
-                            break;
-#else
-                            throw new NotSupportedException();
-#endif
-                    }
-                }
-            }
-            catch (DtsRuntimeException dtsEx)
-            {
-#if SQL2005
-                const string SsisPackageStoreVersion = "2005";
-#elif SQL2008
-                const string SsisPackageStoreVersion = "2008";
-#elif SQL2012
-                const string SsisPackageStoreVersion = "2012";
-#elif SQL2014
-                const string SsisPackageStoreVersion = "2014";
-#endif
-
-                if (packageRef != null && packageRef.StorageType == PackageStorageType.PackageStore && dtsEx.ErrorCode == HResults.DTS_E_PACKAGENOTFOUND)
-                    throw new DtsPackageStoreException(string.Format("The package \"{0}\" couldn't be found in the SSIS {1} Package Store.  Please ensure that the correct unit test engine is used when accessing the SSIS {1} Package Store.", packageName, SsisPackageStoreVersion));
-
-                if (dtsEx.ErrorCode == HResults.DTS_E_LOADFROMSQLSERVER)
-                    throw new DtsPackageStoreException(string.Format("There was an error while attempting to load the package \"{0}\" from MSDB.  Please ensure the package path is valid and the correct unit test engine is used to execute the package.  The current unit test engine is SSIS {1}.", packageName, SsisPackageStoreVersion));
-
-                if (dtsEx.ErrorCode == HResults.DTS_E_LOADFROMXML)
-                    throw new DtsPackageStoreException(string.Format("There was an error while attempting to load the package \"{0}\" from the file system.  Please ensure the package path is valid and the correct unit test engine is used to execute the package.  The current unit test engine is SSIS {1}.", packageName, SsisPackageStoreVersion));
-
-                throw;
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new KeyNotFoundException(string.Format(CultureInfo.CurrentCulture, "The package attribute is {0}, which does not reference a valid package.", packageName));
+                package = packageRef.LoadPackage();
+                loadedProject = packageRef.Project;
             }
 
             return package;
         }
 
-        private static void ParseSsisProjectPath(string relativeProjectPath, out string ssisFolderName, out string ssisProjectName)
+        internal static void ParseSsisProjectPath(string relativeProjectPath, out string ssisFolderName, out string ssisProjectName)
         {
             if (string.IsNullOrEmpty(relativeProjectPath))
                 throw new ArgumentException(string.Format("The relative project path is invalid: \"{0}\")", relativeProjectPath ?? "NULL"));
@@ -486,12 +374,20 @@ namespace SsisUnit
         }
 
 #if SQL2014 || SQL2012
-        private static Package LoadPackageFromProject(Project loadedProject, string projectName, string packageName)
+        internal static Package LoadPackageFromProject(Project loadedProject, string projectName, string packageName)
         {
             PackageItem packageItem = loadedProject.PackageItems.FirstOrDefault(x => string.Compare(x.StreamName, packageName, StringComparison.InvariantCultureIgnoreCase) == 0);
 
             if (packageItem == null)
-                throw new Exception(string.Format("The package \"{0}\" could not be found within project \"{1}\".", packageName, projectName));
+            {
+                throw new ArgumentException(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        "The package \"{0}\" could not be found within project \"{1}\".",
+                        packageName,
+                        projectName),
+                    "packageName");
+            }
 
             if (packageItem.State != PackageItemState.Loaded)
                 packageItem.LoadPackage(null);

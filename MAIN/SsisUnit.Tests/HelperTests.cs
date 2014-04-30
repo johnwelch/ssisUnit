@@ -134,13 +134,11 @@ namespace UTssisUnit
         }
 
         [Test]
-        [Ignore("A 2012 SSIS project needs to be added to the unit test resources.")]
         public void LoadPackageFromProjectInFileSystemTest()
         {
-            SsisTestSuite testSuite = new SsisTestSuite();
-
-            var packageRef = new PackageRef("BI Cleanup.dtsx", "BI Cleanup.dtsx", PackageStorageType.FileSystem, null) { ProjectPath = @"C:\Temp\LaunchParty201307.ispac" };
-
+            var projectFile = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
+            var testSuite = new SsisTestSuite();
+            var packageRef = new PackageRef("TestPackage", "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem, null) { ProjectPath = projectFile };
             testSuite.PackageRefs.Add(packageRef.Name, packageRef);
 
             object loadedProject;

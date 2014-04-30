@@ -1,4 +1,6 @@
-﻿using SsisUnit;
+﻿using System;
+
+using SsisUnit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 
@@ -11,9 +13,10 @@ namespace UTssisUnit
     /// to contain all PackageRefTest Unit Tests
     /// </summary>
     [TestClass]
-    public class PackageRefTest
+    public class PackageRefTest : ExternalFileResourceTestBase
     {
         private const string Xml = "<Package name=\"ssPkg\" packagePath=\"\\File System\\UT Basic Scenario\" server=\"localhost\" storageType=\"PackageStore\" />";
+        private const string TestPackageResource = "UTssisUnit.TestPackages.SimplePackage.dtsx";
 
         /// <summary>
         /// A test for PackageRef Constructor
@@ -82,6 +85,27 @@ namespace UTssisUnit
             var target = new PackageRef(string.Empty, string.Empty, PackageStorageType.FileSystem);
             target.LoadFromXml(Xml);
             Assert.AreEqual(Xml, target.PersistToXml());
+        }
+
+        [TestMethod]
+        public void LoadPackageFileSystemTest()
+        {
+            var file = UnpackToFile(TestPackageResource);
+            var target = new PackageRef("Test", file, PackageStorageType.FileSystem);
+            var package = target.LoadPackage();
+            Assert.IsNotNull(package);
+            Assert.AreEqual("SimplePackage", package.Name);
+        }
+
+        [TestMethod]
+        public void LoadPackageFileSystemEnvironmentVariableTest()
+        {
+            var file = UnpackToFile(TestPackageResource);
+            file = file.Replace(Environment.ExpandEnvironmentVariables("%TMP%"), "%TMP%");
+            var target = new PackageRef("Test", file, PackageStorageType.FileSystem);
+            var package = target.LoadPackage();
+            Assert.IsNotNull(package);
+            Assert.AreEqual("SimplePackage", package.Name);
         }
     }
 }
