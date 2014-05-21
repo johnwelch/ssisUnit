@@ -13,13 +13,13 @@ using SsisUnitBase;
 using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
-#if SQL2012
+#if SQL2012 || SQL2014
 using System.ComponentModel.Composition;
 #endif
 
 namespace SsisUnit
 {
-#if SQL2012
+#if SQL2012 || SQL2014
     [Export(typeof(ISsisTestSuite))]
 #endif
     public class SsisTestSuite : ISsisTestSuite, IValidate

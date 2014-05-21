@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security;
 using System.Text;
 using System.Xml;
@@ -13,9 +12,10 @@ using SsisUnitBase;
 using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
-#if SQL2014 || SQL2012 || SQL2008
+#if !SQL2005
+using System.Linq;
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
-#elif SQL2005
+#else
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
 #endif
 
@@ -101,6 +101,10 @@ namespace SsisUnit
         [Description("The task that this test will run against."),
          TypeConverter("SsisUnit.Design.TaskConverter, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab"),
          Editor("SsisUnit.Design.PackageBrowserEditor, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#elif SQL2014
+        [Description("The task that this test will run against."),
+         TypeConverter("SsisUnit.Design.TaskConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab"),
+         Editor("SsisUnit.Design.PackageBrowserEditor, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
 #endif
         public string Task { get; set; }
 
@@ -113,6 +117,9 @@ namespace SsisUnit
 #elif SQL2012
         [Description("The package that this test will run against."),
          TypeConverter("SsisUnit.Design.PackageRefConverter, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+#elif SQL2014
+        [Description("The package that this test will run against."),
+         TypeConverter("SsisUnit.Design.PackageRefConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
         public string PackageLocation { get; set; }
 
@@ -135,6 +142,9 @@ namespace SsisUnit
         #elif SQL2012
             [Description("The package that this test will run against."),
             TypeConverter("SsisUnit.Design.ProjectRefConverter, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+        #elif SQL2014
+            [Description("The package that this test will run against."),
+            TypeConverter("SsisUnit.Design.ProjectRefConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
         #endif
          */
         [Browsable(false)]
@@ -221,8 +231,11 @@ namespace SsisUnit
 
                 try
                 {
-                    foreach (SsisAssert assert in Asserts.Values.Where(assert=>assert.TestBefore))
+                    foreach (SsisAssert assert in Asserts.Values)
                     {
+                        if (!assert.TestBefore)
+                            continue;
+
                         assert.Execute(loadedProject, packageToTest, taskHost);
                     }
 
@@ -325,7 +338,7 @@ namespace SsisUnit
             }
             finally
             {
-#if SQL2012
+#if SQL2012 || SQL2014
                 Project project = loadedProject as Project;
 
                 if (project != null)

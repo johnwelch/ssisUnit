@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Security;
 using System.Text;
 using System.Xml;
 using System.ComponentModel;
 
 using Microsoft.SqlServer.Dts.Runtime;
+
+#if !SQL2005
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+#endif
+
+#if SQL2012 || SQL2014
 using Microsoft.SqlServer.Management.IntegrationServices;
+#endif
 
 using SsisUnit.Enums;
 
@@ -22,7 +28,10 @@ namespace SsisUnit
 
         private SecureString _password;
 
+#if SQL2012 || SQL2014
         private Project _project;
+#endif
+
         private Package _package;
 
         public PackageRef(string name, string packagePath, PackageStorageType storageType, string server)
@@ -57,7 +66,7 @@ namespace SsisUnit
                 if (StoredPassword != null)
                 {
 #if SQL2005
-                        ssisApp.PackagePassword = Helper.ConvertToUnsecureString(StoredPassword);
+                    ssisApp.PackagePassword = Helper.ConvertToUnsecureString(StoredPassword);
 #else
                     ssisApp.PackagePassword = StoredPassword.ConvertToUnsecureString();
 #endif
@@ -84,7 +93,7 @@ namespace SsisUnit
                             package = Helper.LoadPackageFromProject(_project, _project.Name, PackagePath);
                         }
 #else
-                            package = ssisApp.LoadPackage(ExpandedPackagePath, null);
+                        package = ssisApp.LoadPackage(ExpandedPackagePath, null);
 #endif
                         break;
                     case PackageStorageType.MSDB:
@@ -134,7 +143,7 @@ namespace SsisUnit
 
                         break;
 #else
-                            throw new NotSupportedException();
+                        throw new NotSupportedException();
 #endif
 
                 }
@@ -335,10 +344,12 @@ namespace SsisUnit
         /// </summary>
         public string ExpandedProjectPath { get { return Environment.ExpandEnvironmentVariables(ProjectPath); } }
 
+#if SQL2012 || SQL2014
         /// <summary>
         /// Returns the project associated with the <see cref="PackageRef"/>. <see cref="LoadPackage"/> should be called first for this to be populated.
         /// </summary>
         public Project Project { get { return _project; } }
+#endif
 
         /// <summary>
         /// Returns the package associated with the <see cref="PackageRef"/>. <see cref="LoadPackage"/> should be called first for this to be populated.

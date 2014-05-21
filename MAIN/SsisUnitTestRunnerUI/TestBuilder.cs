@@ -53,6 +53,8 @@ namespace ssisUnitTestRunnerUI
 
 #if SQL2012
             titleText += " (SSIS 2012)";
+#elif SQL2014
+            titleText += " (SSIS 2014)";
 #elif SQL2008
             titleText += " (SSIS 2008)";
 #elif SQL2005
@@ -169,6 +171,8 @@ namespace ssisUnitTestRunnerUI
 
 #if SQL2012
             titleText += " (SSIS 2012)";
+#elif SQL2014
+            titleText += " (SSIS 2014)";
 #elif SQL2008
             titleText += " (SSIS 2008)";
 #elif SQL2005

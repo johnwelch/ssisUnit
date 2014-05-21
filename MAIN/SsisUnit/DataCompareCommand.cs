@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
@@ -11,14 +10,16 @@ using Microsoft.SqlServer.Dts.Runtime;
 using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
-#if SQL2012 || SQL2008
+#if !SQL2005
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
-#elif SQL2005
+#else
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
 #endif
 
 namespace SsisUnit
 {
+    using System.ComponentModel;
+
     public class DataCompareCommand : CommandBase
     {
         private const string PropName = "name";
@@ -123,6 +124,9 @@ namespace SsisUnit
 #elif SQL2012
         [Description("The Actual Dataset that the DataCompareCommmand will use"),
          TypeConverter("SsisUnit.Design.DatasetConverter, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+#elif SQL2014
+        [Description("The Actual Dataset that the DataCompareCommmand will use"),
+         TypeConverter("SsisUnit.Design.DatasetConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
         public Dataset ActualDataset
         {
@@ -147,6 +151,9 @@ namespace SsisUnit
 #elif SQL2012
         [Description("The Expected Dataset that the DataCompareCommand will use"),
          TypeConverter("SsisUnit.Design.DatasetConverter, SsisUnit.Design.2012, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+#elif SQL2014
+        [Description("The Expected Dataset that the DataCompareCommand will use"),
+         TypeConverter("SsisUnit.Design.DatasetConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
         public Dataset ExpectedDataset
         {
