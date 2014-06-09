@@ -33,7 +33,7 @@ namespace UTssisUnit.Commands
         public void RunDataCompareCommandSetTest()
         {
                         var ts = new SsisTestSuite();
-            var connRef = new ConnectionRef("TestConn", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient");
+            var connRef = new ConnectionRef("TestConn", "Data Source=DEV-QA-SQL2012;Initial Catalog=AdventureWorks;Integrated Security=SSPI", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient");
             ts.ConnectionRefs.Add(connRef.ReferenceName, connRef);
             var dataset = new Dataset(
                 ts,
@@ -55,7 +55,7 @@ CAST('1900-01-01' AS DATETIME) AS ColDateTime");
         public void RunDataCompareCommandSetWithOtherTestTest()
         {
             var ts = new SsisTestSuite();
-            var connRef = new ConnectionRef("TestConn", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient");
+            var connRef = new ConnectionRef("TestConn", "Data Source=DEV-QA-SQL2012;Initial Catalog=AdventureWorks;Integrated Security=SSPI", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient");
             var pkgRef = new PackageRef("pkg", _dtsxFilePath, PackageStorageType.FileSystem);
             ts.ConnectionRefs.Add(connRef.ReferenceName, connRef);
             ts.PackageRefs.Add(pkgRef.Name, pkgRef);

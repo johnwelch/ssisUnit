@@ -23,7 +23,8 @@ namespace SsisUnit.TestComponents
         ComponentType = ComponentType.DestinationAdapter,
         DisplayName = "SsisUnit Destination",
         CurrentVersion = 0,
-        Description = "Destination used with SsisUnit tests to retrieve data from the data flow.")]
+        Description = "Destination used with SsisUnit tests to retrieve data from the data flow.",
+        IconResource = "SsisUnit.TestComponents.SsisSource.ico")]
     public class SsisUnitDestination : PipelineComponent
     {
         private const string DataTablePropertyName = "DataTableXml";

@@ -20,7 +20,8 @@ namespace SsisUnit.TestComponents
         ComponentType = ComponentType.SourceAdapter,
         DisplayName = "SsisUnit Source",
         CurrentVersion = 0,
-        Description = "Source used with SsisUnit tests to provide static data to the data flow.")]
+        Description = "Source used with SsisUnit tests to provide static data to the data flow.",
+        IconResource = "SsisUnit.TestComponents.SsisSource.ico")]
     public class SsisUnitSource : PipelineComponent
     {
         private const string StartingDataSet =

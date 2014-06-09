@@ -106,7 +106,7 @@ namespace UTssisUnit.Commands
         }
 
         [TestMethod]
-        public void TestSetConnectionSrtring()
+        public void TestSetConnectionString()
         {
             string packageFilepath;
 #if SQL2005
