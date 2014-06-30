@@ -90,7 +90,7 @@ namespace SsisUnit.TestComponents
         {
             if (DataTable == null)
             {
-                DataTable = new DataTable("SsisUnit");   
+                DataTable = new DataTable("SsisUnit");
             }
 
             if (_bufferColumnMapping == null)
@@ -102,13 +102,29 @@ namespace SsisUnit.TestComponents
                 _bufferColumnMapping.Clear();
             }
 
+            var names = new Dictionary<string, int>();
+            foreach (IDTSInputColumn column in ComponentMetaData.InputCollection[0].InputColumnCollection)
+            {
+                int value;
+                if (names.TryGetValue(column.Name, out value))
+                {
+                    names[column.Name] = value + 1;
+                }
+                else
+                {
+                    names[column.Name] = 1;
+                }
+            }
+
             foreach (IDTSInputColumn column in ComponentMetaData.InputCollection[0].InputColumnCollection)
             {
                 bool isLong = false;
-                _bufferColumnMapping.Add(column.Name, BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, column.LineageID));
-                var dataColumn = new DataColumn(column.Name);
-                dataColumn.DataType = BufferTypeToDataRecordType(ConvertBufferDataTypeToFitManaged(column.DataType, ref isLong));
-                dataColumn.MaxLength = column.Length == 0 ? -1 : column.Length;
+                _bufferColumnMapping.Add(GetColumName(names, column), BufferManager.FindColumnByLineageID(ComponentMetaData.InputCollection[0].Buffer, column.LineageID));
+                var dataColumn = new DataColumn(GetColumName(names, column))
+                                     {
+                                         DataType = BufferTypeToDataRecordType(ConvertBufferDataTypeToFitManaged(column.DataType, ref isLong)),
+                                         MaxLength = column.Length == 0 ? -1 : column.Length
+                                     };
                 if (column.CodePage != 0)
                 {
                     dataColumn.ExtendedProperties.Add("codePage", column.CodePage);
@@ -128,6 +144,20 @@ namespace SsisUnit.TestComponents
             }
         }
 
+        private static string GetColumName(Dictionary<string, int> names, IDTSInputColumn100 column)
+        {
+            int value;
+            if (names.TryGetValue(column.Name, out value))
+            {
+                if (value > 1)
+                {
+                    return string.Format("{0}_{1}", column.UpstreamComponentName, column.Name);                    
+                }
+            }
+
+            return string.Format("{0}", column.Name);
+        }
+
         public override void ProcessInput(int inputID, PipelineBuffer buffer)
         {
             base.ProcessInput(inputID, buffer);
@@ -144,7 +174,7 @@ namespace SsisUnit.TestComponents
                     }
                     else
                     {
-                        dataRow[columnMapping.Key] = buffer[columnMapping.Value];    
+                        dataRow[columnMapping.Key] = buffer[columnMapping.Value];
                     }
                 }
                 DataTable.Rows.Add(dataRow);
@@ -162,7 +192,7 @@ namespace SsisUnit.TestComponents
                     IDTSVariables variables = null;
                     VariableDispenser.LockOneForWrite(variableName, ref variables);
                     variables[variableName].Value = xml;
-                    variables.Unlock();                    
+                    variables.Unlock();
                 }
             }
         }
