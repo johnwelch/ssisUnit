@@ -1178,7 +1178,7 @@
 		<row><td>WindowsVolume</td><td>TARGETDIR</td><td>.:WinRoot</td><td/><td>0</td><td/></row>
 		<row><td>YOUR_COMPANY_NAME</td><td>ProgramFilesFolder</td><td>YOURCO~1|Your Company Name</td><td/><td>0</td><td/></row>
 		<row><td>pragma_1_pragmatic_works</td><td>ProgramMenuFolder</td><td>PRAGMA~1|Pragmatic Works</td><td/><td>1</td><td/></row>
-		<row><td>ssisun_1_ssisunit_2012</td><td>pragma_1_pragmatic_works</td><td>SSISUN~1|ssisUnit 2012</td><td/><td>1</td><td/></row>
+		<row><td>ssisun_1_ssisunit_2012</td><td>pragma_1_pragmatic_works</td><td>SSISUN~1|ssisUnit 2014</td><td/><td>1</td><td/></row>
 	</table>
 
 	<table name="DrLocator">
@@ -1849,6 +1849,7 @@
 		<col def="S255">ProgId_</col>
 		<col def="S64">MIME_</col>
 		<col def="s38">Feature_</col>
+		<row><td>ssisUnit</td><td>ssisUnit.TestRunner.2014.Primary_output</td><td>ext1.File</td><td/><td>AlwaysInstall</td></row>
 	</table>
 
 	<table name="Feature">
@@ -3798,6 +3799,7 @@
 		<row><td>ID_STRING4</td><td>1033</td><td>Pragmatic Works</td><td>0</td><td/><td>-1801369489</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td>ssisUnit 2014</td><td>0</td><td/><td>1243772972</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-1801342965</td></row>
+		<row><td>NEW_STRING1</td><td>1033</td><td>ssisUnit</td><td>0</td><td/><td>-1952299279</td></row>
 	</table>
 
 	<table name="ISSwidtagProperty">
@@ -4037,7 +4039,7 @@ QwBEAF8AUgBPAE0AAQBFAHgAcAByAGUAcwBzAA==
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{2294A408-E924-4748-A7DF-D82F6ED06075}</td></row>
 		<row><td>ISUSSignature</td><td>{43567408-58E0-453A-A028-62DEF16A6E01}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewAppV,viewProject,viewRealSetupDesign,viewSetupDesign,viewSetupTypes,viewUpgradePaths,viewUpdateService,viewObjects,viewRelease,viewISToday,viewAppFiles,viewFeatureFiles,viewDependencies,viewShortcuts,viewFileExtensions,viewEnvironmentVariables,viewUI,viewSupportFiles,viewCustomActions,viewInstallScriptStd,viewDesignPatches</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewAppV,viewProject,viewRealSetupDesign,viewSetupDesign,viewSetupTypes,viewUpgradePaths,viewUpdateService,viewObjects,viewRelease,viewISToday,viewAppFiles,viewFeatureFiles,viewDependencies,viewShortcuts,viewFileExtensions,viewEnvironmentVariables,viewUI,viewSupportFiles,viewCustomActions,viewInstallScriptStd,viewDesignPatches,viewBillboards,viewTextMessages,viewSystemSearch</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4339,6 +4341,7 @@ QwBEAF8AUgBPAE0AAQBFAHgAcAByAGUAcwBzAA==
 		<col def="S72">Icon_</col>
 		<col def="I2">IconIndex</col>
 		<col def="I4">ISAttributes</col>
+		<row><td>ext1.File</td><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Property">
@@ -4706,6 +4709,7 @@ QwBEAF8AUgBPAE0AAQBFAHgAcAByAGUAcwBzAA==
 		<col def="I2">Sequence</col>
 		<col def="L255">Command</col>
 		<col def="L255">Argument</col>
+		<row><td>ssisUnit</td><td>open</td><td/><td>Run Test</td><td>/TESTCASE %1</td></row>
 	</table>
 
 	<table name="_Validation">

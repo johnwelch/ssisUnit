@@ -7,6 +7,7 @@ using SsisUnit;
 using System;
 using System.IO;
 
+using SsisUnit.DynamicValues;
 using SsisUnit.Enums;
 
 using SsisUnitBase.Enums;
@@ -83,7 +84,7 @@ namespace UTssisUnit
         {
             var target = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
             var ssisApp = new Application();
-            target.ConnectionRefs["AdventureWorks"].ConnectionString =
+            target.ConnectionList["AdventureWorks"].ConnectionString =
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
             Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
             string remainingPath;
@@ -97,7 +98,7 @@ namespace UTssisUnit
         public void TeardownTest()
         {
             var target = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
-            target.ConnectionRefs["AdventureWorks"].ConnectionString =
+            target.ConnectionList["AdventureWorks"].ConnectionString =
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
             var ssisApp = new Application();
             Package packageToTest = ssisApp.LoadPackage(UnpackToFile(TestPackageResource), null);
@@ -125,7 +126,7 @@ namespace UTssisUnit
             var packageFile = UnpackToFile("UTssisUnit.TestPackages.SimplePackage.dtsx");
 
             var ts = new SsisTestSuite();
-            ts.PackageRefs.Add("filePkg", new PackageRef("filePkg", packageFile, PackageStorageType.FileSystem));
+            ts.PackageList.Add("filePkg", new PackageRef("filePkg", packageFile, PackageStorageType.FileSystem));
             var test = new Test(ts, "Main", "filePkg", null, "SimplePackage");
             ts.Tests.Add("Main", test);
             var assert = new SsisAssert(ts, test, "A1", 0, false);
@@ -215,7 +216,7 @@ namespace UTssisUnit
         ////    var target = new SsisTestSuite(Helper.CreateUnitTestStream("UTssisUnit_TestSuite.xml"));
         ////    target.ConnectionRefs["Sandbox"].ConnectionString =
         ////        "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
-        
+
         ////    try
         ////    {
         ////        target.Execute();
@@ -233,9 +234,9 @@ namespace UTssisUnit
         public void TestSetupAndTeardownTest()
         {
             var target = new SsisTestSuite(Helper.CreateUnitTestStream("UTSsisUnit_TestSetup_Teardown.xml"));
-            target.ConnectionRefs["Sandbox"].ConnectionString =
+            target.ConnectionList["Sandbox"].ConnectionString =
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
-            target.PackageRefs["filePkg"].PackagePath = _testPackageFile;
+            target.PackageList["filePkg"].PackagePath = _testPackageFile;
 
             try
             {
@@ -256,18 +257,18 @@ namespace UTssisUnit
             string packageFile = UnpackToFile(TestPackageResource);
             var target = new SsisTestSuite();
 
-            Assert.AreEqual(0, target.ConnectionRefs.Count);
+            Assert.AreEqual(0, target.ConnectionList.Count);
 
-            target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
+            target.ConnectionList.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
 
-            Assert.AreEqual(1, target.ConnectionRefs.Count);
-            Assert.AreEqual("AdventureWorks", target.ConnectionRefs["AdventureWorks"].ReferenceName);
-            Assert.AreEqual("Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb", target.ConnectionRefs["AdventureWorks"].ConnectionString);
-            Assert.AreEqual(ConnectionRef.ConnectionTypeEnum.ConnectionString, target.ConnectionRefs["AdventureWorks"].ConnectionType);
+            Assert.AreEqual(1, target.ConnectionList.Count);
+            Assert.AreEqual("AdventureWorks", target.ConnectionList["AdventureWorks"].ReferenceName);
+            Assert.AreEqual("Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb", target.ConnectionList["AdventureWorks"].ConnectionString);
+            Assert.AreEqual(ConnectionRef.ConnectionTypeEnum.ConnectionString, target.ConnectionList["AdventureWorks"].ConnectionType);
 
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", packageFile, PackageStorageType.FileSystem));
+            target.PackageList.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", packageFile, PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
@@ -338,6 +339,53 @@ namespace UTssisUnit
             Assert.AreEqual(4, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
             Assert.AreEqual(0, target.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
             Assert.IsFalse(File.Exists(lineCount2File));
+        }
+
+        [TestMethod]
+        public void TestParameters()
+        {
+            string packageFile = UnpackToFile(TestPackageResource);
+            var target = new SsisTestSuite();
+            target.Parameters["TestParameter"] = "TestValue1";
+            target.PackageList.Add("TestPkg", new PackageRef("TestPkg", "PathToChange", PackageStorageType.FileSystem));
+            target.ConnectionList.Add("TestConn", new ConnectionRef("TestConn", "test", ConnectionRef.ConnectionTypeEnum.ConnectionString));
+            target.DynamicValues.Add(new DynamicValue()
+                                         {
+                                            Value = @"%ProgramData%\%TestParameter%\FixedValue",
+                                            AppliesTo = "TestSuite/PackageList[TestPkg]/PackagePath",
+                                         });
+
+            // Should the API auto apply changes?
+            target.DynamicValues.Apply();
+            Assert.AreEqual(@"C:\ProgramData\TestValue1\FixedValue", target.PackageList["TestPkg"].PackagePath);
+
+            target.DynamicValues.Add(new DynamicValue()
+            {
+                Value = @"ConnectionManager",
+                AppliesTo = "TestSuite/ConnectionList[TestConn]/ConnectionType",
+            });
+
+            target.DynamicValues.Apply();
+            Assert.AreEqual(ConnectionRef.ConnectionTypeEnum.ConnectionManager, target.ConnectionList["TestConn"].ConnectionType);
+
+            // TODO: Add some tests for invalid value conversions, indexers as final property, etc.
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void TestBadParameters()
+        {
+            var target = new SsisTestSuite();
+            target.Parameters["TestParameter"] = "TestValue1";
+            target.ConnectionList.Add("TestConn", new ConnectionRef("TestConn", "test", ConnectionRef.ConnectionTypeEnum.ConnectionString));
+
+            target.DynamicValues.Add(new DynamicValue()
+            {
+                Value = @"BadValue",
+                AppliesTo = "TestSuite/ConnectionList[TestConn]/ConnectionType",
+            });
+
+            target.DynamicValues.Apply();
         }
     }
 }

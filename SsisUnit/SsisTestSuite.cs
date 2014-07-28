@@ -31,14 +31,22 @@ namespace SsisUnit
 
         private SsisTestSuite(bool isLoadDefaultTest)
         {
-            PackageRefs = new Dictionary<string, PackageRef>();
-            ConnectionRefs = new Dictionary<string, ConnectionRef>();
+            Context = new Context
+                          {
+                              TestSuite = this,
+                              Parameters = Parameters,
+                          };
+            PackageList = new Dictionary<string, PackageRef>();
+            ConnectionList = new Dictionary<string, ConnectionRef>();
             Datasets = new Dictionary<string, Dataset>();
             Tests = new Dictionary<string, Test>();
             TestRefs = new Dictionary<string, TestRef>();
             Statistics = new TestSuiteResults();
             ValidationMessages = string.Empty;
             SsisApplication = new Application();
+            Parameters = new Dictionary<string, string>();
+            DynamicValues = new DynamicValues.DynamicValues(Context);
+            //Variables = new Dictionary<string, object>();
 
             if (!isLoadDefaultTest)
                 return;
@@ -58,7 +66,7 @@ namespace SsisUnit
         {
             if (testCaseFile == null)
                 throw new ArgumentNullException("testCaseFile");
-            
+
             InitializeTestCase(testCaseFile);
         }
 
@@ -93,15 +101,15 @@ namespace SsisUnit
 
         public TestSuiteResults Statistics { get; private set; }
 
-        public Dictionary<string, ConnectionRef> ConnectionRefs { get; private set; }
+        public Dictionary<string, ConnectionRef> ConnectionList { get; private set; }
 
-        public Dictionary<string, Dataset> Datasets { get; private set; } 
+        public Dictionary<string, Dataset> Datasets { get; private set; }
 
         public Dictionary<string, Test> Tests { get; private set; }
 
         public Dictionary<string, TestRef> TestRefs { get; private set; }
 
-        public Dictionary<string, PackageRef> PackageRefs { get; private set; }
+        public Dictionary<string, PackageRef> PackageList { get; private set; }
 
         public CommandSet TestSuiteSetup { get; private set; }
 
@@ -117,9 +125,16 @@ namespace SsisUnit
 
         public string ValidationMessages { get; set; }
 
-        #endregion
+        public DynamicValues.DynamicValues DynamicValues { get; private set; }
+        internal Context Context { get; private set; }
 
-        // TODO: Add parameters - replaceable values that can be defined one and used anywhere.
+        // TODO: Not sure this belongs here - maybe on context object?
+        public Dictionary<string, string> Parameters { get; private set; }
+
+        //public Dictionary<string, object> Variables { get; private set; }
+
+
+        #endregion
 
         #region Events
 
@@ -292,7 +307,7 @@ namespace SsisUnit
 
                     xmlWriter.WriteStartElement("ConnectionList");
 
-                    foreach (ConnectionRef conn in ConnectionRefs.Values)
+                    foreach (ConnectionRef conn in ConnectionList.Values)
                     {
                         xmlWriter.WriteRaw(conn.PersistToXml());
                     }
@@ -301,7 +316,7 @@ namespace SsisUnit
 
                     xmlWriter.WriteStartElement("PackageList");
 
-                    foreach (PackageRef pkg in PackageRefs.Values)
+                    foreach (PackageRef pkg in PackageList.Values)
                     {
                         xmlWriter.WriteRaw(pkg.PersistToXml());
                     }
@@ -389,6 +404,19 @@ namespace SsisUnit
             }
         }
 
+        public int Execute(Dictionary<string, string> parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                if (Context.Parameters.ContainsKey(parameter.Key))
+                {
+                    Context.Parameters[parameter.Key] = parameter.Value;
+                }
+            }
+
+            return Execute();
+        }
+
         public int Execute()
         {
             if (!Validate())
@@ -470,7 +498,7 @@ namespace SsisUnit
         {
             ParentTestSuite = ssisTestCase;
             Statistics = ssisTestCase.Statistics;
-            
+
             Execute();
         }
 
@@ -509,11 +537,11 @@ namespace SsisUnit
                         if (pkgRef.Attributes == null)
                             continue;
 
-                        PackageRefs.Add(pkgRef.Attributes["name"].Value, new PackageRef(pkgRef));
+                        PackageList.Add(pkgRef.Attributes["name"].Value, new PackageRef(pkgRef));
                     }
                 }
 
-                ConnectionRefs = _testCaseDoc.DocumentElement != null ? LoadConnectionRefs(_testCaseDoc.DocumentElement["ConnectionList"]) : new Dictionary<string, ConnectionRef>();
+                ConnectionList = _testCaseDoc.DocumentElement != null ? LoadConnectionRefs(_testCaseDoc.DocumentElement["ConnectionList"]) : new Dictionary<string, ConnectionRef>();
 
                 var xmlDatasets = _testCaseDoc.SelectNodes("SsisUnit:TestSuite/SsisUnit:DatasetList/SsisUnit:Dataset", _namespaceMgr);
 
@@ -527,7 +555,7 @@ namespace SsisUnit
                         Datasets.Add(xmlDataset.Attributes["name"].Value, new Dataset(this, xmlDataset));
                     }
                 }
-                
+
                 TestSuiteSetup = _testCaseDoc.DocumentElement != null ? new CommandSet("Test Suite Setup", this, _testCaseDoc.DocumentElement["TestSuiteSetup"]) : new CommandSet(this);
                 TestSuiteTeardown = _testCaseDoc.DocumentElement != null ? new CommandSet("Test Suite Teardown", this, _testCaseDoc.DocumentElement["TestSuiteTeardown"]) : new CommandSet(this);
                 SetupCommands = _testCaseDoc.DocumentElement != null ? new CommandSet("Unit Test Setup", this, _testCaseDoc.DocumentElement["Setup"]) : new CommandSet(this);

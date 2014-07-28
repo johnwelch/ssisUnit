@@ -21,7 +21,7 @@ namespace UTssisUnit.Commands
             _badTestFile = UnpackToFile("UTssisUnit.SampleSsisUnitTests.UTSsisUnit_BadData.ssisUnit");
             _testFile = UnpackToFile("UTssisUnit.SampleSsisUnitTests.UTSsisUnit.ssisUnit");
             _testSuite = new SsisTestSuite(_testFile);
-            _testSuite.ConnectionRefs["AdventureWorks"].ConnectionString = "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
+            _testSuite.ConnectionList["AdventureWorks"].ConnectionString = "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb";
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace UTssisUnit.Commands
         public void SqlCommandExecuteWithAdoNetTest()
         {
             var ts = new SsisTestSuite();
-            ts.ConnectionRefs.Add("Test", new ConnectionRef("Test", "Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient"));
+            ts.ConnectionList.Add("Test", new ConnectionRef("Test", "Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient"));
             var target = new SqlCommand(ts, "Test", true, "SELECT 1");
             Assert.AreEqual(1, target.Execute());
         }

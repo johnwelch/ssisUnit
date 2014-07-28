@@ -25,11 +25,11 @@ namespace UTssisUnit.Commands
         {
             var ts = new SsisTestSuite(Helper.CreateUnitTestStream(TestXmlFilename));
             var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
-            ts.PackageRefs["PropertyTest"].PackagePath = packageFile;
+            ts.PackageList["PropertyTest"].PackagePath = packageFile;
             var target = (PropertyCommand)ts.SetupCommands.Commands[1];
 
             var ssisApp = new Application();
-            var package = ssisApp.LoadPackage(ts.PackageRefs["PropertyTest"].PackagePath, null);
+            var package = ssisApp.LoadPackage(ts.PackageList["PropertyTest"].PackagePath, null);
             var container = package;
             object actual = target.Execute(package, container);
             Assert.AreEqual(1, actual);
@@ -47,8 +47,8 @@ namespace UTssisUnit.Commands
 
             var ssisApp = new Application();
             var packageFile = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
-            ts.PackageRefs["PropertyTest"].PackagePath = packageFile;
-            Package package = ssisApp.LoadPackage(ts.PackageRefs["PropertyTest"].PackagePath, null);
+            ts.PackageList["PropertyTest"].PackagePath = packageFile;
+            Package package = ssisApp.LoadPackage(ts.PackageList["PropertyTest"].PackagePath, null);
             DtsContainer container = package;
             object actual = target.Execute(package, container);
             Assert.AreEqual("TestValue", actual);
@@ -67,7 +67,7 @@ namespace UTssisUnit.Commands
 #endif
 
             var ts = new SsisTestSuite();
-            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageStorageType.FileSystem));
+            ts.PackageList.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageStorageType.FileSystem));
 
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Sequence Container\Script Task.Properties[Description]", "Test Descr"));
             ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Package\Sequence Container.Properties[Description]", "Test Descr"));
@@ -118,7 +118,7 @@ namespace UTssisUnit.Commands
 #endif
 
             var ts = new SsisTestSuite();
-            ts.PackageRefs.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageStorageType.FileSystem));
+            ts.PackageList.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageStorageType.FileSystem));
 
             var ssisTest = new Test(ts, "Test", "PackageA", null, "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}");
             ssisTest.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[localhost.AdventureWorksDW2008].Properties[ConnectionString]", "Provider=SQLNCLI11.1;Data Source=localhost;Initial Catalog=AdventureWorksDW2012;Integrated Security=SSPI;Application Name=TestValue"));

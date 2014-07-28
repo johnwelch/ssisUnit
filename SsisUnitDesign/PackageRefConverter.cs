@@ -68,9 +68,9 @@ namespace SsisUnit.Design
         {
             //Get the TestSuite reference
             Test test = (Test)context.Instance;
-            string[] refs = new string[test.TestSuite.PackageRefs.Count];
+            string[] refs = new string[test.TestSuite.PackageList.Count];
             int count = 0;
-            foreach (PackageRef pRef in test.TestSuite.PackageRefs.Values)
+            foreach (PackageRef pRef in test.TestSuite.PackageList.Values)
             {
                 refs[count] = pRef.Name;
                 count++;

@@ -318,13 +318,13 @@ namespace SsisUnit
 
             if (!isPackagePathFilePath)
             {
-                if (testSuite.PackageRefs.ContainsKey(packageName))
+                if (testSuite.PackageList.ContainsKey(packageName))
                 {
-                    packageRef = testSuite.PackageRefs[packageName];
+                    packageRef = testSuite.PackageList[packageName];
                 }
                 else
                 {
-                    foreach (PackageRef packageReference in testSuite.PackageRefs.Values)
+                    foreach (PackageRef packageReference in testSuite.PackageList.Values)
                     {
                         if ((packageReference.Name != null
                              && string.Compare(
@@ -344,7 +344,7 @@ namespace SsisUnit
                     }
                 }
 
-                if (packageRef == null) throw new KeyNotFoundException();
+                if (packageRef == null) throw new KeyNotFoundException(string.Format(CultureInfo.CurrentCulture, "{0} was not found in the test suite package references.", packageName));
 
                 package = packageRef.LoadPackage();
 

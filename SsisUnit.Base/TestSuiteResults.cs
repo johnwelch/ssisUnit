@@ -7,7 +7,6 @@ namespace SsisUnitBase
     public class TestSuiteResults
     {
         private readonly Dictionary<StatisticEnum, TestSuiteStatistic> _statistics = new Dictionary<StatisticEnum, TestSuiteStatistic>(6);
-        // private List<string> _results = new List<string>();
 
         public TestSuiteResults()
         {
@@ -17,7 +16,6 @@ namespace SsisUnitBase
             _statistics.Add(StatisticEnum.AssertFailedCount, new TestSuiteStatistic());
             _statistics.Add(StatisticEnum.TestPassedCount, new TestSuiteStatistic());
             _statistics.Add(StatisticEnum.TestFailedCount, new TestSuiteStatistic());
-            // _statistics.Add(StatisticEnum.TaskFailedCount, new TestSuiteStatistic());
         }
 
         #region Methods

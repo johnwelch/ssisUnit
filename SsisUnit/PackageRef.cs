@@ -337,12 +337,12 @@ namespace SsisUnit
         /// <summary>
         /// Returns a version of the <see cref="PackagePath"/> with environment variables expanded
         /// </summary>
-        public string ExpandedPackagePath { get { return Environment.ExpandEnvironmentVariables(PackagePath); } }
+        public string ExpandedPackagePath { get { return Environment.ExpandEnvironmentVariables(PackagePath ?? string.Empty); } }
 
         /// <summary>
         /// Returns a version of the <see cref="ProjectPath"/> with environment variables expanded
         /// </summary>
-        public string ExpandedProjectPath { get { return Environment.ExpandEnvironmentVariables(ProjectPath); } }
+        public string ExpandedProjectPath { get { return Environment.ExpandEnvironmentVariables(ProjectPath ?? string.Empty); } }
 
 #if SQL2012 || SQL2014
         /// <summary>

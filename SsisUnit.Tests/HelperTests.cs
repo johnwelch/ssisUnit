@@ -139,7 +139,7 @@ namespace UTssisUnit
             var projectFile = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
             var testSuite = new SsisTestSuite();
             var packageRef = new PackageRef("TestPackage", "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem, null) { ProjectPath = projectFile };
-            testSuite.PackageRefs.Add(packageRef.Name, packageRef);
+            testSuite.PackageList.Add(packageRef.Name, packageRef);
 
             object loadedProject;
 
@@ -157,7 +157,7 @@ namespace UTssisUnit
 
             var packageRef = new PackageRef("Period.In.My.Name.1 1.dtsx", "Period.In.My.Name.1 1.dtsx", PackageStorageType.SsisCatalog, @"FL-WS-DEV-JN21\SQL2012") { ProjectPath = @"Jeremiah SSIS Deployed Projects\SSIS2012" };
 
-            testSuite.PackageRefs.Add(packageRef.Name, packageRef);
+            testSuite.PackageList.Add(packageRef.Name, packageRef);
 
             object loadedProject;
 
