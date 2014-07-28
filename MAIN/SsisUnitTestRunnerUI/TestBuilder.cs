@@ -264,16 +264,16 @@ namespace ssisUnitTestRunnerUI
 
         private void AddPackageRefs(SsisTestSuite ts, IDTSName package, string location)
         {
-            if (!ts.PackageRefs.ContainsKey(package.Name))
-                ts.PackageRefs.Add(package.Name, new PackageRef(package.Name, location, PackageStorageType.FileSystem));
+            if (!ts.PackageList.ContainsKey(package.Name))
+                ts.PackageList.Add(package.Name, new PackageRef(package.Name, location, PackageStorageType.FileSystem));
         }
 
         private void AddConnectionRefs(SsisTestSuite ts, Package package)
         {
             foreach (ConnectionManager cm in package.Connections)
             {
-                if ((cm.CreationName == "OLEDB" || cm.CreationName.StartsWith("ADO.NET")) && !ts.ConnectionRefs.ContainsKey(cm.Name))
-                    ts.ConnectionRefs.Add(cm.Name, new ConnectionRef(cm.Name, cm.ConnectionString, ConnectionRef.ConnectionTypeEnum.ConnectionString));
+                if ((cm.CreationName == "OLEDB" || cm.CreationName.StartsWith("ADO.NET")) && !ts.ConnectionList.ContainsKey(cm.Name))
+                    ts.ConnectionList.Add(cm.Name, new ConnectionRef(cm.Name, cm.ConnectionString, ConnectionRef.ConnectionTypeEnum.ConnectionString));
             }
         }
 

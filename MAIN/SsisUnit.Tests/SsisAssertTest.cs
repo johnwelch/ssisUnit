@@ -125,10 +125,10 @@ namespace UTssisUnit
         {
             var target = new SsisTestSuite();
 
-            target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
+            target.ConnectionList.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
+            target.PackageList.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
@@ -181,10 +181,10 @@ namespace UTssisUnit
         {
             var target = new SsisTestSuite();
 
-            target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
+            target.ConnectionList.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
+            target.PackageList.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
 
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "CREATE TABLE dbo.Test (ID INT)"));
             target.TestSuiteSetup.Commands.Add(new SqlCommand(target, "AdventureWorks", false, "INSERT INTO dbo.Test VALUES (1)"));
@@ -235,10 +235,10 @@ namespace UTssisUnit
         {
             var target = new SsisTestSuite();
 
-            target.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
+            target.ConnectionList.Add("AdventureWorks", new ConnectionRef("AdventureWorks",
                 "Provider=SQLNCLI11;Data Source=localhost;Integrated Security=SSPI;Initial Catalog=tempdb",
                 ConnectionRef.ConnectionTypeEnum.ConnectionString));
-            target.PackageRefs.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
+            target.PackageList.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
 
             var ssisTest = new Test(target, "Test", "UT Basic Scenario", null, "SELECT COUNT");
             target.Tests.Add("Test", ssisTest);

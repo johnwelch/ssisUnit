@@ -24,12 +24,12 @@ namespace SsisUnit.Design
                     CommandBase commandBase = context.Instance as CommandBase;
 
                     if (commandBase != null)
-                        return commandBase.TestSuite.ConnectionRefs[key];
+                        return commandBase.TestSuite.ConnectionList[key];
 
                     Dataset dataset = context.Instance as Dataset;
 
                     if (dataset != null)
-                        return dataset.TestSuite.ConnectionRefs[key];
+                        return dataset.TestSuite.ConnectionList[key];
                 }
                 catch
                 {
@@ -66,12 +66,12 @@ namespace SsisUnit.Design
             if (commandBase == null && dataset != null)
                 testSuite = dataset.TestSuite;
 
-            if (testSuite == null || testSuite.ConnectionRefs == null)
+            if (testSuite == null || testSuite.ConnectionList == null)
                 return new StandardValuesCollection(new ConnectionRef[0]);
 
-            ConnectionRef[] connections = new ConnectionRef[testSuite.ConnectionRefs.Count];
+            ConnectionRef[] connections = new ConnectionRef[testSuite.ConnectionList.Count];
 
-            testSuite.ConnectionRefs.Values.CopyTo(connections, 0);
+            testSuite.ConnectionList.Values.CopyTo(connections, 0);
 
             return new StandardValuesCollection(connections);
         }

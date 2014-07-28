@@ -100,7 +100,11 @@
     <Compile Include="CommandProperty.cs" />
     <Compile Include="CommandSet.cs" />
     <Compile Include="ConnectionList.cs" />
+    <Compile Include="Context.cs" />
+    <Compile Include="DynamicValues\DynamicValue.cs" />
+    <Compile Include="DynamicValues\DynamicValues.cs" />
     <Compile Include="Enums\ParameterType.cs" />
+    <Compile Include="ObjectHelper.cs" />
     <Compile Include="ParameterCommand.cs" />
     <Compile Include="DataCompareAssertCompletedEventArgs.cs" />
     <Compile Include="DataCompareCommand.cs" />

@@ -60,9 +60,9 @@ namespace SsisUnit
 
             string connectionReferenceName = datasetNode.Attributes["connection"] != null ? datasetNode.Attributes["connection"].Value : null;
 
-            if (!string.IsNullOrEmpty(connectionReferenceName) && TestSuite.ConnectionRefs != null)
+            if (!string.IsNullOrEmpty(connectionReferenceName) && TestSuite.ConnectionList != null)
             {
-                foreach (KeyValuePair<string, ConnectionRef> connectionRef in TestSuite.ConnectionRefs)
+                foreach (KeyValuePair<string, ConnectionRef> connectionRef in TestSuite.ConnectionList)
                 {
                     if (connectionRef.Value.ReferenceName != connectionReferenceName)
                         continue;
@@ -105,7 +105,7 @@ namespace SsisUnit
                     Results = null;
                 else
                 {
-                    DataTable deserializedDataTable = new DataTable(ResultsDataTableName);
+                    var deserializedDataTable = new DataTable(ResultsDataTableName);
 
                     deserializedDataTable.ReadXml(new StringReader(rawDataStream));
 
@@ -125,9 +125,9 @@ namespace SsisUnit
 
         public string PersistToXml()
         {
-            StringBuilder xml = new StringBuilder();
+            var xml = new StringBuilder();
 
-            XmlWriterSettings writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
+            var writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
 
             using (XmlWriter xmlWriter = XmlWriter.Create(xml, writerSettings))
             {
@@ -147,7 +147,7 @@ namespace SsisUnit
                 {
                     xmlWriter.WriteStartElement("results");
 
-                    using (StringWriter stringWriter = new StringWriter())
+                    using (var stringWriter = new StringWriter())
                     {
                         Results.WriteXml(stringWriter, XmlWriteMode.WriteSchema, true);
 
@@ -223,7 +223,6 @@ namespace SsisUnit
                                 string.Format(
                                     CultureInfo.CurrentCulture, "The dataset (\"{0}\") did not retrieve any data.", Name));
                         }
-
 
                         return ds.Tables[0];
                     }

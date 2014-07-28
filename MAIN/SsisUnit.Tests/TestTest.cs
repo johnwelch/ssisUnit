@@ -122,7 +122,7 @@ namespace UTssisUnit
         public void TaskThatFailsTest()
         {
             var ts = new SsisTestSuite();
-            var target = new Test(ts, "Test Task That Fails", "C:\\Projects\\SSISUnit\\UTssis2008packages\\UT Basic Scenario.dtsx", null, "SELECT COUNT", DTSExecResult.Failure);
+            var target = new Test(ts, "Test Task That Fails", @"C:\Projects\SsisUnit\MAIN\SsisUnit.Tests\TestPackages\UTBasicScenario2012.dtsx", null, "SELECT COUNT", DTSExecResult.Failure);
             target.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\SELECT COUNT.Properties[SqlStatementSource]", "SELECT ''"));
             ts.Tests.Add("Test Task That Fails", target);
             var assert = new SsisAssert(ts, target, "Test Row Count", 504, false, false);
@@ -148,9 +148,6 @@ namespace UTssisUnit
 
             ts.Execute();
 
-            // TODO: Think this might be missing something - asserts were originally 1 passed, 1 failed
-            // See if I can find original test package
-
             Assert.AreEqual(2, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
             Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
@@ -158,16 +155,26 @@ namespace UTssisUnit
         [TestMethod]
         public void DataFlowComponentTest()
         {
+            Assert.Inconclusive();
             var packageFile = UnpackToFile("UTssisUnit.TestPackages.DataFlowComponent.dtsx");
             var newFileName = CreateTempFile(GetTempPath("Test", true), "TestDataFlowExpression2012.dtsx");
             File.Copy(packageFile, newFileName, true);
             var ts = new SsisTestSuite();
-            ts.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient"));
-            ts.Datasets.Add("testInput", new Dataset(ts, "testInput", ts.ConnectionRefs["AdventureWorks"], false, "SELECT "
-                                                                                               + "CAST(1 AS INT) AS ColInt, "
-                                                                                               + "CAST('Test' AS VARCHAR(50)) AS ColVarChar, "
-                                                                                               + "CAST(N'Test' AS NVARCHAR(50)) AS ColNVarChar, "
-                                                                                               + "CAST('1900-01-01' AS DATETIME) AS ColDateTime"));
+            ts.ConnectionList.Add(
+                "AdventureWorks",
+                new ConnectionRef(
+                    "AdventureWorks",
+                    "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;",
+                    ConnectionRef.ConnectionTypeEnum.AdoNet,
+                    "System.Data.SqlClient"));
+            ts.Datasets.Add(
+                "testInput",
+                new Dataset(
+                    ts,
+                    "testInput",
+                    ts.ConnectionList["AdventureWorks"],
+                    false,
+                    "SELECT " + "CAST(1 AS INT) AS ColInt, " + "CAST('Test' AS VARCHAR(50)) AS ColVarChar, " + "CAST(N'Test' AS NVARCHAR(50)) AS ColNVarChar, " + "CAST('1900-01-01' AS DATETIME) AS ColDateTime"));
             var target = new Test(ts, "DataFlowComponent", newFileName, null, @"Package\Data Flow Task\Derived Column");
             ts.Tests.Add("Test Data Flow Derived Column", target);
             target.TestSetup.Commands.Add(new ComponentInputCommand(ts, "ComponentInput", "testInput", @"Package\Data Flow Task\Derived Column.Inputs[Derived Column Input]"));
@@ -186,9 +193,9 @@ namespace UTssisUnit
         {
             var projectFile = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
             var ts = new SsisTestSuite();
-            ts.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;Provider=SQLNCLI11", ConnectionRef.ConnectionTypeEnum.ConnectionString, "System.Data.SqlClient"));
-            ts.PackageRefs.Add("TestPackage", new PackageRef("TestPackage", "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem));
-            ts.PackageRefs["TestPackage"].ProjectPath = projectFile;
+            ts.ConnectionList.Add("AdventureWorks", new ConnectionRef("AdventureWorks", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;Provider=SQLNCLI11", ConnectionRef.ConnectionTypeEnum.ConnectionString, "System.Data.SqlClient"));
+            ts.PackageList.Add("TestPackage", new PackageRef("TestPackage", "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem));
+            ts.PackageList["TestPackage"].ProjectPath = projectFile;
             var target = new Test(ts, "ExecuteSQL", "TestPackage", null, @"\Package\Execute SQL Task");
             ts.Tests.Add("Test Execute SQL", target);
             var assert = new SsisAssert(ts, target, "Test Output", 71, false);
@@ -206,9 +213,9 @@ namespace UTssisUnit
         {
             var projectFile = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
             var ts = new SsisTestSuite();
-            ts.ConnectionRefs.Add("AdventureWorks", new ConnectionRef("AdventureWorks", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;Provider=SQLNCLI11", ConnectionRef.ConnectionTypeEnum.ConnectionString, "System.Data.SqlClient"));
-            ts.PackageRefs.Add("TestPackage", new PackageRef("TestPackage", "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem));
-            ts.PackageRefs["TestPackage"].ProjectPath = projectFile;
+            ts.ConnectionList.Add("AdventureWorks", new ConnectionRef("AdventureWorks", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI;Provider=SQLNCLI11", ConnectionRef.ConnectionTypeEnum.ConnectionString, "System.Data.SqlClient"));
+            ts.PackageList.Add("TestPackage", new PackageRef("TestPackage", "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem));
+            ts.PackageList["TestPackage"].ProjectPath = projectFile;
             var target = new Test(ts, "ExecuteSQL", "TestPackage", null, @"\Package\Test Param");
             ts.Tests.Add("Test Execute SQL", target);
             var assert = new SsisAssert(ts, target, "Test Output", 71, false);

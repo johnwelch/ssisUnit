@@ -210,7 +210,7 @@ namespace SsisUnit
         {
             get
             {
-                return TestSuite.ConnectionRefs.ContainsKey(Properties[PropConnection].Value) ? TestSuite.ConnectionRefs[Properties[PropConnection].Value] : null;
+                return TestSuite.ConnectionList.ContainsKey(Properties[PropConnection].Value) ? TestSuite.ConnectionList[Properties[PropConnection].Value] : null;
             }
 
             set

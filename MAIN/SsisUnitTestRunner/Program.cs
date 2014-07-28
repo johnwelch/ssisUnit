@@ -4,6 +4,7 @@ using System.Text;
 using SsisUnit;
 using System.IO;
 
+using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
 namespace ssisUnitTestRunner
@@ -11,7 +12,6 @@ namespace ssisUnitTestRunner
     public class Program
     {
         private const string ARG_TEST_CASE = "/TESTCASE";
-        //private const string ARG_PACKAGE = "/PACKAGE";
         private const string ARG_OUTPUT_FILE = "/OUTPUT";
         private const string ARG_REPORT_LEVEL = "/REPORT";
 
@@ -24,50 +24,43 @@ namespace ssisUnitTestRunner
 
             if (args.Length == 0 || args[0].Contains("?"))
             {
-                //Removed package override capability - not sure it's needed
-                //Console.WriteLine("Usage: ssisUnitTestRunner /TESTCASE test-case-file [/PACKAGE package-file] [/OUTPUT output-file] [/REPORT <ALL:PASSED:FAILED>]");
                 Console.WriteLine("Usage: ssisUnitTestRunner /TESTCASE test-case-file [/OUTPUT output-file] [/REPORT <ALL:PASSED:FAILED>]");
                 Console.WriteLine("/TESTCASE\tFilename for test case");
-                //Console.WriteLine("[/PACKAGE]\tFilename for package - overrides value in test case");
                 Console.WriteLine("[/OUTPUT]\tFilename for results");
                 Console.WriteLine("[/REPORT]\tALL - Reports all results (inlcuding setup and teardown)");
                 Console.WriteLine("         \tPASSED - Reports only results for successful tests");
                 Console.WriteLine("         \tFAILED - Reports only results for failed tests");
                 return 0;
             }
-            else
+
+            for (int i = 0; i < args.Length - 1; i++)
             {
-                for (int i = 0; i < args.Length - 1; i++)
+                if (args[i].ToUpper() == ARG_TEST_CASE)
                 {
-                    if (args[i].ToUpper() == ARG_TEST_CASE)
-                    {
-                        testCaseFile = args[i + 1];
-                    }
-                    if (args[i].ToUpper() == ARG_OUTPUT_FILE)
-                    {
-                        outputFile = args[i + 1];
-                    }
-                    //if (args[i].ToUpper() == ARG_PACKAGE)
-                    //{
-                    //    packageFile = args[i + 1];
-                    //}
-                    if (args[i].ToUpper() == ARG_REPORT_LEVEL)
-                    {
-                        report = args[i + 1];
-                    }
+                    testCaseFile = args[i + 1];
                 }
-                TestRun run = new TestRun();
-                //if (run.RunTest(testCaseFile, packageFile, outputFile, report))
-                try
+                
+                if (args[i].ToUpper() == ARG_OUTPUT_FILE)
                 {
-                    run.RunTest(testCaseFile, outputFile, report);
-                    return 0;
+                    outputFile = args[i + 1];
                 }
-                catch (Exception ex)
+
+                if (args[i].ToUpper() == ARG_REPORT_LEVEL)
                 {
-                    Console.WriteLine("Error occurred: " + ex.Message);
-                    return 1;
+                    report = args[i + 1];
                 }
+            }
+
+            var run = new TestRun();
+
+            try
+            {
+                return run.RunTest(testCaseFile, outputFile, report); 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error occurred: " + ex.Message);
+                return 2;
             }
         }
 
@@ -81,8 +74,7 @@ namespace ssisUnitTestRunner
             private string outputFileName = string.Empty;
 
 
-            //public bool RunTest(string testCase, string packageFile, string outputFileName, string reportLevel)
-            public void RunTest(string testCase, string outputFileName, string reportLevel)
+            public int RunTest(string testCase, string outputFileName, string reportLevel)
             {
                 if (reportLevel.ToUpper() == REPORT_LEVEL_PASSED)
                 {
@@ -98,12 +90,11 @@ namespace ssisUnitTestRunner
                 }
 
                 SsisTestSuite unitTest = new SsisTestSuite(testCase);
-                unitTest.TestCompleted += new EventHandler<TestCompletedEventArgs>(unitRunner_TestCompleted);
-                unitTest.AssertCompleted += new EventHandler<AssertCompletedEventArgs>(unitTest_AssertCompleted);
+                unitTest.TestCompleted += unitRunner_TestCompleted;
+                unitTest.AssertCompleted += unitTest_AssertCompleted;
 
-                if (this.reportLevel==0)
+                if (this.reportLevel == 0)
                 {
-                    //Only show setup and teardown messages if all reporting is enabled.
                     unitTest.SetupCompleted += new EventHandler<SetupCompletedEventArgs>(unitTest_SetupCompleted);
                     unitTest.TeardownCompleted += new EventHandler<TeardownCompletedEventArgs>(unitTest_TeardownCompleted);
                 }
@@ -118,7 +109,11 @@ namespace ssisUnitTestRunner
                     outputFile.Close();
                 }
                 unitTest.Execute();
-                return;
+                if (unitTest.Statistics.GetStatistic(StatisticEnum.TestFailedCount) > 0)
+                {
+                    return 1;
+                }
+                return 0;
 
             }
 

@@ -139,13 +139,13 @@ namespace ssisUnitTestRunnerUI
             TreeNode crNode = treeTest.Nodes[0].Nodes.Find("Connection List", false)[0];
             int counter = 1;
 
-            while (_testSuite.ConnectionRefs.ContainsKey("ConnectionRef" + counter.ToString(CultureInfo.InvariantCulture)))
+            while (_testSuite.ConnectionList.ContainsKey("ConnectionRef" + counter.ToString(CultureInfo.InvariantCulture)))
             {
                 counter++;
             }
 
             var cr = new ConnectionRef("ConnectionRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, ConnectionRef.ConnectionTypeEnum.ConnectionString);
-            _testSuite.ConnectionRefs.Add(cr.ReferenceName, cr);
+            _testSuite.ConnectionList.Add(cr.ReferenceName, cr);
             var tn = new TreeNode(cr.ReferenceName) { Tag = cr };
             crNode.Nodes.Add(tn);
             tn.EnsureVisible();
@@ -156,12 +156,12 @@ namespace ssisUnitTestRunnerUI
         {
             TreeNode prNode = treeTest.Nodes[0].Nodes.Find("Package List", false)[0];
             int counter = 1;
-            while (_testSuite.PackageRefs.ContainsKey("PackageRef" + counter.ToString(CultureInfo.InvariantCulture)))
+            while (_testSuite.PackageList.ContainsKey("PackageRef" + counter.ToString(CultureInfo.InvariantCulture)))
             {
                 counter++;
             }
             var pr = new PackageRef("PackageRef" + counter.ToString(CultureInfo.InvariantCulture), string.Empty, PackageStorageType.FileSystem);
-            _testSuite.PackageRefs.Add(pr.Name, pr);
+            _testSuite.PackageList.Add(pr.Name, pr);
             var tn = new TreeNode(pr.Name) { Tag = pr };
             prNode.Nodes.Add(tn);
             tn.EnsureVisible();
@@ -214,7 +214,7 @@ namespace ssisUnitTestRunnerUI
             if (connectionRef != null)
             {
                 ConnectionRef cref = connectionRef;
-                _testSuite.ConnectionRefs.Remove(cref.ReferenceName);
+                _testSuite.ConnectionList.Remove(cref.ReferenceName);
                 treeTest.SelectedNode.Remove();
                 return;
             }
@@ -223,7 +223,7 @@ namespace ssisUnitTestRunnerUI
 
             if (packageRef != null)
             {
-                _testSuite.PackageRefs.Remove(packageRef.Name);
+                _testSuite.PackageList.Remove(packageRef.Name);
                 treeTest.SelectedNode.Remove();
                 return;
             }
@@ -374,7 +374,7 @@ namespace ssisUnitTestRunnerUI
         private TreeNode CreatePackageListNode(SsisTestSuite testSuite)
         {
             TreeNode packageList = new TreeNode("Package List") { Name = "Package List" };
-            foreach (PackageRef pkg in testSuite.PackageRefs.Values)
+            foreach (PackageRef pkg in testSuite.PackageList.Values)
             {
                 TreeNode pkgNode = new TreeNode(pkg.Name) { Tag = pkg };
                 packageList.Nodes.Add(pkgNode);
@@ -385,7 +385,7 @@ namespace ssisUnitTestRunnerUI
         private TreeNode CreateConnectionListNode(SsisTestSuite testSuite)
         {
             TreeNode connectionList = new TreeNode("Connection List") { Name = "Connection List" };
-            foreach (ConnectionRef conn in testSuite.ConnectionRefs.Values)
+            foreach (ConnectionRef conn in testSuite.ConnectionList.Values)
             {
                 TreeNode connNode = new TreeNode(conn.ReferenceName) { Tag = conn };
                 connectionList.Nodes.Add(connNode);
