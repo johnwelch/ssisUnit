@@ -9,6 +9,8 @@ using System.Xml.Schema;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
 
+using SsisUnit.DynamicValues;
+
 using SsisUnitBase;
 using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
@@ -34,7 +36,6 @@ namespace SsisUnit
             Context = new Context
                           {
                               TestSuite = this,
-                              Parameters = Parameters,
                           };
             PackageList = new Dictionary<string, PackageRef>();
             ConnectionList = new Dictionary<string, ConnectionRef>();
@@ -48,6 +49,7 @@ namespace SsisUnit
             DynamicValues = new DynamicValues.DynamicValues(Context);
             //Variables = new Dictionary<string, object>();
 
+            
             if (!isLoadDefaultTest)
                 return;
 
@@ -404,14 +406,14 @@ namespace SsisUnit
             }
         }
 
-        public int Execute(Dictionary<string, string> parameters)
+        public int Execute(IDictionary<string, string> parameters)
         {
-            foreach (var parameter in parameters)
+            if (parameters != null)
             {
-                if (Context.Parameters.ContainsKey(parameter.Key))
+                foreach (var parameter in parameters)
                 {
-                    Context.Parameters[parameter.Key] = parameter.Value;
-                }
+                    Parameters[parameter.Key] = parameter.Value;
+                }                
             }
 
             return Execute();
@@ -421,13 +423,16 @@ namespace SsisUnit
         {
             if (!Validate())
             {
-                throw new ApplicationException("The test suite is not in a valid format. It cannot be executed until the errors have been corrected.");
+                ValidationMessages += "The test suite does not validate.";
+                //throw new ApplicationException("The test suite is not in a valid format. It cannot be executed until the errors have been corrected.");
             }
 
             if (ParentTestSuite == null)
             {
                 Statistics.Reset();
             }
+
+            DynamicValues.Apply();
 
             OnRaiseTestSuiteStarted(new TestSuiteStartedEventArgs());
 
