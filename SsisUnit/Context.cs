@@ -8,7 +8,5 @@ namespace SsisUnit
     internal class Context
     {
         public SsisTestSuite TestSuite { get; set; }
-
-        public Dictionary<string, string> Parameters { get; set; }
     }
 }

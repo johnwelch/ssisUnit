@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,6 +12,8 @@ using SsisUnit.DynamicValues;
 using SsisUnit.Enums;
 
 using SsisUnitBase.Enums;
+
+using UTssisUnit.Commands;
 
 namespace UTssisUnit
 {
@@ -351,8 +354,8 @@ namespace UTssisUnit
             target.ConnectionList.Add("TestConn", new ConnectionRef("TestConn", "test", ConnectionRef.ConnectionTypeEnum.ConnectionString));
             target.DynamicValues.Add(new DynamicValue()
                                          {
-                                            Value = @"%ProgramData%\%TestParameter%\FixedValue",
-                                            AppliesTo = "TestSuite/PackageList[TestPkg]/PackagePath",
+                                             Value = @"%ProgramData%\%TestParameter%\FixedValue",
+                                             AppliesTo = "TestSuite/PackageList[TestPkg]/PackagePath",
                                          });
 
             // Should the API auto apply changes?
@@ -368,7 +371,7 @@ namespace UTssisUnit
             target.DynamicValues.Apply();
             Assert.AreEqual(ConnectionRef.ConnectionTypeEnum.ConnectionManager, target.ConnectionList["TestConn"].ConnectionType);
 
-            // TODO: Add some tests for invalid value conversions, indexers as final property, etc.
+            // TODO: Add some tests for indexers as final property, etc.
         }
 
         [TestMethod]
@@ -386,6 +389,32 @@ namespace UTssisUnit
             });
 
             target.DynamicValues.Apply();
+        }
+
+        [TestMethod]
+        public void TestExecuteWithParameters()
+        {
+            string packageFile = UnpackToFile(TestPackageResource);
+            var target = new SsisTestSuite();
+            target.Parameters["TestParameter"] = string.Empty;
+            target.PackageList.Add("TestPkg", new PackageRef("TestPkg", "PathToChange", PackageStorageType.FileSystem));
+            target.DynamicValues.Add(new DynamicValue()
+            {
+                Value = "%TestParameter%",
+                AppliesTo = "TestSuite/PackageList[TestPkg]/PackagePath",
+            });
+
+            target.Tests.Add("Test", new Test(target, "Test", "TestPkg", null, "Package"));
+            target.Tests["Test"].Asserts.Add("Assert", new SsisAssert(target, target.Tests["Test"], "Assert", true, false));
+            target.Tests["Test"].Asserts["Assert"].Command = new TestCommand();
+
+            target.Execute(new Dictionary<string, string>
+                               {
+                                   { "TestParameter", packageFile }
+                               });
+
+            Assert.AreEqual(packageFile, target.PackageList["TestPkg"].PackagePath);
+            Assert.AreEqual(2, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
         }
     }
 }

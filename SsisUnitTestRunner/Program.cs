@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using SsisUnit;
 using System.IO;
 
@@ -14,6 +13,7 @@ namespace ssisUnitTestRunner
         private const string ARG_TEST_CASE = "/TESTCASE";
         private const string ARG_OUTPUT_FILE = "/OUTPUT";
         private const string ARG_REPORT_LEVEL = "/REPORT";
+        private const string ARG_PARAM = "/PARAM";
 
         static int Main(string[] args)
         {
@@ -21,6 +21,7 @@ namespace ssisUnitTestRunner
             string packageFile = string.Empty;
             string outputFile = string.Empty;
             string report = string.Empty;
+            var parameters = new Dictionary<string, string>();
 
             if (args.Length == 0 || args[0].Contains("?"))
             {
@@ -30,6 +31,7 @@ namespace ssisUnitTestRunner
                 Console.WriteLine("[/REPORT]\tALL - Reports all results (inlcuding setup and teardown)");
                 Console.WriteLine("         \tPASSED - Reports only results for successful tests");
                 Console.WriteLine("         \tFAILED - Reports only results for failed tests");
+                Console.WriteLine("[/PARAM] \tName|Value for a parameter value specified in the test");
                 return 0;
             }
 
@@ -39,7 +41,7 @@ namespace ssisUnitTestRunner
                 {
                     testCaseFile = args[i + 1];
                 }
-                
+
                 if (args[i].ToUpper() == ARG_OUTPUT_FILE)
                 {
                     outputFile = args[i + 1];
@@ -49,13 +51,27 @@ namespace ssisUnitTestRunner
                 {
                     report = args[i + 1];
                 }
+
+                if (args[i].ToUpper() == ARG_PARAM)
+                {
+                    var paramValue = args[i + 1].Split('|');
+
+                    if (paramValue.Length == 2)
+                    {
+                        parameters.Add(paramValue[0], paramValue[1]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Parameter value {0} was ignored, as it wasn't in a valid format.", args[i + 1]);
+                    }
+                }
             }
 
             var run = new TestRun();
 
             try
             {
-                return run.RunTest(testCaseFile, outputFile, report); 
+                return run.RunTest(testCaseFile, outputFile, report, parameters);
             }
             catch (Exception ex)
             {
@@ -70,33 +86,33 @@ namespace ssisUnitTestRunner
             private const string REPORT_LEVEL_PASSED = "PASSED";
             private const string REPORT_LEVEL_FAILED = "FAILED";
 
-            private int reportLevel = 0;
+            private int _reportLevel = 0;
             private string outputFileName = string.Empty;
 
 
-            public int RunTest(string testCase, string outputFileName, string reportLevel)
+            public int RunTest(string testCase, string outputFileName, string reportLevel, IDictionary<string, string> parameters)
             {
                 if (reportLevel.ToUpper() == REPORT_LEVEL_PASSED)
                 {
-                    this.reportLevel = 1;
+                    _reportLevel = 1;
                 }
                 else if (reportLevel.ToUpper() == REPORT_LEVEL_FAILED)
                 {
-                    this.reportLevel = 2;
+                    _reportLevel = 2;
                 }
                 else
                 {
-                    this.reportLevel = 0;
+                    _reportLevel = 0;
                 }
 
-                SsisTestSuite unitTest = new SsisTestSuite(testCase);
+                var unitTest = new SsisTestSuite(testCase);
                 unitTest.TestCompleted += unitRunner_TestCompleted;
                 unitTest.AssertCompleted += unitTest_AssertCompleted;
 
-                if (this.reportLevel == 0)
+                if (_reportLevel == 0)
                 {
-                    unitTest.SetupCompleted += new EventHandler<SetupCompletedEventArgs>(unitTest_SetupCompleted);
-                    unitTest.TeardownCompleted += new EventHandler<TeardownCompletedEventArgs>(unitTest_TeardownCompleted);
+                    unitTest.SetupCompleted += unitTest_SetupCompleted;
+                    unitTest.TeardownCompleted += unitTest_TeardownCompleted;
                 }
 
                 object[] vals = new object[] { "Execution Time", "Package Name", "Task Name", "Test Name", "Test Result", "Passed" };
@@ -104,11 +120,11 @@ namespace ssisUnitTestRunner
                 if (outputFileName != string.Empty)
                 {
                     this.outputFileName = outputFileName;
-                    StreamWriter outputFile = new StreamWriter(outputFileName, true);
+                    var outputFile = new StreamWriter(outputFileName, true);
                     outputFile.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", vals);
                     outputFile.Close();
                 }
-                unitTest.Execute();
+                unitTest.Execute(parameters);
                 if (unitTest.Statistics.GetStatistic(StatisticEnum.TestFailedCount) > 0)
                 {
                     return 1;
@@ -120,7 +136,7 @@ namespace ssisUnitTestRunner
             void unitTest_AssertCompleted(object sender, AssertCompletedEventArgs e)
             {
                 object[] vals = new object[] { e.TestExecResult.TestExecutionTime.ToString(), e.TestExecResult.PackageName, e.TestExecResult.TaskName, e.TestExecResult.TestName, e.TestExecResult.TestResultMsg, e.TestExecResult.TestPassed };
-                switch (reportLevel)
+                switch (_reportLevel)
                 {
                     case 1:
                         if (e.TestExecResult.TestPassed)
@@ -142,7 +158,7 @@ namespace ssisUnitTestRunner
 
             void unitTest_TeardownCompleted(object sender, TeardownCompletedEventArgs e)
             {
-                object[] vals = new object[] { e.TeardownExecutionTime.ToString(), e.Package, e.TaskGuid, e.TestName, e.Results, string.Empty};
+                object[] vals = new object[] { e.TeardownExecutionTime.ToString(), e.Package, e.TaskGuid, e.TestName, e.Results, string.Empty };
                 WriteOutput(vals);
             }
 
@@ -155,7 +171,7 @@ namespace ssisUnitTestRunner
             private void unitRunner_TestCompleted(object sender, TestCompletedEventArgs e)
             {
                 object[] vals = new object[] { e.TestExecResult.TestExecutionTime.ToString(), e.TestExecResult.PackageName, e.TestExecResult.TaskName, e.TestExecResult.TestName, e.TestExecResult.TestResultMsg, e.TestExecResult.TestPassed };
-                switch (reportLevel)
+                switch (_reportLevel)
                 {
                     case 1:
                         if (e.TestExecResult.TestPassed)
@@ -180,7 +196,7 @@ namespace ssisUnitTestRunner
                 Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", vals);
                 if (outputFileName != string.Empty)
                 {
-                    StreamWriter outputFile = new StreamWriter(outputFileName, true);
+                    var outputFile = new StreamWriter(outputFileName, true);
                     outputFile.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", vals);
                     outputFile.Close();
                 }

@@ -206,6 +206,7 @@
                 <xs:element ref="FileCommand"/>
                 <xs:element ref="DirectoryCommand"/>
                 <xs:element ref="PropertyCommand"/>
+                
                 <xs:element ref="ComponentOutputCommand"/>
               </xs:choice>
               <xs:attribute name="name" type="xs:string" use="required"/>
