@@ -4,6 +4,7 @@ using System.Xml;
 using System;
 
 using SsisUnit.Enums;
+using SsisUnit.Packages;
 
 using SsisUnitBase.Enums;
 

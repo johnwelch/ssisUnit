@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel;
 
+using SsisUnit.Packages;
+
 namespace SsisUnit.Design
 {
     class PackageRefConverter : TypeConverter

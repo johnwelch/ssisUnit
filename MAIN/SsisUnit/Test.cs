@@ -25,6 +25,8 @@ namespace SsisUnit
     {
         internal Package InternalPackage;
 
+        private Context _context;
+
         public event EventHandler<CommandCompletedEventArgs> CommandCompleted;
         public event EventHandler<CommandFailedEventArgs> CommandFailed;
         public event EventHandler<CommandStartedEventArgs> CommandStarted;
@@ -34,6 +36,13 @@ namespace SsisUnit
         private string _taskName;
 
         private SecureString _securePassword;
+
+        // TODO: Add Context to all parents, children
+        internal Test(Context context, SsisTestSuite testSuite, string name, string package, string password, string task)
+            : this(testSuite, name, null, package, password, task, DTSExecResult.Success)
+        {
+            _context = context;
+        }
 
         public Test(SsisTestSuite testSuite, string name, string package, string password, string task)
             : this(testSuite, name, null, package, password, task, DTSExecResult.Success) { }
@@ -46,7 +55,7 @@ namespace SsisUnit
 
         public Test(SsisTestSuite testSuite, string name, string project, string package, string password, string task, DTSExecResult taskResult)
         {
-            Asserts = new Dictionary<string, SsisAssert>();
+            Asserts = new Asserts(_context, this);
             TestSuite = testSuite;
             Name = name;
             Task = task;
@@ -64,7 +73,7 @@ namespace SsisUnit
         public Test(SsisTestSuite testSuite, XmlNode testXml)
         {
             TaskResult = DTSExecResult.Success;
-            Asserts = new Dictionary<string, SsisAssert>();
+            Asserts = new Asserts(_context, this);
             TestSuite = testSuite;
 
             LoadFromXml(testXml);
@@ -73,7 +82,7 @@ namespace SsisUnit
         public Test(SsisTestSuite testSuite, string testXml)
         {
             TaskResult = DTSExecResult.Success;
-            Asserts = new Dictionary<string, SsisAssert>();
+            Asserts = new Asserts(_context, this);
             TestSuite = testSuite;
 
             LoadFromXml(testXml);
@@ -151,7 +160,7 @@ namespace SsisUnit
         public string ProjectLocation { get; set; }
 
         [Browsable(false)]
-        public Dictionary<string, SsisAssert> Asserts { get; private set; }
+        public Asserts Asserts { get; private set; }
 
         [Browsable(false)]
         public CommandSet TestSetup { get; private set; }
@@ -527,14 +536,14 @@ namespace SsisUnit
             return false;
         }
 
-        private Dictionary<string, SsisAssert> LoadAsserts(XmlNode asserts)
+        private Asserts LoadAsserts(XmlNode asserts)
         {
             if (asserts == null)
             {
-                return new Dictionary<string, SsisAssert>();
+                return new Asserts(_context, this);
             }
 
-            var returnValue = new Dictionary<string, SsisAssert>(asserts.ChildNodes.Count);
+            var returnValue = new Asserts(_context, this);
 
             foreach (XmlNode assert in asserts)
             {

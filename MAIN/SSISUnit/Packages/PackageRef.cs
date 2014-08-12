@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Security;
-using System.Text;
-using System.Xml;
-using System.ComponentModel;
-
-using Microsoft.SqlServer.Dts.Runtime;
-
-#if !SQL2005
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
+﻿#if !SQL2005
 #endif
 
 #if SQL2012 || SQL2014
-using Microsoft.SqlServer.Management.IntegrationServices;
 #endif
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Security;
+using System.Text;
+using System.Xml;
+
+using Microsoft.SqlServer.Dts.Runtime;
+using Microsoft.SqlServer.Management.IntegrationServices;
 
 using SsisUnit.Enums;
 
-namespace SsisUnit
+namespace SsisUnit.Packages
 {
     public class PackageRef
     {
@@ -354,6 +353,10 @@ namespace SsisUnit
         /// <summary>
         /// Returns the package associated with the <see cref="PackageRef"/>. <see cref="LoadPackage"/> should be called first for this to be populated.
         /// </summary>
-        public Package Package { get { return _package; } }
+        public Package Package
+        {
+            get { return _package; }
+            set { _package = value; }
+        }
     }
 }

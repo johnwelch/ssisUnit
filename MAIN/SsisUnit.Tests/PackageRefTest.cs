@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 
 using SsisUnit.Enums;
+using SsisUnit.Packages;
 
 namespace UTssisUnit
 {

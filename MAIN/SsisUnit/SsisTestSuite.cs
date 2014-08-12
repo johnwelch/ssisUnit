@@ -10,6 +10,7 @@ using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
 
 using SsisUnit.DynamicValues;
+using SsisUnit.Packages;
 
 using SsisUnitBase;
 using SsisUnitBase.Enums;
@@ -37,10 +38,10 @@ namespace SsisUnit
                           {
                               TestSuite = this,
                           };
-            PackageList = new Dictionary<string, PackageRef>();
+            PackageList = new PackageList();
             ConnectionList = new Dictionary<string, ConnectionRef>();
             Datasets = new Dictionary<string, Dataset>();
-            Tests = new Dictionary<string, Test>();
+            Tests = new Tests();
             TestRefs = new Dictionary<string, TestRef>();
             Statistics = new TestSuiteResults();
             ValidationMessages = string.Empty;
@@ -107,11 +108,11 @@ namespace SsisUnit
 
         public Dictionary<string, Dataset> Datasets { get; private set; }
 
-        public Dictionary<string, Test> Tests { get; private set; }
+        public Tests Tests { get; private set; }
 
         public Dictionary<string, TestRef> TestRefs { get; private set; }
 
-        public Dictionary<string, PackageRef> PackageList { get; private set; }
+        public PackageList PackageList { get; private set; }
 
         public CommandSet TestSuiteSetup { get; private set; }
 
