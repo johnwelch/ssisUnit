@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Windows.Forms;
 using SsisUnit;
 using SsisUnit.Enums;
+using SsisUnit.Packages;
 
 using SsisUnitBase;
 

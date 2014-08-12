@@ -9,6 +9,7 @@ using System.IO;
 using System.Xml;
 
 using SsisUnit.Enums;
+using SsisUnit.Packages;
 
 using SsisUnitBase;
 

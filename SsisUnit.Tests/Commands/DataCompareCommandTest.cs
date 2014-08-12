@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using SsisUnit;
 using SsisUnit.Enums;
+using SsisUnit.Packages;
 
 using SsisUnitBase.Enums;
 

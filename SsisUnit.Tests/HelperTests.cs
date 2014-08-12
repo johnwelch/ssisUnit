@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 using SsisUnit;
 using SsisUnit.Enums;
+using SsisUnit.Packages;
 
 namespace UTssisUnit
 {

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
+using Microsoft.QualityTools.Testing.Fakes;
+using Microsoft.QualityTools.Testing.Fakes.Delegates;
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,6 +12,7 @@ using System.IO;
 
 using SsisUnit.DynamicValues;
 using SsisUnit.Enums;
+using SsisUnit.Packages;
 
 using SsisUnitBase.Enums;
 
@@ -415,6 +418,40 @@ namespace UTssisUnit
 
             Assert.AreEqual(packageFile, target.PackageList["TestPkg"].PackagePath);
             Assert.AreEqual(2, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+        }
+
+        [TestMethod]
+        public void TestExecuteWithParametersShim()
+        {
+            using (ShimsContext.Create())
+            {
+                // Arrange
+                string packageFile = "TestValueIExpectToFind";
+                var target = new SsisTestSuite();
+                target.Parameters["TestParameter"] = string.Empty;
+                target.PackageList.Add("TestPkg", new PackageRef("TestPkg", "PathToChange", PackageStorageType.FileSystem));
+                target.PackageList["TestPkg"].Package = new Microsoft.SqlServer.Dts.Runtime.Fakes.ShimPackage();
+                target.DynamicValues.Add(new DynamicValue()
+                {
+                    Value = "%TestParameter%",
+                    AppliesTo = "TestSuite/PackageList[TestPkg]/PackagePath",
+                });
+
+                target.Tests.Add("Test", new Test(target, "Test", "TestPkg", null, "Package"));
+                target.Tests["Test"].Asserts.Add("Assert", new SsisAssert(target, target.Tests["Test"], "Assert", true, false));
+                target.Tests["Test"].Asserts["Assert"].Command = new TestCommand();
+
+                // Act
+                target.Execute(new Dictionary<string, string>
+                               {
+                                   { "TestParameter", packageFile }
+                               });
+
+                // Assert
+                Assert.AreEqual(packageFile, target.PackageList["TestPkg"].PackagePath);
+                Assert.AreEqual(2, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+                
+            }
         }
     }
 }
