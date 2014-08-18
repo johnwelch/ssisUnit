@@ -34,7 +34,7 @@ namespace UTssisUnit.Commands
         public void RunDataCompareCommandSetTest()
         {
             var ts = new SsisTestSuite();
-            var connRef = new ConnectionRef("TestConn", "Data Source=localhost;Initial Catalog=AdventureWorks2012;Integrated Security=SSPI", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient");
+            var connRef = new ConnectionRef("TestConn", "Data Source=localhost;Initial Catalog=ssisUnitTestDb;Integrated Security=SSPI", ConnectionRef.ConnectionTypeEnum.AdoNet, "System.Data.SqlClient");
             ts.ConnectionList.Add(connRef.ReferenceName, connRef);
             var dataset = new Dataset(
                 ts,

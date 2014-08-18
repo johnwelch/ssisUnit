@@ -63,7 +63,7 @@ namespace SsisUnit
         }
 
         #region Properties
-        
+
         [TypeConverter(typeof(StringConverter))]
         public object ExpectedResult
         {
@@ -94,12 +94,12 @@ namespace SsisUnit
 
         #endregion
 
-        public bool Execute(Package package, DtsContainer task)
-        {
-            return Execute(null, package, task);
-        }
+        //public bool Execute(Package package, DtsContainer task)
+        //{
+        //    return Execute(null, package, task);
+        //}
 
-        public bool Execute(object project, Package package, DtsContainer task)
+        public bool Execute(object project, Package package, DtsContainer task, Log assertLog)
         {
             _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertCount);
 
@@ -124,6 +124,7 @@ namespace SsisUnit
                 }
                 catch (Exception ex)
                 {
+                    assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "The {0} assert command failed with the following exception: {1}", Name, ex.Message));
                     resultMessage += string.Format(CultureInfo.CurrentCulture, "The assert command failed with the following exception: {0}", ex.Message);
                     _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
                     _testSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, _test.Name, Name, resultMessage, false, Command));
@@ -143,6 +144,7 @@ namespace SsisUnit
                 catch (ArgumentException ex)
                 {
                     returnValue = false;
+                    assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "The {0} assert expression failed to evaluate: {1}", Name, ex.Message));
                     resultMessage = string.Format(CultureInfo.CurrentCulture, "The expression failed to evaluate: {0}", ex.Message);
                 }
             }
@@ -151,11 +153,13 @@ namespace SsisUnit
 
             if (returnValue)
             {
+                assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "The {0} assert actual result ({1}) matched the expected result ({2}).", Name, validationResult, _expectedResult));
                 resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult, _expectedResult);
                 _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertPassedCount);
             }
             else
             {
+                assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "The {0} assert actual result ({1}) did not matched the expected result ({2}).", Name, validationResult, _expectedResult));
                 resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult, _expectedResult);
                 _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
             }
@@ -182,15 +186,29 @@ namespace SsisUnit
 
                 resultMessage = resultMessage.Trim() + Environment.NewLine;
 
-                resultMessage += dataCompareCommandResults.ActualDatasetErrorIndices.Count < 1 && dataCompareCommandResults.ExpectedDatasetErrorIndices.Count < 1 ?
-                    string.Format("The datasets \"{0}\" and \"{1}\" are the same.", dataCompareCommandResults.ExpectedDataset.Name, dataCompareCommandResults.ActualDataset.Name)
-                    :
-                    string.Format("{0} row{1} differ{2} between the expected \"{3}\" and actual \"{4}\" datasets.",
-                                  (dataCompareCommandResults.ExpectedDatasetErrorIndices.Count + dataCompareCommandResults.ActualDatasetErrorIndices.Count).ToString("N0"),
-                                  dataCompareCommandResults.ActualDatasetErrorIndices.Count == 1 ? string.Empty : "s",
-                                  dataCompareCommandResults.ActualDatasetErrorIndices.Count == 1 ? "s" : string.Empty,
-                                  dataCompareCommandResults.ExpectedDataset.Name,
-                                  dataCompareCommandResults.ActualDataset.Name);
+                if (dataCompareCommandResults.ActualDatasetErrorIndices.Count < 1 &&
+                    dataCompareCommandResults.ExpectedDatasetErrorIndices.Count < 1)
+                {
+                    resultMessage += string.Format("The datasets \"{0}\" and \"{1}\" are the same.",
+                        dataCompareCommandResults.ExpectedDataset.Name, dataCompareCommandResults.ActualDataset.Name);
+                    assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture,
+                        "The {0} assert datasets {1} and {2} are the same.", Name,
+                        dataCompareCommandResults.ExpectedDataset.Name, dataCompareCommandResults.ActualDataset.Name));
+                }
+                else
+                {
+                    resultMessage +=
+                        string.Format("{0} row{1} differ{2} between the expected \"{3}\" and actual \"{4}\" datasets.",
+                            (dataCompareCommandResults.ExpectedDatasetErrorIndices.Count +
+                             dataCompareCommandResults.ActualDatasetErrorIndices.Count).ToString("N0"),
+                            dataCompareCommandResults.ActualDatasetErrorIndices.Count == 1 ? string.Empty : "s",
+                            dataCompareCommandResults.ActualDatasetErrorIndices.Count == 1 ? "s" : string.Empty,
+                            dataCompareCommandResults.ExpectedDataset.Name,
+                            dataCompareCommandResults.ActualDataset.Name);
+                    assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture,
+     "The {0} asset datasets differ by {1} row(s) between the expected \"{2}\" and actual \"{3}\" datasets.", Name, (dataCompareCommandResults.ExpectedDatasetErrorIndices.Count +
+                             dataCompareCommandResults.ActualDatasetErrorIndices.Count).ToString("N0"), dataCompareCommandResults.ExpectedDataset.Name, dataCompareCommandResults.ActualDataset.Name));
+                }
 
                 _testSuite.OnRaiseAssertCompleted(new DataCompareAssertCompletedEventArgs(DateTime.Now, package.Name, task.Name, _test.Name, Name, resultMessage.Trim(), returnValue, dataCompareCommand, dataCompareCommandResults));
             }
@@ -254,7 +272,7 @@ namespace SsisUnit
             _expectedResult = assertXml.Attributes != null ? assertXml.Attributes["expectedResult"].Value : null;
             _testBefore = assertXml.Attributes != null && (assertXml.Attributes["testBefore"].Value == true.ToString().ToLower());
             XmlNode xmlNode = assertXml.Attributes != null ? assertXml.Attributes.GetNamedItem("expression") : null;
-            
+
             if (xmlNode == null)
             {
                 _expression = false;
