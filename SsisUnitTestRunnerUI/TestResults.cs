@@ -76,8 +76,8 @@ namespace ssisUnitTestRunnerUI
             Show();
 
             Test test = _testSuite.Tests[testName];
-
-            test.Execute();
+            Context context = _testSuite.CreateContext();
+            test.Execute(context);
         }
 
         void TestSuiteTestCompleted(object sender, TestCompletedEventArgs e)

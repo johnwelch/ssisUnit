@@ -34,10 +34,6 @@ namespace SsisUnit
 
         private SsisTestSuite(bool isLoadDefaultTest)
         {
-            Context = new Context
-                          {
-                              TestSuite = this,
-                          };
             PackageList = new PackageList();
             ConnectionList = new Dictionary<string, ConnectionRef>();
             Datasets = new Dictionary<string, Dataset>();
@@ -47,7 +43,7 @@ namespace SsisUnit
             ValidationMessages = string.Empty;
             SsisApplication = new Application();
             Parameters = new Dictionary<string, string>();
-            DynamicValues = new DynamicValues.DynamicValues(Context);
+            DynamicValues = new DynamicValues.DynamicValues(this);
             //Variables = new Dictionary<string, object>();
 
             
@@ -129,9 +125,6 @@ namespace SsisUnit
         public string ValidationMessages { get; set; }
 
         public DynamicValues.DynamicValues DynamicValues { get; private set; }
-        internal Context Context { get; private set; }
-
-        // TODO: Not sure this belongs here - maybe on context object?
         public Dictionary<string, string> Parameters { get; private set; }
 
         //public Dictionary<string, object> Variables { get; private set; }
@@ -292,6 +285,11 @@ namespace SsisUnit
 
         #endregion
 
+        public Context CreateContext()
+        {
+            return new Context(this);
+        }
+
         public void Save(string fileName)
         {
             File.WriteAllText(fileName, PersistToXml(), Encoding.UTF8);
@@ -422,6 +420,11 @@ namespace SsisUnit
 
         public int Execute()
         {
+            return Execute(CreateContext());
+        }
+
+        public int Execute(Context context)
+        {
             if (!Validate())
             {
                 ValidationMessages += "The test suite does not validate.";
@@ -455,7 +458,7 @@ namespace SsisUnit
                     test.TestStarted += TestStarted;
                     test.TestCompleted += TestCompleted;
 
-                    test.Execute();
+                    test.Execute(context);
                 }
                 catch (Exception ex)
                 {
@@ -470,6 +473,7 @@ namespace SsisUnit
 
             foreach (TestRef testRef in TestRefs.Values)
             {
+                // TODO: Add context
                 testRef.Execute();
             }
 

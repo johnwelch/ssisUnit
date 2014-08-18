@@ -9,12 +9,12 @@ namespace SsisUnit.DynamicValues
 {
     public class DynamicValues : Dictionary<string, DynamicValue>
     {
-        internal DynamicValues(Context context)
+        internal DynamicValues(SsisTestSuite testSuite)
         {
-            Context = context;
+            TestSuite = testSuite;
         }
 
-        private Context Context { get; set; }
+        private SsisTestSuite TestSuite { get; set; }
 
         public void Add(DynamicValue dynamicValue)
         {
@@ -23,7 +23,7 @@ namespace SsisUnit.DynamicValues
 
         public void Apply()
         {
-            foreach (var dynamicValue in this.Values)
+            foreach (var dynamicValue in Values)
             {
                 ApplyExpression(dynamicValue);
             }
@@ -31,7 +31,7 @@ namespace SsisUnit.DynamicValues
 
         private void ApplyExpression(DynamicValue dynamicValue)
         {
-            Tuple<object, PropertyInfo> targetObject = FindObject(Context.TestSuite, dynamicValue.AppliesTo);
+            Tuple<object, PropertyInfo> targetObject = FindObject(TestSuite, dynamicValue.AppliesTo);
             targetObject.Item2.SetValue(targetObject.Item1, EvaluateExpression(targetObject.Item2.PropertyType, dynamicValue.Value), null);
         }
 
@@ -43,7 +43,7 @@ namespace SsisUnit.DynamicValues
             }
 
             // Process Value
-            foreach (var parameter in Context.TestSuite.Parameters)
+            foreach (var parameter in TestSuite.Parameters)
             {
                 value = value.Replace("%" + parameter.Key + "%", parameter.Value);
             }

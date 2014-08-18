@@ -35,6 +35,8 @@ namespace SsisUnit
 
         private string _taskName;
 
+        private List<string> _packageErrors;
+
         private SecureString _securePassword;
 
         // TODO: Add Context to all parents, children
@@ -173,12 +175,23 @@ namespace SsisUnit
 
         #endregion
 
+        public bool Execute()
+        {
+            return Execute(TestSuite.CreateContext());
+        }
+
         /// <summary>
         /// Execute the setup, asserts, and teardown associated with this test.
         /// </summary>
         /// <returns>True if the test was executed with no errors, false if it encountered errors.</returns>
-        public bool Execute()
+        public bool Execute(Context context)
         {
+            _packageErrors = new List<string>();
+            var testLog = new Log();
+            testLog.ItemName = string.Format(CultureInfo.CurrentCulture, "Test: {0}", Name);
+            context.Log.Find(new Log { ItemName = "TestSuite" }).Add(testLog);
+            testLog.Messages.Add("Test Started");
+
             OnRaiseTestStarted(new TestStartedEventArgs());
 
             TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestCount);
@@ -209,17 +222,23 @@ namespace SsisUnit
                 bool setupSucceeded;
                 _taskName = taskHost.Name;
 
+                var setupLog = new Log();
+                context.Log.Find(testLog).Add(setupLog);
+                setupLog.ItemName = string.Format(CultureInfo.CurrentCulture, "{0} Setup", Name);
                 try
                 {
                     ExecuteCommandSet(TestSuite.SetupCommands, loadedProject, packageToTest, taskHost);
                     ExecuteCommandSet(TestSetup, loadedProject, packageToTest, taskHost);
 
                     setupResults = "Setup succeeded.";
+                    setupLog.Messages.Add(setupResults);
+
                     setupSucceeded = true;
                 }
                 catch (Exception ex)
                 {
                     setupResults = "Setup failed: " + ex.Message;
+                    setupLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "Setup failed: {0}", ex));
 
                     if (ex.InnerException != null)
                         setupResults += " : " + ex.InnerException;
@@ -238,20 +257,27 @@ namespace SsisUnit
 
                 string resultMessage = string.Empty;
 
+                var preExecAssertLog = new Log();
+                context.Log.Find(testLog).Add(preExecAssertLog);
+                preExecAssertLog.ItemName = string.Format(CultureInfo.CurrentCulture, "{0} Pre Execution Asserts", Name);
+
+                var execLog = new Log();
+                context.Log.Find(testLog).Add(execLog);
+                execLog.ItemName = string.Format(CultureInfo.CurrentCulture, "{0} Task Execution", Name);
+
+                var assertLog = new Log();
+                context.Log.Find(testLog).Add(assertLog);
+                assertLog.ItemName = string.Format(CultureInfo.CurrentCulture, "{0} Post Execution Asserts", Name);
+
                 try
                 {
-                    foreach (SsisAssert assert in Asserts.Values)
-                    {
-                        if (!assert.TestBefore)
-                            continue;
+                    // Pre execution Asserts
+                    ProcessAsserts(loadedProject, packageToTest, taskHost, true, preExecAssertLog);
 
-                        assert.Execute(loadedProject, packageToTest, taskHost);
-                    }
-
-                    var events = new SsisEvents();
+                    var events = new SsisEvents(_packageErrors);
 
 #if SQL2012 || SQL2014
-                    Project project = loadedProject as Project;
+                    var project = loadedProject as Project;
 
                     if (project != null)
                     {
@@ -272,16 +298,12 @@ namespace SsisUnit
 
                     if (result == TaskResult)
                     {
+                        execLog.Messages.Add(string.Format("Task Execution: Actual result ({0}) was equal to the expected result ({1}).", result, TaskResult));
                         TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), true)));
                         TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertPassedCount);
 
-                        foreach (SsisAssert assert in Asserts.Values)
-                        {
-                            if (assert.TestBefore)
-                                continue;
-
-                            assert.Execute(loadedProject, packageToTest, taskHost);
-                        }
+                        // Post Execution Asserts
+                        ProcessAsserts(loadedProject, packageToTest, taskHost, false, assertLog);
 
                         resultMessage = "All asserts were completed.";
                         returnValue = true;
@@ -290,11 +312,17 @@ namespace SsisUnit
                     }
                     else
                     {
+                        execLog.Messages.Add(string.Format("Task Execution: Actual result ({0}) was not equal to the expected result ({1}).", result, TaskResult));
+                        foreach (var packageError in _packageErrors)
+                        {
+                            execLog.Messages.Add(string.Format("Package Error: {0}.", packageError));
+                        }
                         TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), false)));
                         TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
 
                         foreach (DtsError err in packageToTest.Errors)
                         {
+                            execLog.Messages.Add(string.Format("Package Error: {0}.", err.Description));
                             TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
                             TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
                         }
@@ -357,6 +385,18 @@ namespace SsisUnit
 #endif
 
                 OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, Name, PackageLocation, _taskName, string.Format("The {0} unit test has completed.", Name), returnValue));
+            }
+        }
+
+        private void ProcessAsserts(object loadedProject, Package packageToTest, DtsContainer taskHost, bool preExecuteAsserts, Log assertLog)
+        {
+            // TODO: Log asserts
+            foreach (SsisAssert assert in Asserts.Values)
+            {
+                if (assert.TestBefore == preExecuteAsserts)
+                {
+                    assert.Execute(loadedProject, packageToTest, taskHost, assertLog);
+                }
             }
         }
 
@@ -561,9 +601,24 @@ namespace SsisUnit
 
         private class SsisEvents : DefaultEvents
         {
+            private readonly List<string> _packageErrors;
+
+            public SsisEvents(List<string> packageErrors)
+            {
+                _packageErrors = packageErrors;
+            }
             public override bool OnError(DtsObject source, int errorCode, string subComponent, string description, string helpFile, int helpContext, string idofInterfaceWithError)
             {
-                return base.OnError(source, errorCode, subComponent, description, helpFile, helpContext, idofInterfaceWithError);
+                _packageErrors.Add(
+                    string.Format(
+                    CultureInfo.CurrentCulture, 
+                    "Source: {0} | Error Code: {1} | Sub Component: {2} | Description: {3}",
+                    source, 
+                    errorCode, 
+                    subComponent, 
+                    description));
+
+                return true;
             }
         }
     }

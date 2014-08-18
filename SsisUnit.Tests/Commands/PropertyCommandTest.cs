@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -96,7 +98,9 @@ namespace UTssisUnit.Commands
             ts.Tests["Test"].Asserts.Add("TestH", AddNewAssert(ts, ssisTest, "TestH", "Test Descr", "\\Package.EventHandlers[OnError]\\Script Task.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestI", AddNewAssert(ts, ssisTest, "TestI", "Test Descr", "\\Package.Connections[test.multple.periods.in.path].Properties[Description]"));
 
-            ts.Execute();
+            var context = ts.CreateContext();
+            ts.Execute(context);
+            context.Log.ApplyTo(log => Debug.Print(log.ItemName + " :: " + string.Join(Environment.NewLine + "\t", log.Messages)));
             Assert.AreEqual(10, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
             Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
@@ -122,15 +126,15 @@ namespace UTssisUnit.Commands
             ts.PackageList.Add("PackageA", new PackageRef("PackageA", packageFilepath, PackageStorageType.FileSystem));
 
             var ssisTest = new Test(ts, "Test", "PackageA", null, "{7874CCC9-C3C6-40F5-9E8B-1DD62903D845}");
-            ssisTest.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[localhost.AdventureWorksDW2008].Properties[ConnectionString]", "Provider=SQLNCLI11.1;Data Source=localhost;Initial Catalog=AdventureWorksDW2012;Integrated Security=SSPI;Application Name=TestValue"));
+            ssisTest.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", @"\Package.Connections[localhost.AdventureWorksDW2008].Properties[ConnectionString]", "Provider=SQLNCLI11.1;Data Source=localhost;Initial Catalog=ssisUnitTestDb;Integrated Security=SSPI;Application Name=TestValue"));
 
             ts.Tests.Add("Test", ssisTest);
 
-            ts.Tests["Test"].Asserts.Add("Assert", AddNewAssert(ts, ssisTest, "Assert", "Data Source=localhost;Initial Catalog=AdventureWorksDW2012;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=TestValue;", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[ConnectionString]"));
+            ts.Tests["Test"].Asserts.Add("Assert", AddNewAssert(ts, ssisTest, "Assert", "Data Source=localhost;Initial Catalog=ssisUnitTestDb;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=TestValue;", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[ConnectionString]"));
 
             ts.Execute();
 
-            Assert.AreEqual("Data Source=localhost;Initial Catalog=AdventureWorksDW2012;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=TestValue;",
+            Assert.AreEqual("Data Source=localhost;Initial Catalog=ssisUnitTestDb;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=TestValue;",
                 ssisTest.InternalPackage.Connections["localhost.AdventureWorksDW2008"].ConnectionString);
 
             Assert.AreEqual(2, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
