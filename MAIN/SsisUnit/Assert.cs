@@ -92,6 +92,9 @@ namespace SsisUnit
             set { _expression = value; }
         }
 
+        [Browsable(false)]
+        public Func<string, string, bool> Evaluator { get; set; }
+
         #endregion
 
         //public bool Execute(Package package, DtsContainer task)
@@ -100,6 +103,11 @@ namespace SsisUnit
         //}
 
         public bool Execute(object project, Package package, DtsContainer task, Log assertLog)
+        {
+            return Execute(project, package, task, assertLog, Evaluator ?? ((s, s1) => s == s1));
+        }
+
+        public bool Execute(object project, Package package, DtsContainer task, Log assertLog, Func<string, string, bool> evaluateFunc)
         {
             _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertCount);
 
@@ -149,7 +157,7 @@ namespace SsisUnit
                 }
             }
             else
-                returnValue = _expectedResult.ToString() == validationResult.ToString();
+                returnValue = evaluateFunc(_expectedResult.ToString(), validationResult.ToString());
 
             if (returnValue)
             {

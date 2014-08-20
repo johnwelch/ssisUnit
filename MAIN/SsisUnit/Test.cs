@@ -296,40 +296,113 @@ namespace SsisUnit
 
                     TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertCount);
 
-                    if (result == TaskResult)
+                    if (TaskResult == DTSExecResult.Success)
                     {
-                        execLog.Messages.Add(string.Format("Task Execution: Actual result ({0}) was equal to the expected result ({1}).", result, TaskResult));
-                        TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), true)));
-                        TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertPassedCount);
-
-                        // Post Execution Asserts
-                        ProcessAsserts(loadedProject, packageToTest, taskHost, false, assertLog);
-
-                        resultMessage = "All asserts were completed.";
-                        returnValue = true;
-
-                        TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestPassedCount);
-                    }
-                    else
-                    {
-                        execLog.Messages.Add(string.Format("Task Execution: Actual result ({0}) was not equal to the expected result ({1}).", result, TaskResult));
-                        foreach (var packageError in _packageErrors)
+                        // User expects success
+                        if (result == TaskResult)
                         {
-                            execLog.Messages.Add(string.Format("Package Error: {0}.", packageError));
+                            if (_packageErrors.Count > 0)
+                            {
+                                TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null,
+                                    new TestResult(DateTime.Now, PackageLocation, _taskName, Name,
+                                        string.Format(
+                                            "Task Completed: There were validation or execution errors.",
+                                            result, TaskResult.ToString()), false)));
+                                TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
+                                foreach (var packageError in _packageErrors)
+                                {
+                                    execLog.Messages.Add(string.Format("Package Error: {0}.", packageError));
+                                    TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, "Task Error: " + packageError.Replace(Environment.NewLine, string.Empty), false)));
+                                }
+                            }
+                            else
+                            {
+
+                                execLog.Messages.Add(
+                                    string.Format(
+                                        "Task Execution: Actual result ({0}) was equal to the expected result ({1}).",
+                                        result, TaskResult));
+                                TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null,
+                                    new TestResult(DateTime.Now, PackageLocation, _taskName, Name,
+                                        string.Format(
+                                            "Task Completed: Actual result ({0}) was equal to the expected result ({1}).",
+                                            result, TaskResult), true)));
+                                TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertPassedCount);
+
+                                // Post Execution Asserts
+                                ProcessAsserts(loadedProject, packageToTest, taskHost, false, assertLog);
+
+                                resultMessage = "All asserts were completed.";
+                                returnValue = true;
+
+                                TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestPassedCount);
+                            }
                         }
-                        TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), false)));
-                        TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
-
-                        foreach (DtsError err in packageToTest.Errors)
+                        else
                         {
-                            execLog.Messages.Add(string.Format("Package Error: {0}.", err.Description));
-                            TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
+                            execLog.Messages.Add(string.Format("Task Execution: Actual result ({0}) was not equal to the expected result ({1}).", result, TaskResult));
+                            foreach (var packageError in _packageErrors)
+                            {
+                                execLog.Messages.Add(string.Format("Package Error: {0}.", packageError));
+                            }
+                            TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), false)));
                             TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
+
+                            foreach (DtsError err in packageToTest.Errors)
+                            {
+                                execLog.Messages.Add(string.Format("Package Error: {0}.", err.Description));
+                                TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
+                            }
+
+                            resultMessage = "The task " + _taskName + " did not execute successfully.";
+
+                            TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestFailedCount);
                         }
+                    }
+                    if (TaskResult == DTSExecResult.Failure)
+                    {
+                        // User expects failure
+                        if (result == TaskResult || _packageErrors.Count > 0)
+                        {
+                                execLog.Messages.Add(
+                                    string.Format(
+                                        "Task Execution: Actual result ({0}) was equal to the expected result ({1}).",
+                                        result, TaskResult));
+                                TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null,
+                                    new TestResult(DateTime.Now, PackageLocation, _taskName, Name,
+                                        string.Format(
+                                            "Task Completed: Actual result ({0}) was equal to the expected result ({1}).",
+                                            result, TaskResult), true)));
+                                TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertPassedCount);
 
-                        resultMessage = "The task " + _taskName + " did not execute successfully.";
+                                // Post Execution Asserts
+                                ProcessAsserts(loadedProject, packageToTest, taskHost, false, assertLog);
 
-                        TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestFailedCount);
+                                resultMessage = "All asserts were completed.";
+                                returnValue = true;
+
+                                TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestPassedCount);
+                        }
+                        else
+                        {
+                            execLog.Messages.Add(string.Format("Task Execution: Actual result ({0}) was not equal to the expected result ({1}).", result, TaskResult));
+                            foreach (var packageError in _packageErrors)
+                            {
+                                execLog.Messages.Add(string.Format("Package Error: {0}.", packageError));
+                            }
+                            TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, string.Format("Task Completed: Actual result ({0}) was not equal to the expected result ({1}).", result.ToString(), TaskResult.ToString()), false)));
+                            TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
+
+                            foreach (DtsError err in packageToTest.Errors)
+                            {
+                                execLog.Messages.Add(string.Format("Package Error: {0}.", err.Description));
+                                TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null, new TestResult(DateTime.Now, PackageLocation, _taskName, Name, "Task Error: " + err.Description.Replace(Environment.NewLine, string.Empty), false)));
+                            }
+
+                            resultMessage = "The task " + _taskName + " did not execute successfully.";
+
+                            TestSuite.Statistics.IncrementStatistic(StatisticEnum.TestFailedCount);
+                        }
                     }
                 }
                 catch (Exception ex)
