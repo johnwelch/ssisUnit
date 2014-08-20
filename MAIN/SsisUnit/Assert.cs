@@ -161,13 +161,13 @@ namespace SsisUnit
 
             if (returnValue)
             {
-                assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "The {0} assert actual result ({1}) matched the expected result ({2}).", Name, validationResult, _expectedResult));
+                assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "The {0} assert actual result matched the expected result. Actual: {1}" + Environment.NewLine + "Expected: {2}", Name, validationResult, _expectedResult));
                 resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) matched the expected result ({1}).", validationResult, _expectedResult);
                 _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertPassedCount);
             }
             else
             {
-                assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "The {0} assert actual result ({1}) did not matched the expected result ({2}).", Name, validationResult, _expectedResult));
+                assertLog.Messages.Add(string.Format(CultureInfo.CurrentCulture, "The {0} assert actual result did not match the expected result. Actual: {1}" + Environment.NewLine + "Expected: {2}", Name, validationResult, _expectedResult));
                 resultMessage += string.Format(CultureInfo.CurrentCulture, "The actual result ({0}) did not match the expected result ({1}).", validationResult, _expectedResult);
                 _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
             }
