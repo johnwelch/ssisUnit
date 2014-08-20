@@ -124,6 +124,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="TestPackages\ISPACTesting.ispac" />
+    <EmbeddedResource Include="TestPackages\BadPackage.dtsx" />
     <None Include="UT_BadTestFile.ssisUnit" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTssisUnit_Package.xml" />
     <EmbeddedResource Include="SampleSsisUnitTests\UTSsisUnit_BadData.ssisUnit" />

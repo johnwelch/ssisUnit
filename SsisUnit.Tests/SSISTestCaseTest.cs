@@ -420,6 +420,23 @@ namespace UTssisUnit
             Assert.AreEqual(2, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
         }
 
+        [TestMethod]
+        public void TestExecuteWithBadPackage()
+        {
+            string packageFile = UnpackToFile("UTssisUnit.TestPackages.BadPackage.dtsx");
+            var target = new SsisTestSuite();
+            target.PackageList.Add("TestPkg", new PackageRef("TestPkg", packageFile, PackageStorageType.FileSystem));
+
+            target.Tests.Add("Test", new Test(target, "Test", "TestPkg", null, "Package"));
+            target.Tests["Test"].Asserts.Add("Assert", new SsisAssert(target, target.Tests["Test"], "Assert", true, false));
+            target.Tests["Test"].Asserts["Assert"].Command = new TestCommand();
+
+            target.Execute();
+
+            Assert.AreEqual(0, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
+        }
+
         ////[TestMethod]
         ////public void TestExecuteWithParametersShim()
         ////{
