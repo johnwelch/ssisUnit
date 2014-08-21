@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+#if !SQL2005
 using System.Linq;
-using System.Text;
+#endif
 
 namespace SsisUnit
 {
@@ -97,9 +98,16 @@ namespace SsisUnit
 
         public IEnumerator<TreeItem<T>> GetEnumerator()
         {
-            return _children != null ?
-                _children.GetEnumerator() :
-                Enumerable.Empty<TreeItem<T>>().GetEnumerator();
+#if SQL2005
+            return _children != null
+                ? _children.GetEnumerator()
+                : new List<TreeItem<T>>.Enumerator();
+#else
+            return _children != null
+                ? _children.GetEnumerator()
+                : Enumerable.Empty<TreeItem<T>>().GetEnumerator();
+#endif
+
         }
 
         public virtual TreeItem<T> Add(T item)

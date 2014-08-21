@@ -9,7 +9,10 @@ using System.Xml.Schema;
 using Microsoft.SqlServer.Dts.Runtime;
 using System.Text;
 
+#if !SQL2005
 using SsisUnit.DynamicValues;
+#endif
+
 using SsisUnit.Packages;
 
 using SsisUnitBase;
@@ -43,7 +46,9 @@ namespace SsisUnit
             ValidationMessages = string.Empty;
             SsisApplication = new Application();
             Parameters = new Dictionary<string, string>();
+#if !SQL2005
             DynamicValues = new DynamicValues.DynamicValues(this);
+#endif
             //Variables = new Dictionary<string, object>();
 
             
@@ -124,7 +129,9 @@ namespace SsisUnit
 
         public string ValidationMessages { get; set; }
 
+#if !SQL2005
         public DynamicValues.DynamicValues DynamicValues { get; private set; }
+#endif
         public Dictionary<string, string> Parameters { get; private set; }
 
         //public Dictionary<string, object> Variables { get; private set; }
@@ -436,7 +443,9 @@ namespace SsisUnit
                 Statistics.Reset();
             }
 
+#if !SQL2005
             DynamicValues.Apply();
+#endif
 
             OnRaiseTestSuiteStarted(new TestSuiteStartedEventArgs());
 
