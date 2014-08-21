@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-using Microsoft.QualityTools.Testing.Fakes;
-using Microsoft.QualityTools.Testing.Fakes.Delegates;
 using Microsoft.SqlServer.Dts.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
