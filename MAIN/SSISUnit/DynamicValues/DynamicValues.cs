@@ -31,7 +31,7 @@ namespace SsisUnit.DynamicValues
 
         private void ApplyExpression(DynamicValue dynamicValue)
         {
-            Tuple<object, PropertyInfo> targetObject = FindObject(TestSuite, dynamicValue.AppliesTo);
+            var targetObject = FindObject(TestSuite, dynamicValue.AppliesTo);
             targetObject.Item2.SetValue(targetObject.Item1, EvaluateExpression(targetObject.Item2.PropertyType, dynamicValue.Value), null);
         }
 
@@ -93,7 +93,7 @@ namespace SsisUnit.DynamicValues
             return false;
         }
 
-        private Tuple<object, PropertyInfo> FindObject(SsisTestSuite testSuite, string appliesTo)
+        private ObjectInfo FindObject(SsisTestSuite testSuite, string appliesTo)
         {
             var queuedObjects = new Queue<string>(appliesTo.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries));
             object currentObject = testSuite;
@@ -126,7 +126,7 @@ namespace SsisUnit.DynamicValues
             // Final Item
             // TODO: Handle indexer as final property?
             var finalProperty = queuedObjects.Dequeue();
-            return new Tuple<object, PropertyInfo>(currentObject, currentObject.GetProperty(finalProperty));
+            return new ObjectInfo(currentObject, currentObject.GetProperty(finalProperty));
         }
 
         private bool SplitNode(string testValue, out string property, out string indexer)
@@ -145,5 +145,18 @@ namespace SsisUnit.DynamicValues
             property = testValue;
             return false;
         }
+
+        private class ObjectInfo
+        {
+            public object Item1 { get; private set; }
+            public PropertyInfo Item2 { get; private set; }
+
+            public ObjectInfo(object item1, PropertyInfo item2)
+            {
+                Item1 = item1;
+                Item2 = item2;
+            }
+        }
     }
+
 }

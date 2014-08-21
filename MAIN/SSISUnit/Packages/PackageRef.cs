@@ -2,6 +2,7 @@
 #endif
 
 #if SQL2012 || SQL2014
+using Microsoft.SqlServer.Management.IntegrationServices;
 #endif
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,6 @@ using System.Text;
 using System.Xml;
 
 using Microsoft.SqlServer.Dts.Runtime;
-using Microsoft.SqlServer.Management.IntegrationServices;
 
 using SsisUnit.Enums;
 

@@ -1,8 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit", "SSISUnit\SsisUnit.csproj", "{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B905B87-1991-462C-9BC0-C40A66C250FC}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SSISUnit35.vsmdi = SSISUnit35.vsmdi
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit", "SSISUnit\SsisUnit.csproj", "{39BA5FA0-7E89-49E3-8194-8EDB89CD50ED}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunnerUI", "ssisUnitTestRunnerUI\ssisUnitTestRunnerUI.csproj", "{A943E51D-D0CC-4EF1-875B-937D0B179241}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SsisUnit.Design", "SsisUnitDesign\SsisUnit.Design.csproj", "{3B38F252-0DE8-4639-9AF9-AB8B216B685C}"
@@ -35,8 +37,35 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssisUnitTestRunner", "SsisUnitTestRunner\ssisUnitTestRunner.csproj", "{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = SSISUnit1.vsmdi
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 9
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs04
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = SSISUnit\\SsisUnit.csproj
+		SccProjectName1 = SSISUnit
+		SccLocalPath1 = SSISUnit
+		SccProjectUniqueName2 = ssisUnitTestRunnerUI\\ssisUnitTestRunnerUI.csproj
+		SccProjectName2 = ssisUnitTestRunnerUI
+		SccLocalPath2 = ssisUnitTestRunnerUI
+		SccProjectUniqueName3 = SsisUnitDesign\\SsisUnit.Design.csproj
+		SccProjectName3 = SsisUnitDesign
+		SccLocalPath3 = SsisUnitDesign
+		SccProjectUniqueName4 = ssisUnitSetup\\ssisUnitSetup.vdproj
+		SccProjectName4 = ssisUnitSetup
+		SccLocalPath4 = ssisUnitSetup
+		SccProjectUniqueName5 = SsisUnit.TestComponents\\SsisUnit.TestComponents.csproj
+		SccProjectName5 = SsisUnit.TestComponents
+		SccLocalPath5 = SsisUnit.TestComponents
+		SccProjectUniqueName6 = SsisUnit.Base\\SsisUnitBase.csproj
+		SccProjectName6 = SsisUnit.Base
+		SccLocalPath6 = SsisUnit.Base
+		SccProjectUniqueName7 = SsisUnit.Tests\\UTssisUnit.csproj
+		SccProjectName7 = SsisUnit.Tests
+		SccLocalPath7 = SsisUnit.Tests
+		SccProjectUniqueName8 = SsisUnitTestRunner\\ssisUnitTestRunner.csproj
+		SccProjectName8 = SsisUnitTestRunner
+		SccLocalPath8 = SsisUnitTestRunner
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,31 +159,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs04.codeplex.com/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = SSISUnit\\SsisUnit.csproj
-		SccProjectName1 = SSISUnit
-		SccLocalPath1 = SSISUnit
-		SccProjectUniqueName2 = TestRunner\\ssisUnitTestRunner.csproj
-		SccProjectName2 = TestRunner
-		SccLocalPath2 = TestRunner
-		SccProjectUniqueName3 = UTssisUnit\\UTssisUnit.csproj
-		SccProjectName3 = UTssisUnit
-		SccLocalPath3 = UTssisUnit
-		SccProjectUniqueName4 = ssisUnitTestRunnerUI\\ssisUnitTestRunnerUI.csproj
-		SccProjectName4 = ssisUnitTestRunnerUI
-		SccLocalPath4 = ssisUnitTestRunnerUI
-		SccProjectUniqueName5 = ssisUnitVS2008\\ssisUnitVS2008.csproj
-		SccProjectName5 = ssisUnitVS2008
-		SccLocalPath5 = ssisUnitVS2008
-		SccProjectUniqueName6 = SsisUnitDesign\\SsisUnit.Design.csproj
-		SccProjectName6 = SsisUnitDesign
-		SccLocalPath6 = SsisUnitDesign
-		SccProjectUniqueName7 = ssisUnitSetup\\ssisUnitSetup.vdproj
-		SccProjectName7 = ssisUnitSetup
-		SccLocalPath7 = ssisUnitSetup
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = SSISUnit1.vsmdi
 	EndGlobalSection
 EndGlobal

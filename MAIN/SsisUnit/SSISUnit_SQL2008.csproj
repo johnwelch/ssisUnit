@@ -85,6 +85,7 @@
       <DependentUpon>app.settings</DependentUpon>
     </Compile>
     <Compile Include="Assert.cs" />
+    <Compile Include="Asserts.cs" />
     <Compile Include="CommandBase.cs" />
     <Compile Include="CommandProperty.cs" />
     <Compile Include="CommandSet.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Commands\ComponentOutputCommand.cs" />
     <Compile Include="ConnectionList.cs" />
     <Compile Include="ConnectionRef.cs" />
+    <Compile Include="Context.cs" />
     <Compile Include="DataCompareAssertCompletedEventArgs.cs" />
     <Compile Include="DataCompareCommand.cs" />
     <Compile Include="DataCompareCommandCompletedEventArgs.cs" />
@@ -99,13 +101,20 @@
     <Compile Include="Dataset.cs" />
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="DtsPackageStoreException.cs" />
+    <Compile Include="DynamicValues\DynamicValue.cs" />
+    <Compile Include="DynamicValues\DynamicValues.cs" />
     <Compile Include="Enums\PackageStorageType.cs" />
     <Compile Include="Enums\ParameterType.cs" />
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
-    <Compile Include="PackageRef.cs" />
+    <Compile Include="ObjectHelper.cs" />
+    <Compile Include="Packages\PackageList.cs" />
+    <Compile Include="Packages\PackageRef.cs" />
     <Compile Include="ParameterCommand.cs" />
     <Compile Include="ProcessCommand.cs" />
+    <Compile Include="ProjectRef.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyCommand.cs" />
     <Compile Include="ReflectorEval.cs" />
@@ -122,6 +131,7 @@
     <Compile Include="ssisUnit1.Designer.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="TestRef.cs" />
+    <Compile Include="Tests.cs" />
     <Compile Include="VariableCommand.cs" />
     <Compile Include="XmlHelper.cs" />
   </ItemGroup>
