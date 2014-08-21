@@ -92,8 +92,10 @@ namespace SsisUnit
             set { _expression = value; }
         }
 
+#if !SQL2005
         [Browsable(false)]
         public Func<string, string, bool> Evaluator { get; set; }
+#endif
 
         #endregion
 
@@ -103,11 +105,13 @@ namespace SsisUnit
         //}
 
         public bool Execute(object project, Package package, DtsContainer task, Log assertLog)
+#if !SQL2005
         {
             return Execute(project, package, task, assertLog, Evaluator ?? ((s, s1) => s == s1));
         }
 
         public bool Execute(object project, Package package, DtsContainer task, Log assertLog, Func<string, string, bool> evaluateFunc)
+#endif
         {
             _testSuite.Statistics.IncrementStatistic(StatisticEnum.AssertCount);
 
@@ -157,7 +161,11 @@ namespace SsisUnit
                 }
             }
             else
+#if !SQL2005
                 returnValue = evaluateFunc(_expectedResult.ToString(), validationResult.ToString());
+#else
+                returnValue = _expectedResult.ToString()==validationResult.ToString();
+#endif
 
             if (returnValue)
             {

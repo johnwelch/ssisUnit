@@ -144,7 +144,7 @@ namespace SsisUnit.TestComponents
             }
         }
 
-        private static string GetColumName(Dictionary<string, int> names, IDTSInputColumn100 column)
+        private static string GetColumName(Dictionary<string, int> names, IDTSInputColumn column)
         {
             int value;
             if (names.TryGetValue(column.Name, out value))

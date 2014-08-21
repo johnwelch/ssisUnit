@@ -1,16 +1,18 @@
 ﻿#if !SQL2005
+using System.Linq;
 #endif
+
 
 #if SQL2012 || SQL2014
 using Microsoft.SqlServer.Management.IntegrationServices;
 #endif
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Text;
 using System.Xml;
