@@ -8,7 +8,10 @@ using SsisUnit;
 using System;
 using System.IO;
 
+#if !SQL2005
 using SsisUnit.DynamicValues;
+#endif
+
 using SsisUnit.Enums;
 using SsisUnit.Packages;
 

@@ -346,7 +346,10 @@ namespace SsisUnit
                     }
                 }
 
-                if (packageRef == null) throw new KeyNotFoundException(string.Format(CultureInfo.CurrentCulture, "{0} was not found in the test suite package references.", packageName));
+                if (packageRef == null)
+                {
+                    throw new KeyNotFoundException(string.Format(CultureInfo.CurrentCulture, "{0} was not found in the test suite package references.", packageName));
+                }
 
                 package = packageRef.LoadPackage();
 
