@@ -187,8 +187,7 @@ namespace SsisUnit
         public bool Execute(Context context)
         {
             _packageErrors = new List<string>();
-            var testLog = new Log();
-            testLog.ItemName = string.Format(CultureInfo.CurrentCulture, "Test: {0}", Name);
+            var testLog = new Log { ItemName = string.Format(CultureInfo.CurrentCulture, "Test: {0}", this.Name) };
             context.Log.Find(new Log { ItemName = "TestSuite" }).Add(testLog);
             testLog.Messages.Add("Test Started");
 
@@ -277,19 +276,11 @@ namespace SsisUnit
                     var events = new SsisEvents(_packageErrors);
 
 #if SQL2012 || SQL2014
-                    var project = loadedProject as Project;
-
-                    if (project != null)
+                    if (packageToTest.Project != null)
                     {
-                        foreach (var connectionManagerItem in project.ConnectionManagerItems)
-                        {
-                            packageToTest.Connections.Join(connectionManagerItem.ConnectionManager);
-                        }
+                        packageToTest.Project.EnsureConnectionsAreLoaded();
                     }
-#else
-                loadedProject = null;
 #endif
-
                     taskHost.Execute(packageToTest.Connections, taskHost.Variables, events, null, null);
 
                     DTSExecResult result = taskHost.ExecutionResult;
@@ -305,9 +296,7 @@ namespace SsisUnit
                             {
                                 TestSuite.OnRaiseAssertCompleted(new AssertCompletedEventArgs(null,
                                     new TestResult(DateTime.Now, PackageLocation, _taskName, Name,
-                                        string.Format(
-                                            "Task Completed: There were validation or execution errors.",
-                                            result, TaskResult.ToString()), false)));
+                                            "Task Completed: There were validation or execution errors.", false)));
                                 TestSuite.Statistics.IncrementStatistic(StatisticEnum.AssertFailedCount);
                                 foreach (var packageError in _packageErrors)
                                 {
@@ -317,7 +306,6 @@ namespace SsisUnit
                             }
                             else
                             {
-
                                 execLog.Messages.Add(
                                     string.Format(
                                         "Task Execution: Actual result ({0}) was equal to the expected result ({1}).",
