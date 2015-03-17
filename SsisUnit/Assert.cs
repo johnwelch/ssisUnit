@@ -162,7 +162,7 @@ namespace SsisUnit
             }
             else
 #if !SQL2005
-                returnValue = evaluateFunc(_expectedResult.ToString(), validationResult.ToString());
+                returnValue = evaluateFunc(_expectedResult.ToString().ToLower(), validationResult.ToString().ToLower());
 #else
                 returnValue = _expectedResult.ToString()==validationResult.ToString();
 #endif

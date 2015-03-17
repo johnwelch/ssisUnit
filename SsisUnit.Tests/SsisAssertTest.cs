@@ -265,5 +265,38 @@ namespace UTssisUnit
             Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
             Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
+
+        [TestMethod]
+        public void TestAssertCommandBoolean()
+        {
+            var target = new SsisTestSuite();
+
+            target.PackageList.Add("UT Basic Scenario", new PackageRef("UT Basic Scenario", _dtsxFilePath, PackageStorageType.FileSystem));
+            var ssisTest = new Test(target, "Test", "UT Basic Scenario", null, "SELECT COUNT");
+            target.Tests.Add("Test", ssisTest);
+
+            var ssisAssert = new SsisAssert(target, ssisTest, "Test Count", true, false, false);
+            ssisAssert.Command = new Commands.TestCommand();
+            ssisTest.Asserts.Add("Test Count", ssisAssert);
+            
+            ssisAssert = new SsisAssert(target, ssisTest, "Test Count 1", "True", false, false);
+            ssisAssert.Command = new Commands.TestCommand();
+            ssisTest.Asserts.Add("Test Count 1", ssisAssert);
+
+            int testCount = 0;
+
+            try
+            {
+                testCount = target.Execute();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+
+            Assert.AreEqual(1, testCount);
+            Assert.AreEqual(1, target.Statistics.GetStatistic(StatisticEnum.TestPassedCount));
+            Assert.AreEqual(3, target.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+        }
     }
 }
