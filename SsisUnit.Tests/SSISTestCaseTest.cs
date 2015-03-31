@@ -21,6 +21,8 @@ using UTssisUnit.Commands;
 
 namespace UTssisUnit
 {
+    using SsisUnit.DynamicValues;
+
     [TestClass]
     public class SsisTestCaseTest : ExternalFileResourceTestBase
     {

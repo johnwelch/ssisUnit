@@ -11,7 +11,6 @@ using System.IO;
 
 using SsisUnit.Packages;
 #if SQL2014 || SQL2012
-using System.Globalization;
 using System.Linq;
 #endif
 
