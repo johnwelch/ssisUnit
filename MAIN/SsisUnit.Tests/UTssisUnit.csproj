@@ -85,6 +85,7 @@
     <Compile Include="Commands\ProcessCommandTest.cs" />
     <Compile Include="Commands\PropertyCommandTest.cs" />
     <Compile Include="Commands\SqlCommandTest.cs" />
+    <Compile Include="Commands\TestCommand.cs" />
     <Compile Include="ExternalFileResourceTestBase.cs" />
     <Compile Include="PackageRefTest.cs" />
     <Compile Include="ProgramTest.cs" />

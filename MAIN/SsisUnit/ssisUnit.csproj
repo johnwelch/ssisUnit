@@ -97,10 +97,13 @@
     <Compile Include="Dataset.cs" />
     <Compile Include="DirectoryCommand.cs" />
     <Compile Include="DtsPackageStoreException.cs" />
+    <Compile Include="DynamicValues\DynamicValue.cs" />
+    <Compile Include="DynamicValues\DynamicValues.cs" />
     <Compile Include="Enums\PackageStorageType.cs" />
     <Compile Include="Enums\ParameterType.cs" />
     <Compile Include="FileCommand.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="ObjectHelper.cs" />
     <Compile Include="Packages\PackageList.cs" />
     <Compile Include="Packages\PackageRef.cs" />
     <Compile Include="ParameterCommand.cs" />

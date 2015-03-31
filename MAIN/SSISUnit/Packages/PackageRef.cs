@@ -73,8 +73,6 @@ namespace SsisUnit.Packages
 #endif
                 }
 
-                string password;
-
                 switch (StorageType)
                 {
                     case PackageStorageType.FileSystem:
@@ -83,12 +81,12 @@ namespace SsisUnit.Packages
                             package = ssisApp.LoadPackage(ExpandedPackagePath, null);
                         else
                         {
-                            password = StoredPassword == null ? null : StoredPassword.ConvertToUnsecureString();
+                            string filePassword = StoredPassword == null ? null : StoredPassword.ConvertToUnsecureString();
 
                             // Read the project file into memory and release the file before opening the project.
                             var fileMemoryStream = new MemoryStream(File.ReadAllBytes(ExpandedProjectPath));
 
-                            _project = string.IsNullOrEmpty(password) ? Project.OpenProject(fileMemoryStream) : Project.OpenProject(fileMemoryStream, password);
+                            _project = string.IsNullOrEmpty(filePassword) ? Project.OpenProject(fileMemoryStream) : Project.OpenProject(fileMemoryStream, filePassword);
                             _project.ProtectionLevel = DTSProtectionLevel.EncryptSensitiveWithUserKey;
 
                             package = Helper.LoadPackageFromProject(_project, _project.Name, PackagePath);
@@ -105,7 +103,7 @@ namespace SsisUnit.Packages
                         break;
                     case PackageStorageType.SsisCatalog:
 #if SQL2014 || SQL2012
-                        password = StoredPassword == null ? null : StoredPassword.ConvertToUnsecureString();
+                        string catalogPassword = StoredPassword == null ? null : StoredPassword.ConvertToUnsecureString();
 
                         var sqlConnectionStringBuilder = new SqlConnectionStringBuilder { DataSource = Server, InitialCatalog = "SSISDB", IntegratedSecurity = true };
 
@@ -137,7 +135,7 @@ namespace SsisUnit.Packages
 
                         var catalogMemoryStream = new MemoryStream(projectBytes);
 
-                        _project = password == null ? Project.OpenProject(catalogMemoryStream) : Project.OpenProject(catalogMemoryStream, password);
+                        _project = catalogPassword == null ? Project.OpenProject(catalogMemoryStream) : Project.OpenProject(catalogMemoryStream, catalogPassword);
                         _project.ProtectionLevel = DTSProtectionLevel.EncryptSensitiveWithUserKey;
 
                         package = Helper.LoadPackageFromProject(_project, _project.Name, PackagePath);
