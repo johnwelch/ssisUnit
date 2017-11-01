@@ -7,22 +7,29 @@ The expression in ExpectedResult must evaluate to a boolean (True/False) value, 
 
 To use the expression in an Assert, you'd set the Expression property to true, and put the expression in the ExpectedResult property:
 
-![](Using Expressions in Asserts_SsisUnitExpressions.png)
+![Expressions In Asserts](/docs/Using%20Expressions%20in%20Asserts_SsisUnitExpressions.png)
 
 Or if you prefer the raw XML:
-      <Assert name="ExpressionTest" expectedResult="(int)result==1" testBefore="false" expression="true">
-        <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
-          SELECT 1FROM Production.Product
-        </SqlCommand>
-      </Assert>
-
+```xml
+<Assert name="ExpressionTest" expectedResult="(int)result==1" testBefore="false" expression="true">
+  <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
+    SELECT 1FROM Production.Product
+  </SqlCommand>
+</Assert>
+```
 
 ## Examples
 ### Check a result to see if it is less than 1
+```csharp
 (int)result<=1
+```
 
 ### Compare a string
+```csharp
 result.ToString()=="test"
+```
 
 ### Checking the result against the current date
+```csharp
 ((DateTime)result).Date==DateTime.Now.Date
+```
