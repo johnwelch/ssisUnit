@@ -13,7 +13,7 @@ Or if you prefer the raw XML:
 ```xml
 <Assert name="ExpressionTest" expectedResult="(int)result==1" testBefore="false" expression="true">
   <SqlCommand connectionRef="AdventureWorks" returnsValue="true">
-    SELECT 1FROM Production.Product
+    SELECT 1 FROM Production.Product
   </SqlCommand>
 </Assert>
 ```
