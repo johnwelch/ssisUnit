@@ -1,5 +1,3 @@
-_***Note: This example works with the 1.0 version, which is available on the [Releases](http://www.codeplex.com/ssisUnit/Release/ProjectReleases.aspx) page.
+The attached files contain a very simple package and unit test to illustrate the concept of ssisUnit. For a more complete sample, see [Product Sample Package and Test](/docs/Product%20Sample%20Package%20and%20Test_ProductSample.zip).
 
-The attached files contain a very simple package and unit test to illustrate the concept of ssisUnit. For a more complete sample, see [Product Sample Package and Test](Product-Sample-Package-and-Test).
-
-[Getting Started.zip](Getting Started_Getting Started.zip)
+[Getting Started](/docs/Getting%20Started_Getting%20Started.zip)
