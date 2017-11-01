@@ -10,16 +10,17 @@ The ConnectionList node contains a list of Connection nodes. Connection nodes pr
 
 
 When the unit test is run, this is the sequence of execution for each test:
-# All commands in the setup node are executed.
-# The task referenced by the test is executed. If the task reference is the package guid, the entire package is executed.
-# The command contained in the test node is executed.
-# The value returned from the command is compared to the expected value for the test.
-# All commands in the teardown node are executed.
+1. All commands in the setup node are executed.
+1. The task referenced by the test is executed. If the task reference is the package guid, the entire package is executed.
+1. The command contained in the test node is executed.
+1. The value returned from the command is compared to the expected value for the test.
+1. All commands in the teardown node are executed.
 
 This sequence repeats for each subsequent test.
 
 This is a sample of a unit test file:
 
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <TestSuite xmlns="http://tempuri.org/ssisUnit.xsd">
   <Setup>
@@ -50,3 +51,4 @@ This is a sample of a unit test file:
     <VariableCommand name="ProductRowCount" value="10"/>
   </Teardown>
 </TestSuite>
+```
