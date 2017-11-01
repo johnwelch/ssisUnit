@@ -20,9 +20,9 @@ then please take a look at [LegiTest](https://legitest.com). It supports testing
 and adds some great user experience features, along with offering other valuable tools for BI developers.
 
 ## More Info
-[Unit Test Structure](/docs/Unit%20Test%20Structure.md)
-[Getting Started](/docs/Getting%20Started.md)
-[Product Sample Package and Test](/docs/Product%20Sample%20Package%20and%20Test.md)
-[Using Expressions in Asserts](/docs/Using%20Expressions%20in%20Asserts.md)
+- [Unit Test Structure](/docs/Unit%20Test%20Structure.md)
+- [Getting Started](/docs/Getting%20Started.md)
+- [Product Sample Package and Test](/docs/Product%20Sample%20Package%20and%20Test.md)
+- [Using Expressions in Asserts](/docs/Using%20Expressions%20in%20Asserts.md)
 
 Please report issues using the Issues tracker in GitHub.
