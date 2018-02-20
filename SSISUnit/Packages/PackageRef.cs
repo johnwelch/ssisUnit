@@ -3,7 +3,7 @@ using System.Linq;
 #endif
 
 
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
 using Microsoft.SqlServer.Management.IntegrationServices;
 #endif
 
@@ -29,7 +29,7 @@ namespace SsisUnit.Packages
 
         private SecureString _password;
 
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
         private Project _project;
 #endif
 
@@ -76,7 +76,7 @@ namespace SsisUnit.Packages
                 switch (StorageType)
                 {
                     case PackageStorageType.FileSystem:
-#if SQL2014 || SQL2012
+#if SQL2017 || SQL2014 || SQL2012
                         if (string.IsNullOrWhiteSpace(ProjectPath))
                             package = ssisApp.LoadPackage(ExpandedPackagePath, null);
                         else
@@ -102,7 +102,7 @@ namespace SsisUnit.Packages
                         package = ssisApp.LoadFromDtsServer(PackagePath, Server, null);
                         break;
                     case PackageStorageType.SsisCatalog:
-#if SQL2014 || SQL2012
+#if SQL2017 || SQL2014 || SQL2012
                         string catalogPassword = StoredPassword == null ? null : StoredPassword.ConvertToUnsecureString();
 
                         var sqlConnectionStringBuilder = new SqlConnectionStringBuilder { DataSource = Server, InitialCatalog = "SSISDB", IntegratedSecurity = true };
@@ -157,6 +157,8 @@ namespace SsisUnit.Packages
                 const string SsisPackageStoreVersion = "2012";
 #elif SQL2014
                 const string SsisPackageStoreVersion = "2014";
+#elif SQL2017
+                const string SsisPackageStoreVersion = "2017";
 #endif
 
                 if (StorageType == PackageStorageType.PackageStore && dtsEx.ErrorCode == HResults.DTS_E_PACKAGENOTFOUND)
@@ -343,7 +345,7 @@ namespace SsisUnit.Packages
         /// </summary>
         public string ExpandedProjectPath { get { return Environment.ExpandEnvironmentVariables(ProjectPath ?? string.Empty); } }
 
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
         /// <summary>
         /// Returns the project associated with the <see cref="PackageRef"/>. <see cref="LoadPackage"/> should be called first for this to be populated.
         /// </summary>

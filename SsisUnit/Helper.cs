@@ -10,7 +10,7 @@ using Microsoft.SqlServer.Dts.Runtime;
 using System.IO;
 
 using SsisUnit.Packages;
-#if SQL2014 || SQL2012
+#if SQL2017 || SQL2014 || SQL2012
 using System.Linq;
 #endif
 
@@ -274,7 +274,7 @@ namespace SsisUnit
             }
             finally
             {
-#if SQL2014 || SQL2012
+#if SQL2017 || SQL2014 || SQL2012
                 var project = loadedProject as Project;
 
                 if (project != null)
@@ -352,7 +352,7 @@ namespace SsisUnit
 
                 package = packageRef.LoadPackage();
 
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
                 loadedProject = packageRef.Project;
 #endif
             }
@@ -374,7 +374,7 @@ namespace SsisUnit
             ssisProjectName = relativeProjectPath.Substring(indx + 1 > relativeProjectPath.Length ? indx : indx + 1);
         }
 
-#if SQL2014 || SQL2012
+#if SQL2017 || SQL2014 || SQL2012
         internal static Package LoadPackageFromProject(Project loadedProject, string projectName, string packageName)
         {
             PackageItem packageItem = loadedProject.PackageItems.FirstOrDefault(x => string.Compare(x.StreamName, packageName, StringComparison.InvariantCultureIgnoreCase) == 0);

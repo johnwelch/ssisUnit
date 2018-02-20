@@ -83,7 +83,7 @@ namespace SsisUnit
 
         public override object Execute(object project, Package package, DtsContainer container)
         {
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
             object returnValue;
 
             CommandParentType commandParentType = GetCommandParentType();
