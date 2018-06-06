@@ -8,7 +8,7 @@ or web applications, we felt it was important to deliver something that did not 
 ssisUnit supports task level testing in SSIS. Any control flow task can have a set of tests created around it. This level of
 granularity in testing can make testing complex packages much easier.
 
-The SsisUnit test framework has evolved into **LegiTest**. If you are looking for:
+The ssisUnit test framework has evolved into **LegiTest**. If you are looking for:
 - coverage for databases (anything with an OLE DB or ODBC provider)
 - SQL Server Analysis Services (tabular and multidimensional)
 - SQL Server Reporting Services
