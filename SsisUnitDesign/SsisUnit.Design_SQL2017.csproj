@@ -80,6 +80,13 @@
     <Compile Include="ConnectionStringBuilder.Designer.cs">
       <DependentUpon>ConnectionStringBuilder.cs</DependentUpon>
     </Compile>
+    <Compile Include="DatasetBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DatasetBrowser.Designer.cs">
+      <DependentUpon>DatasetBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DatasetBrowserEditor.cs" />
     <Compile Include="DatasetConverter.cs" />
     <Compile Include="TaskConverter.cs" />
     <Compile Include="PackageBrowserEditor.cs" />
@@ -102,6 +109,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ConnectionStringBuilder.resx">
       <DependentUpon>ConnectionStringBuilder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DatasetBrowser.resx">
+      <DependentUpon>DatasetBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PackageBrowser.resx">
       <DependentUpon>PackageBrowser.cs</DependentUpon>

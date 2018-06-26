@@ -186,7 +186,9 @@ namespace SsisUnit
 
         public bool IsResultsStored { get; set; }
 
-        [Browsable(false)]
+        //[Browsable(false)]
+        [Description("Data table result object"),
+            Editor("SsisUnit.Design.DataBrowserEditor, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public DataTable Results { get; internal set; }
 
 #if SQL2005
