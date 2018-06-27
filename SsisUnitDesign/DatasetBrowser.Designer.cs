@@ -36,8 +36,6 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtSerializedDataTable = new System.Windows.Forms.TextBox();
-            this.cbIsResutsStored = new System.Windows.Forms.ComboBox();
-            this.lblIsResultsStored = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dgvOriginalResults = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).BeginInit();
@@ -56,7 +54,6 @@
             this.dgvResults.Name = "dgvResults";
             this.dgvResults.Size = new System.Drawing.Size(643, 217);
             this.dgvResults.TabIndex = 0;
-            this.dgvResults.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvResults_CellValueChanged);
             // 
             // btnLoadDataset
             // 
@@ -136,26 +133,6 @@
             this.txtSerializedDataTable.Size = new System.Drawing.Size(637, 213);
             this.txtSerializedDataTable.TabIndex = 0;
             // 
-            // cbIsResutsStored
-            // 
-            this.cbIsResutsStored.FormattingEnabled = true;
-            this.cbIsResutsStored.Items.AddRange(new object[] {
-            "true",
-            "false"});
-            this.cbIsResutsStored.Location = new System.Drawing.Point(448, 13);
-            this.cbIsResutsStored.Name = "cbIsResutsStored";
-            this.cbIsResutsStored.Size = new System.Drawing.Size(121, 21);
-            this.cbIsResutsStored.TabIndex = 5;
-            // 
-            // lblIsResultsStored
-            // 
-            this.lblIsResultsStored.AutoSize = true;
-            this.lblIsResultsStored.Location = new System.Drawing.Point(350, 18);
-            this.lblIsResultsStored.Name = "lblIsResultsStored";
-            this.lblIsResultsStored.Size = new System.Drawing.Size(81, 13);
-            this.lblIsResultsStored.TabIndex = 6;
-            this.lblIsResultsStored.Text = "IsResultsStored";
-            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.dgvOriginalResults);
@@ -184,8 +161,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(682, 304);
-            this.Controls.Add(this.lblIsResultsStored);
-            this.Controls.Add(this.cbIsResutsStored);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -201,7 +176,6 @@
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvOriginalResults)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -214,8 +188,6 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TextBox txtSerializedDataTable;
-        private System.Windows.Forms.ComboBox cbIsResutsStored;
-        private System.Windows.Forms.Label lblIsResultsStored;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dgvOriginalResults;
     }

@@ -37,21 +37,15 @@ namespace SsisUnit.Design
 
         private void DatasetBrowser_Load(object sender, EventArgs e)
         {
-            this.Text = "Dataset: " + OpenedDataset.Name;
+            this.Text = "Dataset: " + OpenedDataset.Name + " | IsResultsStored: " + FormIsResultsStored.ToString();
 
             dgvResults.DataSource = ResultsDatatable;
-            cbIsResutsStored.SelectedValue = FormIsResultsStored.ToString();
 
             using (var stringWriter = new StringWriter())
             {
                 ResultsDatatable.WriteXml(stringWriter, XmlWriteMode.WriteSchema, true);
                 txtSerializedDataTable.Text = stringWriter.ToString();
             }
-        }
-
-        private void dgvResults_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            lblIsResultsStored.Text = lblIsResultsStored.Text + " *";
         }
     }
 }
