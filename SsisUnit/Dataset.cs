@@ -7,9 +7,11 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
+using SsisUnitBase;
+
 namespace SsisUnit
 {
-    public class Dataset
+    public class Dataset : SsisUnitBaseObject
     {
         private const string DatasetElementName = "Dataset";
         private const string ResultsDataTableName = "Results";
@@ -42,12 +44,12 @@ namespace SsisUnit
             Results = results;
         }
 
-        public void LoadFromXml(string packageXml)
+        public override void LoadFromXml(string packageXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(packageXml));
         }
 
-        private void LoadFromXml(XmlNode datasetNode)
+        public override void LoadFromXml(XmlNode datasetNode)
         {
             if (datasetNode.Name != DatasetElementName)
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Dataset"));
@@ -123,7 +125,7 @@ namespace SsisUnit
             }
         }
 
-        public string PersistToXml()
+        public override string PersistToXml()
         {
             var xml = new StringBuilder();
 
@@ -182,7 +184,7 @@ namespace SsisUnit
 #endif
         public ConnectionRef ConnectionRef { get; set; }
 
-        public string Name { get; set; }
+        //public string Name { get; set; }
 
         public bool IsResultsStored { get; set; }
 
