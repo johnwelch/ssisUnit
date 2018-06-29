@@ -54,21 +54,22 @@
             this.dgvResults.Name = "dgvResults";
             this.dgvResults.Size = new System.Drawing.Size(643, 217);
             this.dgvResults.TabIndex = 0;
+            this.dgvResults.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvResults_CellValueChanged);
             // 
             // btnLoadDataset
             // 
             this.btnLoadDataset.Location = new System.Drawing.Point(13, 13);
             this.btnLoadDataset.Name = "btnLoadDataset";
-            this.btnLoadDataset.Size = new System.Drawing.Size(101, 23);
+            this.btnLoadDataset.Size = new System.Drawing.Size(182, 23);
             this.btnLoadDataset.TabIndex = 1;
-            this.btnLoadDataset.Text = "Reload dataset";
+            this.btnLoadDataset.Text = "Refresh dataset from original";
             this.btnLoadDataset.UseVisualStyleBackColor = true;
             this.btnLoadDataset.Click += new System.EventHandler(this.btnLoadDataset_Click);
             // 
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(121, 13);
+            this.btnOK.Location = new System.Drawing.Point(201, 13);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 2;
@@ -78,7 +79,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(203, 13);
+            this.btnCancel.Location = new System.Drawing.Point(283, 13);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 3;
@@ -160,6 +161,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(682, 304);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnCancel);

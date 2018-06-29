@@ -20,17 +20,15 @@ namespace SsisUnit.Design
 
         public DataTable ResultsDatatable { get; set; }
         public DataTable OriginalResultsDatatable { get; set; }
-
         public Dataset OpenedDataset { get; set; }
-
         public bool FormIsResultsStored { get; set; }
 
         private void btnLoadDataset_Click(object sender, EventArgs e)
         {
-            dgvResults.DataSource = ResultsDatatable;
+            dgvResults.DataSource = OriginalResultsDatatable;
             using (var stringWriter = new StringWriter())
             {
-                ResultsDatatable.WriteXml(stringWriter, XmlWriteMode.WriteSchema, true);
+                OriginalResultsDatatable.WriteXml(stringWriter, XmlWriteMode.WriteSchema, true);
                 txtSerializedDataTable.Text = stringWriter.ToString();
             }
         }
@@ -40,7 +38,17 @@ namespace SsisUnit.Design
             this.Text = "Dataset: " + OpenedDataset.Name + " | IsResultsStored: " + FormIsResultsStored.ToString();
 
             dgvResults.DataSource = ResultsDatatable;
+            dgvOriginalResults.DataSource = OriginalResultsDatatable;
 
+            using (var stringWriter = new StringWriter())
+            {
+                ResultsDatatable.WriteXml(stringWriter, XmlWriteMode.WriteSchema, true);
+                txtSerializedDataTable.Text = stringWriter.ToString();
+            }
+        }
+
+        private void dgvResults_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
             using (var stringWriter = new StringWriter())
             {
                 ResultsDatatable.WriteXml(stringWriter, XmlWriteMode.WriteSchema, true);
