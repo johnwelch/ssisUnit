@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System;
 using System.Data;
 using System.Globalization;
+using System.Windows.Forms;
 
 namespace SsisUnit.Design
 {
@@ -43,9 +44,19 @@ namespace SsisUnit.Design
             dsb.ResultsDatatable = dt;
             dsb.FormIsResultsStored = isStored;
             dsb.OpenedDataset = ds;
+            dsb.OriginalResultsDatatable = dt.Copy();
 
             dsb.ShowDialog();
-            return dsb.ResultsDatatable;
+            //return dsb.ResultsDatatable;
+
+            if (dsb.DialogResult == DialogResult.OK)
+            {
+                return dsb.ResultsDatatable;
+            }
+            else
+            {
+                return dsb.OriginalResultsDatatable;
+            }
 
             //return this.EditValue(dt);
         }
@@ -56,6 +67,7 @@ namespace SsisUnit.Design
             DatasetBrowser dsb = new DatasetBrowser();
             dsb.ResultsDatatable = value;
             dsb.ShowDialog();
+
             return dsb.ResultsDatatable;
         }
     }
