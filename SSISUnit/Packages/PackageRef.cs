@@ -20,10 +20,11 @@ using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 
 using SsisUnit.Enums;
+using SsisUnitBase;
 
 namespace SsisUnit.Packages
 {
-    public class PackageRef
+    public class PackageRef : SsisUnitBaseObject
     {
         private string _storageType;
 
@@ -187,7 +188,7 @@ namespace SsisUnit.Packages
         [Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string ProjectPath { get; set; }
 
-        public string Name { get; set; }
+        //public string Name { get; set; }
 
         public PackageStorageType StorageType
         {
@@ -275,7 +276,7 @@ namespace SsisUnit.Packages
             _password = passwordString != null ? Helper.ConvertToSecureString(passwordString) : null;
         }
 
-        public string PersistToXml()
+        public override string PersistToXml()
         {
             var xml = new StringBuilder();
             var writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
@@ -302,12 +303,12 @@ namespace SsisUnit.Packages
             return xml.ToString();
         }
 
-        public void LoadFromXml(string packageXml)
+        public override void LoadFromXml(string packageXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(packageXml));
         }
 
-        public void LoadFromXml(XmlNode packageXml)
+        public override void LoadFromXml(XmlNode packageXml)
         {
             if (packageXml.Name != "Package")
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Package"));
