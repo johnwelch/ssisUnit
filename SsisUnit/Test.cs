@@ -457,7 +457,7 @@ namespace SsisUnit
                 loadedProject = null;
 #endif
 
-                OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, Name, PackageLocation, _taskName, string.Format("The {0} unit test has completed.", Name), returnValue));
+                OnRaiseTestCompleted(new TestCompletedEventArgs(DateTime.Now, PackageLocation, _taskName, Name, string.Format("The {0} unit test has completed.", Name), returnValue));
             }
         }
 
