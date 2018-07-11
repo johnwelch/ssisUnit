@@ -15,6 +15,8 @@ namespace SsisUnit.Design
             InitializeComponent();
         }
 
+        public string OriginalQuery { get; set; }
+
         public string Query
         {
             get { return txtQuery.Text; }
