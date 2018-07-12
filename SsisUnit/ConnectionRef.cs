@@ -4,9 +4,11 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 
+using SsisUnitBase;
+
 namespace SsisUnit
 {
-    public class ConnectionRef
+    public class ConnectionRef : SsisUnitBaseObject
     {
         private ConnectionTypeEnum _connectionType;
 
@@ -108,7 +110,7 @@ namespace SsisUnit
             throw new ArgumentException(string.Format("The provided connection type ({0}) is not recognized.", type));
         }
 
-        public void LoadFromXml(string connectionXml)
+        public override void LoadFromXml(string connectionXml)
         {
             XmlDocument doc = new XmlDocument();
 
@@ -122,7 +124,7 @@ namespace SsisUnit
             LoadFromXml(frag["Connection"]);
         }
 
-        public void LoadFromXml(XmlNode connectionXml)
+        public override void LoadFromXml(XmlNode connectionXml)
         {
             if (connectionXml.Name != "Connection")
             {
@@ -135,7 +137,7 @@ namespace SsisUnit
             InvariantType = connectionXml.Attributes != null && connectionXml.Attributes["invariantType"] != null ? connectionXml.Attributes["invariantType"].Value : null;
         }
 
-        public string PersistToXml()
+        public override string PersistToXml()
         {
             StringBuilder xml = new StringBuilder();
             xml.AppendFormat(@"<Connection name=""{0}"" connection=""{1}"" connectionType=""{2}"" invariantType=""{3}"" />", XmlHelper.EscapeAttributeValue(ReferenceName), XmlHelper.EscapeAttributeValue(ConnectionString), XmlHelper.EscapeAttributeValue(ConnectionType.ToString()), XmlHelper.EscapeAttributeValue(InvariantType));
