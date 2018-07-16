@@ -93,7 +93,7 @@ namespace UTssisUnit.Commands
             ts.Tests["Test"].Asserts.Add("TestA", AddNewAssert(ts, ssisTest, "TestA", "Test Descr", "\\Package\\Sequence Container\\Script Task.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestB", AddNewAssert(ts, ssisTest, "TestB", "Test Descr", "\\Package\\Sequence Container.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestC", AddNewAssert(ts, ssisTest, "TestC", "Test Descr", "\\Package\\Execute SQL Task.Properties[Description]"));
-            ts.Tests["Test"].Asserts.Add("TestD", AddNewAssert(ts, ssisTest, "TestD", "1/1/2000 12:00:00 AM", "\\Package.Properties[CreationDate]"));
+            ts.Tests["Test"].Asserts.Add("TestD", AddNewAssert(ts, ssisTest, "TestD", new DateTime(2000, 1, 1), "\\Package.Properties[CreationDate]"));
             ts.Tests["Test"].Asserts.Add("TestE", AddNewAssert(ts, ssisTest, "TestE", "Test Descr", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestF", AddNewAssert(ts, ssisTest, "TestF", false, "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]"));
             ts.Tests["Test"].Asserts.Add("TestG", AddNewAssert(ts, ssisTest, "TestG", "Test Descr", "\\Package.EventHandlers[OnError].Properties[Description]"));
