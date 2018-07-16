@@ -1,7 +1,8 @@
 ﻿using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 using Microsoft.SqlServer.Dts.Runtime;
 
-using NUnit.Framework;
+//using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using SsisUnit;
 using SsisUnit.Enums;
@@ -9,12 +10,12 @@ using SsisUnit.Packages;
 
 namespace UTssisUnit
 {
-    [TestFixture]
+    [TestClass]
     public class HelperTests : ExternalFileResourceTestBase
     {
         private const string TestPackageResource = "UTssisUnit.TestPackages.UTBasicScenario2012.dtsx";
 
-        [Test]
+        [TestMethod]
         public void FindExecutableByIdTest()
         {
             var ssisApp = new Application();
@@ -28,7 +29,7 @@ namespace UTssisUnit
             Assert.AreEqual("UT Basic Scenario", result.Name);
         }
 
-        [Test]
+        [TestMethod]
         public void FindExecutableByNameTest()
         {
             var ssisApp = new Application();
@@ -39,7 +40,7 @@ namespace UTssisUnit
             Assert.AreEqual("SELECT COUNT", result.Name);
         }
 
-        [Test]
+        [TestMethod]
         public void FindExecutableByPathTest()
         {
             var ssisApp = new Application();
@@ -58,7 +59,7 @@ namespace UTssisUnit
             Assert.AreEqual("OLE DB Source", remainingPath);
         }
 
-        [Test]
+        [TestMethod]
         public void FindComponentByPathTest()
         {
             var ssisApp = new Application();
@@ -73,7 +74,7 @@ namespace UTssisUnit
             Assert.AreEqual("OLE DB Source", result2.Name);
         }
 
-        [Test]
+        [TestMethod]
         public void FindInputByPathTest()
         {
             var ssisApp = new Application();
@@ -87,7 +88,7 @@ namespace UTssisUnit
             Assert.AreEqual("Derived Column Input", result2.Name);
         }
 
-        [Test]
+        [TestMethod]
         public void FindOutputByPathTest()
         {
             var ssisApp = new Application();
@@ -101,7 +102,7 @@ namespace UTssisUnit
             Assert.AreEqual("Derived Column Output", result2.Name);
         }
 
-        [Test]
+        [TestMethod]
         public void FindPathTest()
         {
             var ssisApp = new Application();
@@ -117,7 +118,7 @@ namespace UTssisUnit
         }
 
 
-        [Test]
+        [TestMethod]
         public void FindExecutableDoesNotExistTest()
         {
             var ssisApp = new Application();
@@ -134,7 +135,7 @@ namespace UTssisUnit
             Assert.IsNull(result);
         }
 
-        [Test]
+        [TestMethod]
         public void LoadPackageFromProjectInFileSystemTest()
         {
             var projectFile = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
@@ -150,13 +151,13 @@ namespace UTssisUnit
             Assert.IsNotNull(loadedProject);
         }
 
-        [Test]
-        [Ignore("The SSIS Catalog cannot be tested statically.")]
+        [TestMethod]
+        //[Ignore("The SSIS Catalog cannot be tested statically.")]
         public void LoadPackageFromProjectInSsisCatalogTest()
         {
             SsisTestSuite testSuite = new SsisTestSuite();
 
-            var packageRef = new PackageRef("Period.In.My.Name.1 1.dtsx", "Period.In.My.Name.1 1.dtsx", PackageStorageType.SsisCatalog, @"FL-WS-DEV-JN21\SQL2012") { ProjectPath = @"Jeremiah SSIS Deployed Projects\SSIS2012" };
+            var packageRef = new PackageRef("15_Users_Dataset.dtsx", "15_Users_Dataset.dtsx", PackageStorageType.SsisCatalog, @".\SQL2017") { ProjectPath = @"ssisUnit\ssisUnitLearning" };
 
             testSuite.PackageList.Add(packageRef.Name, packageRef);
 
