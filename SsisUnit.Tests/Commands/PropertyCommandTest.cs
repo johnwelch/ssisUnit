@@ -107,6 +107,36 @@ namespace UTssisUnit.Commands
             Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
 
+#if SQL2012 || SQL2014 || SQL2017
+        [TestMethod]
+        public void CheckProjectPathsTest()
+        {
+            string projectFilepath;
+            projectFilepath = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
+
+            var ts = new SsisTestSuite();
+            ts.PackageList.Add("PackageA", new PackageRef("ExecuteSqlTask", projectFilepath, "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem));
+
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Project\ConnectionManagers[localhost.AdventureWorks2012.conmgr].Properties[ConnectionString]", "Data Source=.;Initial Catalog=AdventureWorks2012;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;"));
+
+            Test ssisTest = new Test(ts, "Test", projectFilepath, "ExecuteSqlTask.dtsx", null, "{B56FADB6-02EF-477B-9139-987363F8BCE3}");
+
+            ts.Tests.Add("Test", ssisTest);
+
+            ts.Tests["Test"].Asserts.Add("TestA1", AddNewAssert(ts, ssisTest, "TestA1", "Data Source=.;Initial Catalog=AdventureWorks2012;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;", "\\Project\\ConnectionManagers[localhost.AdventureWorks2012.conmgr].Properties[ConnectionString]"));
+            ts.Tests["Test"].Asserts.Add("TestA2", AddNewAssert(ts, ssisTest, "TestA2", "AdventureWorks2012", "\\Project\\ConnectionManagers[localhost.AdventureWorks2012.conmgr].Properties[InitialCatalog]"));
+            ts.Tests["Test"].Asserts.Add("TestA3", AddNewAssert(ts, ssisTest, "TestA3", DTSProtectionLevel.EncryptSensitiveWithUserKey, "\\Project.Properties[ProtectionLevel]"));
+            ts.Tests["Test"].Asserts.Add("TestA4", AddNewAssert(ts, ssisTest, "TestA4", DTSTargetServerVersion.Latest, "\\Project.Properties[TargetServerVersion]"));
+            ts.Tests["Test"].Asserts.Add("TestA5", AddNewAssert(ts, ssisTest, "TestA5", "ISPACTesting", "\\Project.Properties[Name]"));
+
+            var context = ts.CreateContext();
+            ts.Execute(context);
+            context.Log.ApplyTo(log => Debug.Print(log.ItemName + " :: " + string.Join(Environment.NewLine + "\t", log.Messages)));
+            Assert.AreEqual(6, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
+        }
+#endif
+
         private SsisAssert AddNewAssert(SsisTestSuite ts, Test test, string assertName, object result, string propertyPath)
         {
             return new SsisAssert(ts, test, assertName, result, false) { Command = new PropertyCommand(ts, "Get", propertyPath, string.Empty) };
