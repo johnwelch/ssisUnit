@@ -52,6 +52,15 @@ namespace SsisUnit.Packages
             Server = string.Empty;
         }
 
+        public PackageRef(string name, string projectPath, string packageName, PackageStorageType storageType)
+        {
+            Name = name;
+            ProjectPath = projectPath;
+            PackagePath = packageName;
+            _storageType = storageType.ToString();
+            Server = string.Empty;
+        }
+
         public PackageRef(XmlNode packageRef)
         {
             LoadFromXml(packageRef);
