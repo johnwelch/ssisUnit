@@ -45,6 +45,8 @@ namespace SsisUnit.Design
                 ResultsDatatable.WriteXml(stringWriter, XmlWriteMode.WriteSchema, true);
                 txtSerializedDataTable.Text = stringWriter.ToString();
             }
+
+            propertyGrid1.SelectedObject = ResultsDatatable;
         }
 
         private void dgvResults_CellValueChanged(object sender, DataGridViewCellEventArgs e)

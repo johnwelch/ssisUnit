@@ -38,12 +38,15 @@
             this.txtSerializedDataTable = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dgvOriginalResults = new System.Windows.Forms.DataGridView();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOriginalResults)).BeginInit();
+            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // dgvResults
@@ -52,24 +55,24 @@
             this.dgvResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvResults.Location = new System.Drawing.Point(3, 3);
             this.dgvResults.Name = "dgvResults";
-            this.dgvResults.Size = new System.Drawing.Size(643, 217);
+            this.dgvResults.Size = new System.Drawing.Size(675, 424);
             this.dgvResults.TabIndex = 0;
             this.dgvResults.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvResults_CellValueChanged);
             // 
             // btnLoadDataset
             // 
-            this.btnLoadDataset.Location = new System.Drawing.Point(13, 13);
+            this.btnLoadDataset.Location = new System.Drawing.Point(13, 12);
             this.btnLoadDataset.Name = "btnLoadDataset";
-            this.btnLoadDataset.Size = new System.Drawing.Size(182, 23);
+            this.btnLoadDataset.Size = new System.Drawing.Size(239, 23);
             this.btnLoadDataset.TabIndex = 1;
-            this.btnLoadDataset.Text = "Refresh dataset from original";
+            this.btnLoadDataset.Text = "Refresh DataTable from unmodified results";
             this.btnLoadDataset.UseVisualStyleBackColor = true;
             this.btnLoadDataset.Click += new System.EventHandler(this.btnLoadDataset_Click);
             // 
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(201, 13);
+            this.btnOK.Location = new System.Drawing.Point(258, 12);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 2;
@@ -79,7 +82,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(283, 13);
+            this.btnCancel.Location = new System.Drawing.Point(339, 12);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 3;
@@ -94,10 +97,11 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(13, 43);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(657, 249);
+            this.tabControl1.Size = new System.Drawing.Size(689, 456);
             this.tabControl1.TabIndex = 4;
             // 
             // tabPage1
@@ -106,7 +110,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(649, 223);
+            this.tabPage1.Size = new System.Drawing.Size(681, 430);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Results DataTable";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -117,7 +121,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(649, 223);
+            this.tabPage2.Size = new System.Drawing.Size(651, 330);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Serialized DataTable";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -140,7 +144,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(649, 223);
+            this.tabPage3.Size = new System.Drawing.Size(651, 330);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Original (unmodified) Results";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -154,15 +158,37 @@
             this.dgvOriginalResults.Location = new System.Drawing.Point(3, 3);
             this.dgvOriginalResults.Name = "dgvOriginalResults";
             this.dgvOriginalResults.ReadOnly = true;
-            this.dgvOriginalResults.Size = new System.Drawing.Size(643, 217);
+            this.dgvOriginalResults.Size = new System.Drawing.Size(645, 324);
             this.dgvOriginalResults.TabIndex = 0;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.propertyGrid1);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(651, 330);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "DataTable metadata";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDark;
+            this.propertyGrid1.Location = new System.Drawing.Point(6, 6);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(637, 211);
+            this.propertyGrid1.TabIndex = 1;
             // 
             // DatasetBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(682, 304);
+            this.ClientSize = new System.Drawing.Size(714, 511);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -177,6 +203,7 @@
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvOriginalResults)).EndInit();
+            this.tabPage4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -192,5 +219,7 @@
         private System.Windows.Forms.TextBox txtSerializedDataTable;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dgvOriginalResults;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.PropertyGrid propertyGrid1;
     }
 }
