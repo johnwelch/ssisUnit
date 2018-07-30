@@ -289,7 +289,8 @@ namespace ssisUnitTestRunnerUI
 
         private void ShowHelp()
         {
-            System.Diagnostics.Process.Start("http://www.codeplex.com/ssisUnit");
+            //System.Diagnostics.Process.Start("http://www.codeplex.com/ssisUnit");
+            System.Diagnostics.Process.Start("https://github.com/johnwelch/ssisUnit");
         }
 
         private void runSuiteToolStripMenuItem_Click(object sender, EventArgs e)
