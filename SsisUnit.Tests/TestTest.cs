@@ -122,14 +122,20 @@ namespace UTssisUnit
         [TestMethod]
         public void TaskThatFailsTest()
         {
-            var ts = new SsisTestSuite();
-            var target = new Test(ts, "Test Task That Fails", @"C:\Projects\SsisUnit\MAIN\SsisUnit.Tests\TestPackages\UTBasicScenario2012.dtsx", null, "SELECT COUNT", DTSExecResult.Failure);
+            string packageFile = UnpackToFile("UTssisUnit.TestPackages.UTBasicScenario2012.dtsx");
+
+            SsisTestSuite ts = new SsisTestSuite();
+            ts.PackageList.Add("PackageA", new PackageRef("PackageA", packageFile, PackageStorageType.FileSystem));
+
+            Test target = new Test(ts, "Test Task That Fails", "PackageA", null, "SELECT COUNT", DTSExecResult.Failure);
             target.TestSetup.Commands.Add(new PropertyCommand(ts, "Set", "\\Package\\SELECT COUNT.Properties[SqlStatementSource]", "SELECT ''"));
             ts.Tests.Add("Test Task That Fails", target);
-            var assert = new SsisAssert(ts, target, "Test Row Count", 504, false, false);
+
+            SsisAssert assert = new SsisAssert(ts, target, "Test Row Count", 504, false, false);
             target.Asserts.Add("Test Row Count", assert);
             assert.Command = new VariableCommand(ts, VariableCommand.VariableOperation.Get, "User::ProductRowCount", null);
             ts.Execute();
+
             Assert.AreEqual(1, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
             Assert.AreEqual(1, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
