@@ -14,13 +14,13 @@ using SsisUnitBase;
 using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
 using System.ComponentModel.Composition;
 #endif
 
 namespace SsisUnit
 {
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
     [Export(typeof(ISsisTestSuite))]
 #endif
     public class SsisTestSuite : ISsisTestSuite, IValidate
@@ -93,6 +93,8 @@ namespace SsisUnit
                 return 2012;
 #elif SQL2014
                 return 2014;
+#elif SQL2017
+                return 2017;
 #endif
             }
         }
@@ -520,7 +522,7 @@ namespace SsisUnit
             Assembly asm = Assembly.GetExecutingAssembly();
 #if SQL2005
             Stream resource = asm.GetManifestResourceStream(asm.GetName().Name + "." + resourceName);
-#elif SQL2014 || SQL2008 || SQL2012
+#elif SQL2014 || SQL2008 || SQL2012 || SQL2017
             Stream resource = asm.GetManifestResourceStream("SsisUnit." + resourceName);
 #endif
             return resource;

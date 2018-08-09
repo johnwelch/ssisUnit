@@ -3,7 +3,7 @@ using System.Linq;
 #endif
 
 
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
 using Microsoft.SqlServer.Management.IntegrationServices;
 #endif
 
@@ -20,16 +20,17 @@ using System.Xml;
 using Microsoft.SqlServer.Dts.Runtime;
 
 using SsisUnit.Enums;
+using SsisUnitBase;
 
 namespace SsisUnit.Packages
 {
-    public class PackageRef
+    public class PackageRef : SsisUnitBaseObject
     {
         private string _storageType;
 
         private SecureString _password;
 
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
         private Project _project;
 #endif
 
@@ -47,6 +48,15 @@ namespace SsisUnit.Packages
         {
             Name = name;
             PackagePath = packagePath;
+            _storageType = storageType.ToString();
+            Server = string.Empty;
+        }
+
+        public PackageRef(string name, string projectPath, string packageName, PackageStorageType storageType)
+        {
+            Name = name;
+            ProjectPath = projectPath;
+            PackagePath = packageName;
             _storageType = storageType.ToString();
             Server = string.Empty;
         }
@@ -76,7 +86,7 @@ namespace SsisUnit.Packages
                 switch (StorageType)
                 {
                     case PackageStorageType.FileSystem:
-#if SQL2014 || SQL2012
+#if SQL2017 || SQL2014 || SQL2012
                         if (string.IsNullOrWhiteSpace(ProjectPath))
                             package = ssisApp.LoadPackage(ExpandedPackagePath, null);
                         else
@@ -102,7 +112,7 @@ namespace SsisUnit.Packages
                         package = ssisApp.LoadFromDtsServer(PackagePath, Server, null);
                         break;
                     case PackageStorageType.SsisCatalog:
-#if SQL2014 || SQL2012
+#if SQL2017 || SQL2014 || SQL2012
                         string catalogPassword = StoredPassword == null ? null : StoredPassword.ConvertToUnsecureString();
 
                         var sqlConnectionStringBuilder = new SqlConnectionStringBuilder { DataSource = Server, InitialCatalog = "SSISDB", IntegratedSecurity = true };
@@ -157,6 +167,8 @@ namespace SsisUnit.Packages
                 const string SsisPackageStoreVersion = "2012";
 #elif SQL2014
                 const string SsisPackageStoreVersion = "2014";
+#elif SQL2017
+                const string SsisPackageStoreVersion = "2017";
 #endif
 
                 if (StorageType == PackageStorageType.PackageStore && dtsEx.ErrorCode == HResults.DTS_E_PACKAGENOTFOUND)
@@ -185,7 +197,7 @@ namespace SsisUnit.Packages
         [Editor("System.Windows.Forms.Design.FileNameEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
         public string ProjectPath { get; set; }
 
-        public string Name { get; set; }
+        //public string Name { get; set; }
 
         public PackageStorageType StorageType
         {
@@ -273,7 +285,7 @@ namespace SsisUnit.Packages
             _password = passwordString != null ? Helper.ConvertToSecureString(passwordString) : null;
         }
 
-        public string PersistToXml()
+        public override string PersistToXml()
         {
             var xml = new StringBuilder();
             var writerSettings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, OmitXmlDeclaration = true };
@@ -300,12 +312,12 @@ namespace SsisUnit.Packages
             return xml.ToString();
         }
 
-        public void LoadFromXml(string packageXml)
+        public override void LoadFromXml(string packageXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(packageXml));
         }
 
-        public void LoadFromXml(XmlNode packageXml)
+        public override void LoadFromXml(XmlNode packageXml)
         {
             if (packageXml.Name != "Package")
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Package"));
@@ -343,7 +355,7 @@ namespace SsisUnit.Packages
         /// </summary>
         public string ExpandedProjectPath { get { return Environment.ExpandEnvironmentVariables(ProjectPath ?? string.Empty); } }
 
-#if SQL2012 || SQL2014
+#if SQL2012 || SQL2014 || SQL2017
         /// <summary>
         /// Returns the project associated with the <see cref="PackageRef"/>. <see cref="LoadPackage"/> should be called first for this to be populated.
         /// </summary>

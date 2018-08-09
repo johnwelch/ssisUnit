@@ -67,6 +67,8 @@ namespace UTssisUnit.Commands
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
 #elif SQL2014 || SQL2012
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2012.dtsx");
+#elif SQL2017
+            packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2017.dtsx");
 #endif
 
             var ts = new SsisTestSuite();
@@ -91,7 +93,7 @@ namespace UTssisUnit.Commands
             ts.Tests["Test"].Asserts.Add("TestA", AddNewAssert(ts, ssisTest, "TestA", "Test Descr", "\\Package\\Sequence Container\\Script Task.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestB", AddNewAssert(ts, ssisTest, "TestB", "Test Descr", "\\Package\\Sequence Container.Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestC", AddNewAssert(ts, ssisTest, "TestC", "Test Descr", "\\Package\\Execute SQL Task.Properties[Description]"));
-            ts.Tests["Test"].Asserts.Add("TestD", AddNewAssert(ts, ssisTest, "TestD", "1/1/2000 12:00:00 AM", "\\Package.Properties[CreationDate]"));
+            ts.Tests["Test"].Asserts.Add("TestD", AddNewAssert(ts, ssisTest, "TestD", new DateTime(2000, 1, 1), "\\Package.Properties[CreationDate]"));
             ts.Tests["Test"].Asserts.Add("TestE", AddNewAssert(ts, ssisTest, "TestE", "Test Descr", "\\Package.Connections[localhost.AdventureWorksDW2008].Properties[Description]"));
             ts.Tests["Test"].Asserts.Add("TestF", AddNewAssert(ts, ssisTest, "TestF", false, "\\Package.EventHandlers[OnError].Variables[System::Cancel].Properties[Value]"));
             ts.Tests["Test"].Asserts.Add("TestG", AddNewAssert(ts, ssisTest, "TestG", "Test Descr", "\\Package.EventHandlers[OnError].Properties[Description]"));
@@ -104,6 +106,36 @@ namespace UTssisUnit.Commands
             Assert.AreEqual(10, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
             Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
         }
+
+#if SQL2012 || SQL2014 || SQL2017
+        [TestMethod]
+        public void CheckProjectPathsTest()
+        {
+            string projectFilepath;
+            projectFilepath = UnpackToFile("UTssisUnit.TestPackages.ISPACTesting.ispac", true);
+
+            var ts = new SsisTestSuite();
+            ts.PackageList.Add("PackageA", new PackageRef("ExecuteSqlTask", projectFilepath, "ExecuteSqlTask.dtsx", PackageStorageType.FileSystem));
+
+            ts.SetupCommands.Commands.Add(new PropertyCommand(ts, "Set", @"\Project\ConnectionManagers[localhost.AdventureWorks2012.conmgr].Properties[ConnectionString]", "Data Source=.;Initial Catalog=AdventureWorks2012;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;"));
+
+            Test ssisTest = new Test(ts, "Test", projectFilepath, "ExecuteSqlTask.dtsx", null, "{B56FADB6-02EF-477B-9139-987363F8BCE3}");
+
+            ts.Tests.Add("Test", ssisTest);
+
+            ts.Tests["Test"].Asserts.Add("TestA1", AddNewAssert(ts, ssisTest, "TestA1", "Data Source=.;Initial Catalog=AdventureWorks2012;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;", "\\Project\\ConnectionManagers[localhost.AdventureWorks2012.conmgr].Properties[ConnectionString]"));
+            ts.Tests["Test"].Asserts.Add("TestA2", AddNewAssert(ts, ssisTest, "TestA2", "AdventureWorks2012", "\\Project\\ConnectionManagers[localhost.AdventureWorks2012.conmgr].Properties[InitialCatalog]"));
+            ts.Tests["Test"].Asserts.Add("TestA3", AddNewAssert(ts, ssisTest, "TestA3", DTSProtectionLevel.EncryptSensitiveWithUserKey, "\\Project.Properties[ProtectionLevel]"));
+            ts.Tests["Test"].Asserts.Add("TestA4", AddNewAssert(ts, ssisTest, "TestA4", DTSTargetServerVersion.Latest, "\\Project.Properties[TargetServerVersion]"));
+            ts.Tests["Test"].Asserts.Add("TestA5", AddNewAssert(ts, ssisTest, "TestA5", "ISPACTesting", "\\Project.Properties[Name]"));
+
+            var context = ts.CreateContext();
+            ts.Execute(context);
+            context.Log.ApplyTo(log => Debug.Print(log.ItemName + " :: " + string.Join(Environment.NewLine + "\t", log.Messages)));
+            Assert.AreEqual(6, ts.Statistics.GetStatistic(StatisticEnum.AssertPassedCount));
+            Assert.AreEqual(0, ts.Statistics.GetStatistic(StatisticEnum.AssertFailedCount));
+        }
+#endif
 
         private SsisAssert AddNewAssert(SsisTestSuite ts, Test test, string assertName, object result, string propertyPath)
         {
@@ -120,6 +152,8 @@ namespace UTssisUnit.Commands
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest.dtsx");
 #elif SQL2014 || SQL2012
             packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2012.dtsx");
+#elif SQL2017
+            packageFilepath = UnpackToFile("UTssisUnit.TestPackages.PropertyTest2017.dtsx");
 #endif
 
             var ts = new SsisTestSuite();

@@ -8,7 +8,7 @@ using Microsoft.SqlServer.Dts.Runtime;
 
 using SsisUnit.TestComponents;
 
-#if SQL2014 || SQL2012 || SQL2008
+#if SQL2017 || SQL2014 || SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 using IDTSInput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSInput100;
 #elif SQL2005

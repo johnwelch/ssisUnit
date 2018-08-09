@@ -231,6 +231,8 @@ namespace ssisUnitTestRunnerUI
             _testSuite.TestCompleted -= _testCompleted;
             _testSuite.CommandCompleted -= _commandCompleted;
             _testSuite.CommandFailed -= _commandFailed;
+            _testSuite.TestSuiteCompleted -= _testSuiteCompleted;
+            _testSuite.TestSuiteFailed -= _testSuiteFailed;
         }
 
         private void RefreshToolStripMenuItemClick(object sender, EventArgs e)

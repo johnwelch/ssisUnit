@@ -7,9 +7,11 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
+using SsisUnitBase;
+
 namespace SsisUnit
 {
-    public class Dataset
+    public class Dataset : SsisUnitBaseObject
     {
         private const string DatasetElementName = "Dataset";
         private const string ResultsDataTableName = "Results";
@@ -42,12 +44,12 @@ namespace SsisUnit
             Results = results;
         }
 
-        public void LoadFromXml(string packageXml)
+        public override void LoadFromXml(string packageXml)
         {
             LoadFromXml(Helper.GetXmlNodeFromString(packageXml));
         }
 
-        private void LoadFromXml(XmlNode datasetNode)
+        public override void LoadFromXml(XmlNode datasetNode)
         {
             if (datasetNode.Name != DatasetElementName)
                 throw new ArgumentException(string.Format("The Xml does not contain the correct type ({0}).", "Dataset"));
@@ -123,7 +125,7 @@ namespace SsisUnit
             }
         }
 
-        public string PersistToXml()
+        public override string PersistToXml()
         {
             var xml = new StringBuilder();
 
@@ -176,15 +178,21 @@ namespace SsisUnit
 #elif SQL2014
         [Description("The Connection that the SQLCommand will use"),
          TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+#elif SQL2017
+        [Description("The Connection that the SQLCommand will use"),
+         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
 #endif
         public ConnectionRef ConnectionRef { get; set; }
 
-        public string Name { get; set; }
+        //public string Name { get; set; }
 
         public bool IsResultsStored { get; set; }
 
-        [Browsable(false)]
-        public DataTable Results { get; internal set; }
+        //[Browsable(false)]
+        [Description("Data table result object"),
+            TypeConverter("SsisUnit.Design.DataTableConverter, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab"),
+            Editor("SsisUnit.Design.DatasetBrowserEditor, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+        public DataTable Results { get; set; }
 
 #if SQL2005
         [Description("The SQL statement to be executed by the SQLCommand"),
@@ -198,6 +206,10 @@ namespace SsisUnit
 #elif SQL2014
         [Description("The SQL statement to be executed by the SQLCommand"),
          Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#elif SQL2017
+        [Description("The SQL statement to be executed by the SQLCommand"),
+         Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+
 #endif
         public string Query { get; set; }
 

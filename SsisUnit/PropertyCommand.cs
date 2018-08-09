@@ -92,7 +92,25 @@ namespace SsisUnit
 
         public override object Execute(object project, Package package, DtsContainer container)
         {
-            return Execute(package, container);
+            //return Execute(package, container);
+            CommandParentType commandParentType = GetCommandParentType();
+
+            try
+            {
+                OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null, commandParentType));
+
+                object returnValue = LocatePropertyValue(project, package, PropertyPath, Operation, Value);
+
+                OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName), commandParentType));
+
+                return returnValue;
+            }
+            catch (Exception ex)
+            {
+                OnCommandFailed(new CommandFailedEventArgs(DateTime.Now, CommandName, null, null, ex.Message, commandParentType));
+
+                throw;
+            }
         }
 
         public override object Execute(Package package, DtsContainer container)
@@ -103,7 +121,7 @@ namespace SsisUnit
             {
                 OnCommandStarted(new CommandStartedEventArgs(DateTime.Now, CommandName, null, null, commandParentType));
 
-                object returnValue = LocatePropertyValue(package, PropertyPath, Operation, Value);
+                object returnValue = LocatePropertyValue(null, package, PropertyPath, Operation, Value);
 
                 OnCommandCompleted(new CommandCompletedEventArgs(DateTime.Now, CommandName, null, null, string.Format("The {0} command has completed.", CommandName), commandParentType));
 
@@ -157,7 +175,7 @@ namespace SsisUnit
             Set = 1
         }
 
-        private object LocatePropertyValue(DtsObject dtsObject, string propertyPath, PropertyOperation operation, object value)
+        private object LocatePropertyValue(object project, DtsObject dtsObject, string propertyPath, PropertyOperation operation, object value)
         {
             propertyPath = propertyPath.Replace("\\", ".");
             object returnValue = null;
@@ -182,9 +200,28 @@ namespace SsisUnit
                     restOfString = propertyPath.Substring(delimiterIndex + 1, propertyPath.Length - (delimiterIndex + 1));
                     if (firstPart.Length == 0)
                     {
-                        return LocatePropertyValue(dtsObject, restOfString, operation, value);
+                        return LocatePropertyValue(project, dtsObject, restOfString, operation, value);
                     }
                 }
+            }
+
+            //\Project\ConnectionManagers[localhost.AdventureWorks2012.conmgr].Properties[ConnectionString]
+            //\Project\Properties[ProtectionLevel]
+            if (firstPart.ToUpper().StartsWith("PROJECT"))
+            {
+                if(!(project is Project))
+                {
+                    throw new ArgumentException("The initial object must be of type Project.", "project");
+                }
+                return LocatePropertyValue(project, (DtsObject)project, restOfString, operation, value);
+            }
+
+            //\Project\ConnectionManagers[localhost.AdventureWorks2012.conmgr].Properties[ConnectionString]
+            if (firstPart.ToUpper().StartsWith("CONNECTIONMANAGERS"))
+            {
+                string connIndex = GetSubStringBetween(firstPart, "[", "]");
+                ConnectionManager cm = (((Project)project).ConnectionManagerItems[connIndex]).ConnectionManager;
+                return LocatePropertyValue(project, cm, restOfString, operation, value);
             }
 
             if (firstPart.ToUpper().StartsWith("PACKAGE"))
@@ -193,9 +230,9 @@ namespace SsisUnit
                 {
                     throw new ArgumentException("The initial object must be of type Package.", "dtsObject");
                 }
-                return LocatePropertyValue(dtsObject, restOfString, operation, value);
+                return LocatePropertyValue(project, dtsObject, restOfString, operation, value);
             }
-            
+
             if (firstPart.ToUpper().StartsWith("VARIABLES"))
             {
                 if (!(dtsObject is DtsContainer))
@@ -207,7 +244,7 @@ namespace SsisUnit
 
                 DtsContainer cont = (DtsContainer)dtsObject;
                 cont.VariableDispenser.LockOneForRead(varName, ref vars);
-                returnValue = LocatePropertyValue(vars[varName], restOfString, operation, value);
+                returnValue = LocatePropertyValue(project, vars[varName], restOfString, operation, value);
                 vars.Unlock();
                 return returnValue;
             }
@@ -215,14 +252,27 @@ namespace SsisUnit
             // \Package.Properties[CreationDate]
             if (firstPart.ToUpper().StartsWith("PROPERTIES"))
             {
-                if (!(dtsObject is IDTSPropertiesProvider))
-                {
-                    throw new ArgumentException("Object must be of type IDTSPropertiesProvider to reference properties.", "dtsObject");
-                }
-                IDTSPropertiesProvider propProv = (IDTSPropertiesProvider)dtsObject;
                 string propIndex = GetSubStringBetween(firstPart, "[", "]");
 
+                if (!(dtsObject is IDTSPropertiesProvider))
+                {
+                    if (!(dtsObject is Project))
+                    {
+                        throw new ArgumentException("Object must be of type Project or IDTSPropertiesProvider to reference properties.", "dtsObject");
+                    }
+                    else
+                    {
+                        if (operation == PropertyOperation.Set)
+                        {
+                            dtsObject.GetType().GetProperty(propIndex).SetValue(dtsObject, Convert.ChangeType(value, dtsObject.GetType()));
+                        }
+                        return dtsObject.GetType().GetProperty(propIndex).GetValue(dtsObject, null);
+                    }   
+                }
+                IDTSPropertiesProvider propProv = (IDTSPropertiesProvider)dtsObject;
+
                 DtsProperty prop = propProv.Properties[propIndex];
+
                 if (operation == PropertyOperation.Set)
                 {
                     if (dtsObject is Variable)
@@ -247,7 +297,7 @@ namespace SsisUnit
                 }
                 string connIndex = GetSubStringBetween(firstPart, "[", "]");
                 Package pkg = (Package)dtsObject;
-                return LocatePropertyValue(pkg.Connections[connIndex], restOfString, operation, value);
+                return LocatePropertyValue(project, pkg.Connections[connIndex], restOfString, operation, value);
             }
 
             // \Package.EventHandlers[OnError].Properties[Description]
@@ -259,7 +309,7 @@ namespace SsisUnit
                 }
                 EventsProvider eventProvider = (EventsProvider)dtsObject;
                 string eventIndex = GetSubStringBetween(firstPart, "[", "]");
-                return LocatePropertyValue(eventProvider.EventHandlers[eventIndex], restOfString, operation, value);
+                return LocatePropertyValue(project, eventProvider.EventHandlers[eventIndex], restOfString, operation, value);
             }
 
             // First Part of string is not one of the hard-coded values - it's either a task or container
@@ -271,7 +321,7 @@ namespace SsisUnit
             IDTSSequence seq = (IDTSSequence)dtsObject;
             if (seq.Executables.Contains(firstPart))
             {
-                return LocatePropertyValue(seq.Executables[firstPart], restOfString, operation, value);
+                return LocatePropertyValue(project, seq.Executables[firstPart], restOfString, operation, value);
             }
 
             // \Package\Sequence Container\Script Task.Properties[Description]
@@ -281,7 +331,7 @@ namespace SsisUnit
             // \Package.EventHandlers[OnError]\Script Task.Properties[Description]
             if (restOfString.Length > 0)
             {
-                returnValue = LocatePropertyValue(dtsObject, restOfString, operation, value);
+                returnValue = LocatePropertyValue(project, dtsObject, restOfString, operation, value);
             }
 
             return returnValue;

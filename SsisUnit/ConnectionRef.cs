@@ -4,9 +4,11 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 
+using SsisUnitBase;
+
 namespace SsisUnit
 {
-    public class ConnectionRef
+    public class ConnectionRef : SsisUnitBaseObject
     {
         private ConnectionTypeEnum _connectionType;
 
@@ -43,6 +45,10 @@ namespace SsisUnit
 #elif SQL2014
         [Description("Connection String used by SQL Commands or the name of a ConnectionManager in the package"),
          Editor("SsisUnit.Design.ConnectionStringEditor, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"),
+         ReadOnly(false)]
+#elif SQL2017
+        [Description("Connection String used by SQL Commands or the name of a ConnectionManager in the package"),
+         Editor("SsisUnit.Design.ConnectionStringEditor, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"),
          ReadOnly(false)]
 #endif
 
@@ -83,6 +89,10 @@ namespace SsisUnit
         [Description("The invariant name of the ADO.NET provider to use when ConnectionType == AdoNet."),
          TypeConverter("SsisUnit.Design.ConnectionRefInvariantTypeConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab"),
          ReadOnly(false)]
+#elif SQL2017
+        [Description("The invariant name of the ADO.NET provider to use when ConnectionType == AdoNet."),
+         TypeConverter("SsisUnit.Design.ConnectionRefInvariantTypeConverter, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab"),
+         ReadOnly(false)]
 #endif
         public string InvariantType { get; set; }
 
@@ -100,7 +110,7 @@ namespace SsisUnit
             throw new ArgumentException(string.Format("The provided connection type ({0}) is not recognized.", type));
         }
 
-        public void LoadFromXml(string connectionXml)
+        public override void LoadFromXml(string connectionXml)
         {
             XmlDocument doc = new XmlDocument();
 
@@ -114,7 +124,7 @@ namespace SsisUnit
             LoadFromXml(frag["Connection"]);
         }
 
-        public void LoadFromXml(XmlNode connectionXml)
+        public override void LoadFromXml(XmlNode connectionXml)
         {
             if (connectionXml.Name != "Connection")
             {
@@ -127,7 +137,7 @@ namespace SsisUnit
             InvariantType = connectionXml.Attributes != null && connectionXml.Attributes["invariantType"] != null ? connectionXml.Attributes["invariantType"].Value : null;
         }
 
-        public string PersistToXml()
+        public override string PersistToXml()
         {
             StringBuilder xml = new StringBuilder();
             xml.AppendFormat(@"<Connection name=""{0}"" connection=""{1}"" connectionType=""{2}"" invariantType=""{3}"" />", XmlHelper.EscapeAttributeValue(ReferenceName), XmlHelper.EscapeAttributeValue(ConnectionString), XmlHelper.EscapeAttributeValue(ConnectionType.ToString()), XmlHelper.EscapeAttributeValue(InvariantType));

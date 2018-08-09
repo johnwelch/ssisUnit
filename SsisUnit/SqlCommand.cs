@@ -9,7 +9,7 @@ using Microsoft.SqlServer.Dts.Runtime;
 using SsisUnitBase.Enums;
 using SsisUnitBase.EventArgs;
 
-#if SQL2014 || SQL2012 || SQL2008
+#if SQL2017 || SQL2014 || SQL2012 || SQL2008
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData100;
 #elif SQL2005
 using IDTSComponentMetaData = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSComponentMetaData90;
@@ -205,6 +205,10 @@ namespace SsisUnit
 #elif SQL2014
         [Description("The Connection that the SQLCommand will use"),
          TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+#elif SQL2017
+        [Description("The Connection that the SQLCommand will use"),
+         TypeConverter("SsisUnit.Design.ConnectionRefConverter, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab")]
+
 #endif
         public ConnectionRef ConnectionReference
         {
@@ -239,6 +243,9 @@ namespace SsisUnit
 #elif SQL2014
         [Description("The SQL statement to be executed by the SQLCommand"),
          Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design.2014, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+#elif SQL2017
+        [Description("The SQL statement to be executed by the SQLCommand"),
+         Editor("SsisUnit.Design.QueryEditor, SsisUnit.Design.2017, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6fbed22cbef36cab", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
 #endif
         // ReSharper disable InconsistentNaming
         public string SQLStatement

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing.Design;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace SsisUnit.Design
 {
@@ -31,8 +32,18 @@ namespace SsisUnit.Design
         {
             QueryBuilder builder = new QueryBuilder();
             builder.Query = value;
+            builder.OriginalQuery = value;
             builder.ShowDialog();
-            return builder.Query;
+
+            if (builder.DialogResult == DialogResult.OK)
+            {
+                return builder.Query;
+            }
+            else
+            {
+                return builder.OriginalQuery;
+            }
+            //return builder.Query;
         }
     }
 }

@@ -142,6 +142,7 @@
             // propertyGrid1
             // 
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDark;
             this.propertyGrid1.Location = new System.Drawing.Point(3, 3);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(392, 407);
@@ -292,65 +293,65 @@
             // addAssertToolStripMenuItem
             // 
             this.addAssertToolStripMenuItem.Name = "addAssertToolStripMenuItem";
-            this.addAssertToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.addAssertToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.addAssertToolStripMenuItem.Text = "Add &Assert";
             this.addAssertToolStripMenuItem.Click += new System.EventHandler(this.addAssertToolStripMenuItem_Click);
             // 
             // addCommandToolStripMenuItem
             // 
             this.addCommandToolStripMenuItem.Name = "addCommandToolStripMenuItem";
-            this.addCommandToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.addCommandToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.addCommandToolStripMenuItem.Text = "Add &Command";
             // 
             // addTestToolStripMenuItem
             // 
             this.addTestToolStripMenuItem.Name = "addTestToolStripMenuItem";
-            this.addTestToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.addTestToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.addTestToolStripMenuItem.Text = "Add &Test";
             this.addTestToolStripMenuItem.Click += new System.EventHandler(this.addTestToolStripMenuItem_Click);
             // 
             // addConnectionRefToolStripMenuItem
             // 
             this.addConnectionRefToolStripMenuItem.Name = "addConnectionRefToolStripMenuItem";
-            this.addConnectionRefToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.addConnectionRefToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.addConnectionRefToolStripMenuItem.Text = "Add Connection &Ref";
             this.addConnectionRefToolStripMenuItem.Click += new System.EventHandler(this.addConnectionRefToolStripMenuItem_Click);
             // 
             // addPackageRefToolStripMenuItem
             // 
             this.addPackageRefToolStripMenuItem.Name = "addPackageRefToolStripMenuItem";
-            this.addPackageRefToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.addPackageRefToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.addPackageRefToolStripMenuItem.Text = "Add Pa&ckage Ref";
             this.addPackageRefToolStripMenuItem.Click += new System.EventHandler(this.addPackageRefToolStripMenuItem_Click);
             // 
             // addDatasetToolStripMenuItem
             // 
             this.addDatasetToolStripMenuItem.Name = "addDatasetToolStripMenuItem";
-            this.addDatasetToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.addDatasetToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.addDatasetToolStripMenuItem.Text = "Add Dataset";
             this.addDatasetToolStripMenuItem.Click += new System.EventHandler(this.addDatasetToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(204, 6);
             // 
             // addTestFromPackageToolStripMenuItem
             // 
             this.addTestFromPackageToolStripMenuItem.Name = "addTestFromPackageToolStripMenuItem";
-            this.addTestFromPackageToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.addTestFromPackageToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.addTestFromPackageToolStripMenuItem.Text = "Add Test From Package...";
             this.addTestFromPackageToolStripMenuItem.Click += new System.EventHandler(this.addTestFromPackageToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(204, 6);
             // 
             // deleteSelectedItemToolStripMenuItem
             // 
             this.deleteSelectedItemToolStripMenuItem.Name = "deleteSelectedItemToolStripMenuItem";
-            this.deleteSelectedItemToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.deleteSelectedItemToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.deleteSelectedItemToolStripMenuItem.Text = "&Delete Selected Item";
             this.deleteSelectedItemToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedItemToolStripMenuItem_Click);
             // 
@@ -360,21 +361,21 @@
             this.runSuiteToolStripMenuItem,
             this.runSelectedTestToolStripMenuItem});
             this.testSuiteToolStripMenuItem.Name = "testSuiteToolStripMenuItem";
-            this.testSuiteToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+            this.testSuiteToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
             this.testSuiteToolStripMenuItem.Text = "&Test Suite";
             // 
             // runSuiteToolStripMenuItem
             // 
             this.runSuiteToolStripMenuItem.Name = "runSuiteToolStripMenuItem";
             this.runSuiteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.runSuiteToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.runSuiteToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.runSuiteToolStripMenuItem.Text = "Run Suite";
             this.runSuiteToolStripMenuItem.Click += new System.EventHandler(this.runSuiteToolStripMenuItem_Click);
             // 
             // runSelectedTestToolStripMenuItem
             // 
             this.runSelectedTestToolStripMenuItem.Name = "runSelectedTestToolStripMenuItem";
-            this.runSelectedTestToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.runSelectedTestToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.runSelectedTestToolStripMenuItem.Text = "Run Selected Test";
             this.runSelectedTestToolStripMenuItem.Click += new System.EventHandler(this.runSelectedTestToolStripMenuItem_Click);
             // 
@@ -389,7 +390,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -428,7 +429,7 @@
             this.runTestSuiteTtoolStripButton});
             this.toolStrip1.Location = new System.Drawing.Point(3, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(239, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(110, 25);
             this.toolStrip1.TabIndex = 7;
             // 
             // newToolStripButton

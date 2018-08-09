@@ -56,6 +56,8 @@ namespace ssisUnitTestRunnerUI
             titleText += " (SSIS 2012)";
 #elif SQL2014
             titleText += " (SSIS 2014)";
+#elif SQL2017
+            titleText += " (SSIS 2017)";
 #elif SQL2008
             titleText += " (SSIS 2008)";
 #elif SQL2005
@@ -174,6 +176,8 @@ namespace ssisUnitTestRunnerUI
             titleText += " (SSIS 2012)";
 #elif SQL2014
             titleText += " (SSIS 2014)";
+#elif SQL2017
+            titleText += " (SSIS 2017)";
 #elif SQL2008
             titleText += " (SSIS 2008)";
 #elif SQL2005
@@ -285,7 +289,8 @@ namespace ssisUnitTestRunnerUI
 
         private void ShowHelp()
         {
-            System.Diagnostics.Process.Start("http://www.codeplex.com/ssisUnit");
+            //System.Diagnostics.Process.Start("http://www.codeplex.com/ssisUnit");
+            System.Diagnostics.Process.Start("https://github.com/johnwelch/ssisUnit");
         }
 
         private void runSuiteToolStripMenuItem_Click(object sender, EventArgs e)
