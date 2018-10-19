@@ -14,7 +14,7 @@ The ssisUnit test framework has evolved into **LegiTest**. If you are looking fo
 - SQL Server Reporting Services
 - a more robust user interface and an enhanced user experience
 
-then please take a look at [LegiTest](https://legitest.com). It supports testing SSIS packages, cubes, databases, and reports, 
+then please take a look at [LegiTest](http://legitest.com). It supports testing SSIS packages, cubes, databases, and reports, 
 and adds some great user experience features, along with offering other valuable tools for BI developers.
 
 ## More Info
