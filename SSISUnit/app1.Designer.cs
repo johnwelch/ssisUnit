@@ -13,13 +13,22 @@ namespace SsisUnit {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.3.0.0")]
-    internal sealed partial class ssisUnit : global::System.Configuration.ApplicationSettingsBase {
+    internal sealed partial class app : global::System.Configuration.ApplicationSettingsBase {
         
-        private static ssisUnit defaultInstance = ((ssisUnit)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new ssisUnit())));
+        private static app defaultInstance = ((app)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new app())));
         
-        public static ssisUnit Default {
+        public static app Default {
             get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int ProcessCheckForExitDelay {
+            get {
+                return ((int)(this["ProcessCheckForExitDelay"]));
             }
         }
         
@@ -29,15 +38,6 @@ namespace SsisUnit {
         public int ProcessTimeout {
             get {
                 return ((int)(this["ProcessTimeout"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("20")]
-        public int ProcessCheckForExitDelay {
-            get {
-                return ((int)(this["ProcessCheckForExitDelay"]));
             }
         }
     }

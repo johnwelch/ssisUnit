@@ -95,6 +95,8 @@ namespace SsisUnit
                 return 2014;
 #elif SQL2017
                 return 2017;
+#elif SQL2019
+                return 2019;
 #endif
             }
         }
@@ -522,7 +524,7 @@ namespace SsisUnit
             Assembly asm = Assembly.GetExecutingAssembly();
 #if SQL2005
             Stream resource = asm.GetManifestResourceStream(asm.GetName().Name + "." + resourceName);
-#elif SQL2014 || SQL2008 || SQL2012 || SQL2017
+#elif SQL2014 || SQL2008 || SQL2012 || SQL2017 || SQL2019
             Stream resource = asm.GetManifestResourceStream("SsisUnit." + resourceName);
 #endif
             return resource;

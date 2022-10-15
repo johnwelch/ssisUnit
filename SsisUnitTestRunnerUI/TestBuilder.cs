@@ -58,6 +58,8 @@ namespace ssisUnitTestRunnerUI
             titleText += " (SSIS 2014)";
 #elif SQL2017
             titleText += " (SSIS 2017)";
+#elif SQL2019
+            titleText += " (SSIS 2019)";
 #elif SQL2008
             titleText += " (SSIS 2008)";
 #elif SQL2005
@@ -178,6 +180,8 @@ namespace ssisUnitTestRunnerUI
             titleText += " (SSIS 2014)";
 #elif SQL2017
             titleText += " (SSIS 2017)";
+#elif SQL2019
+            titleText += " (SSIS 2019)";
 #elif SQL2008
             titleText += " (SSIS 2008)";
 #elif SQL2005
