@@ -5,7 +5,7 @@ using System.IO;
 using Microsoft.SqlServer.Dts.Pipeline;
 using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
 
-#if SQL2017 || SQL2014 || SQL2008 || SQL2012
+#if SQL2019 || SQL2017 || SQL2014 || SQL2008 || SQL2012
 using IDTSInputColumn = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSInputColumn100;
 using IDTSVariables = Microsoft.SqlServer.Dts.Runtime.Wrapper.IDTSVariables100;
 using IDTSVirtualInput = Microsoft.SqlServer.Dts.Pipeline.Wrapper.IDTSVirtualInput100;

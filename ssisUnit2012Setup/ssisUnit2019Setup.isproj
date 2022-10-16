@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Project ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<!-- Select a Product Configuration -->
+		<InstallShieldProductConfiguration>Express</InstallShieldProductConfiguration>
+		<!-- Select a Visual Studio Configuration / InstallShield Release -->
+		<Configuration>Debug</Configuration>
+		<InstallShieldRelease>$(Configuration)</InstallShieldRelease>
+	</PropertyGroup>
+	<ItemGroup>
+		<!-- The InstallShieldProject item selects the project to build -->
+		<InstallShieldProject Include="$(MSBuildProjectDirectory)\$(MSBuildProjectName).isl"/>
+		<!-- The InstallShieldReleaseFlags sets Release Flags -->
+		<!--<InstallShieldReleaseFlags Include=""/>-->
+		<!-- The InstallShieldMergeModulePath specifies what directories are
+		searched for Merge Modules -->
+		<!--<InstallShieldMergeModulePath Include=""/>-->
+	</ItemGroup>
+	<ItemGroup>
+		<!-- The ProjectReference items refer to any Visual Studio solutions you want to automatically probe for Project Output Groups.  -->
+	</ItemGroup>
+	<ItemGroup>
+		<!-- The TaggedOutputs items allow you to explicitly add extra files to output groups. Each item must include both Name and OutputGroup, as well as TargetPath metadata values. -->
+		<!--<TaggedOutputs Include="C:\My Test Exe.exe">
+			<Name>My Test Project</Name>
+			<OutputGroup>Primary output</OutputGroup>
+			<TargetPath>My Test Exe.exe</TargetPath>
+		</TaggedOutputs> -->
+	</ItemGroup>
+	<Import Project="$(MSBuildExtensionsPath32)\InstallShield\2013Limited\InstallShield.targets"/>
+	<ItemGroup>
+		<ProjectReference Include="..\SSISUnit\SSISUnit.2019.csproj">
+			<Name>SSISUnit.2019</Name>
+			<Project>{8C839F0E-0AFD-4D9A-8DEE-5C7963E3E6C7}</Project>
+		</ProjectReference>
+		<ProjectReference Include="..\SsisUnitDesign\SsisUnit.Design_SQL2019.csproj">
+			<Name>SsisUnit.Design_SQL2019</Name>
+			<Project>{3B38F252-0DE8-4639-9AF9-AB8B216B685C}</Project>
+		</ProjectReference>
+		<ProjectReference Include="..\SsisUnit.TestComponents\SsisUnit.TestComponents.2019.csproj">
+			<Name>SsisUnit.TestComponents.2019</Name>
+			<Project>{6C8078E0-99DD-40D0-94DA-E17B3FC50679}</Project>
+		</ProjectReference>
+		<ProjectReference Include="..\SsisUnit.Base\SsisUnitBase.csproj">
+			<Name>SsisUnitBase</Name>
+			<Project>{E693CCE8-9EDF-4117-AB7F-EB87B87E29EA}</Project>
+		</ProjectReference>
+		<ProjectReference Include="..\SsisUnitTestRunner\ssisUnit.TestRunner.2019.csproj">
+			<Name>ssisUnit.TestRunner.2019</Name>
+			<Project>{8EDF3C6B-F9B0-4547-8B8B-B21F2FF8C9C0}</Project>
+		</ProjectReference>
+		<ProjectReference Include="..\ssisUnitTestRunnerUI\ssisUnitTestRunnerUI.2019.csproj">
+			<Name>ssisUnitTestRunnerUI.2019</Name>
+			<Project>{A943E51D-D0CC-4EF1-875B-937D0B179241}</Project>
+		</ProjectReference>
+	</ItemGroup>
+</Project>
